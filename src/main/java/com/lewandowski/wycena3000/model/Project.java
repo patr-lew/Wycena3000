@@ -1,0 +1,58 @@
+package com.lewandowski.wycena3000.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Map;
+
+@Entity
+@Table(name = "project")
+@Getter
+@Setter
+@AllArgsConstructor
+public class Project {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    private String name;
+
+    @Column(name = "created_at")
+    private LocalDateTime created;
+
+    @Column(name = "modified_at")
+    private LocalDateTime modified;
+
+    @Column(name = "total_cost")
+    private BigDecimal totalCost;
+
+    @Column
+    private BigDecimal price;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ProjectDetails projectDetails;
+
+    @ElementCollection
+    @CollectionTable(name = "project_board",
+            joinColumns = @JoinColumn(name = "project_id"))
+    @MapKeyJoinColumn(name = "board_id")
+    @Column(name = "amount")
+    private Map<WoodenBoard, Integer> boards;
+
+    @ElementCollection
+    @CollectionTable(name = "project_part",
+            joinColumns = @JoinColumn(name = "project_id"))
+    @MapKeyJoinColumn(name = "part_id")
+    @Column(name = "amount")
+    private Map<FurtniturePart, Integer> furnitureParts;
+
+    public Project() {
+    }
+
+}
