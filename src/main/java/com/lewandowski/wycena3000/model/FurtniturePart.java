@@ -24,7 +24,7 @@ public class FurtniturePart {
     @JoinColumn(name = "type_id", nullable = false)
     private FurniturePartType furniturePartType;
 
-    @Column(scale = 11, precision = 2)
+    @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
     public FurtniturePart() {

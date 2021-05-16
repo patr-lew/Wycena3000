@@ -23,13 +23,13 @@ public class ProjectDetails {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @Column(name = "worker_cost", scale = 11, precision = 2)
+    @Column(name = "worker_cost", scale = 2, precision = 11)
     private BigDecimal workerCost;
 
-    @Column(name = "other_costs", scale = 11, precision = 2)
+    @Column(name = "other_costs", scale = 2, precision = 11)
     private BigDecimal otherCosts;
 
-    @Column(name = "montage_cost", scale = 11, precision = 2)
+    @Column(name = "montage_cost", scale = 2, precision = 11)
     private BigDecimal montageCost;
 
     private String comment;

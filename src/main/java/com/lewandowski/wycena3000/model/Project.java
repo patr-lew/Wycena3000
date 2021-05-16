@@ -28,7 +28,7 @@ public class Project {
     @Column(name = "modified_at")
     private LocalDateTime modified;
 
-    @Column(name = "total_cost", scale = 11, precision = 2)
+    @Column(name = "total_cost", scale = 2, precision = 11)
     private BigDecimal totalCost;
 
     @Column(scale = 11, precision = 2)
