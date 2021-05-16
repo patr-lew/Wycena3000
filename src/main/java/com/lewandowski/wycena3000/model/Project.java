@@ -28,10 +28,10 @@ public class Project {
     @Column(name = "modified_at")
     private LocalDateTime modified;
 
-    @Column(name = "total_cost")
+    @Column(name = "total_cost", scale = 11, precision = 2)
     private BigDecimal totalCost;
 
-    @Column
+    @Column(scale = 11, precision = 2)
     private BigDecimal price;
 
     @OneToOne(cascade = CascadeType.ALL)

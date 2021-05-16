@@ -20,7 +20,7 @@ public class WoodenBoardType {
 
     private String name;
 
-    @Column(name = "price_per_m2")
+    @Column(name = "price_per_m2", scale = 11, precision = 2)
     private BigDecimal pricePerM2;
 
 }
