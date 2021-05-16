@@ -19,7 +19,7 @@ import javax.persistence.EntityManagerFactory;
 @EnableWebMvc
 @ComponentScan(basePackages = "com.lewandowski")
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.lewandowski")
+@EnableJpaRepositories(basePackages = "com.lewandowski.repository")
 public class AppConfig implements WebMvcConfigurer {
 
     @Bean

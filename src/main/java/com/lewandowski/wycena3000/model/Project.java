@@ -50,7 +50,7 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "part_id")
     @Column(name = "amount")
-    private Map<FurtniturePart, Integer> furnitureParts;
+    private Map<FurniturePart, Integer> furnitureParts;
 
     public Project() {
     }

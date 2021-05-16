@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FurtniturePart {
+public class FurniturePart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +27,6 @@ public class FurtniturePart {
     @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
-    public FurtniturePart() {
+    public FurniturePart() {
     }
 }
