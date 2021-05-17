@@ -54,10 +54,53 @@
 
 <!-- Main content -->
 
-<div class="container-fluid">
+<div class="container">
+    <div class="row p-md-3">
+        <h3>Dodaj nową wycenę</h3>
+    </div>
+
+    <div class="row p-sm-3">
+        <div class="col">
+            <form action="#" th:action="@{/creator/project/add}" th:object="${project}" method="post">
+                <!-- Project name -->
+                <div class="row p-lg-3 g-2 align-items-center">
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text"
+                                   th:field="*{name}"
+                                   class="form-control" id="projectName"
+                                   aria-describedby="nameHelp"
+                                   placeholder="Nazwa projektu">
+                            <label for="projectName">Nazwa projektu</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                      <span id="nameHelp" class="form-text">
+                     Np. "Jan Nowak, Częstochowa" albo "Mateusz Kołodziejski, kuchnia kremowa retro"
+                      </span>
+                    </div>
+                </div>
+
+                <!-- Project comment -->
+                <div class="row p-lg-3 g-2 align-items-center">
+
+                    <div class="col">
+                        <div class="form-floating">
+                            <textarea class="form-control"
+                                      th:field="*{comment}"
+                                      id="projectComment"
+                                      placeholder="Komentarz"></textarea>
+                            <label for="projectComment">Komentarz</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj</button>
+            </form>
+        </div>
+    </div>
 
 </div>
 
 </body>
-
 </html>

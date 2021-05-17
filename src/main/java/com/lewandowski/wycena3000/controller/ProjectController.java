@@ -1,10 +1,13 @@
 package com.lewandowski.wycena3000.controller;
 
 import com.lewandowski.wycena3000.entity.Project;
+import com.lewandowski.wycena3000.entity.ProjectDetails;
 import com.lewandowski.wycena3000.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
@@ -28,12 +31,28 @@ public class ProjectController {
     public String findAll(Model model) {
         List<Project> projects = projectService.findAll();
 
-        // computing the margin to pass to the view
+        // pass computed margin (price/cost) to the view
         List<String> margins = projectService.computeMarginList(projects);
 
         model.addAttribute("projects", projects);
         model.addAttribute("margins", margins);
 
         return "project/projects_all";
+    }
+
+    @GetMapping("/add")
+    public String addProject(Model model) {
+        Project project = new Project();
+
+        model.addAttribute("project", project);
+
+        return "project/projects_add";
+    }
+
+    @PostMapping("/add")
+    public String addProject(@ModelAttribute Project project) {
+        projectService.save(project);
+
+        return "redirect:/creator/project/all";
     }
 }

@@ -21,7 +21,11 @@ public class ProjectService {
     }
 
     public List<Project> findAll() {
-        return projectRepository.findAll();
+        return projectRepository.findAllByOrderByCreatedAsc();
+    }
+
+    public void save(Project project) {
+        projectRepository.save(project);
     }
 
     public List<String> computeMarginList(List<Project> projects) {
@@ -32,6 +36,11 @@ public class ProjectService {
     }
 
     public String computeMargin(Project project) {
+
+        if(null == project.getTotalCost() || null == project.getPrice()) {
+            return "-";
+        }
+
         String margin = project.getPrice()
                 .divide(project.getTotalCost(), 2, RoundingMode.HALF_UP)
                 .subtract(BigDecimal.ONE)

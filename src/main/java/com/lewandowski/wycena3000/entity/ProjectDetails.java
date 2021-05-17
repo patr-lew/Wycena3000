@@ -32,8 +32,6 @@ public class ProjectDetails {
     @Column(name = "montage_cost", scale = 2, precision = 11)
     private BigDecimal montageCost;
 
-    private String comment;
-
     public ProjectDetails() {
     }
 }

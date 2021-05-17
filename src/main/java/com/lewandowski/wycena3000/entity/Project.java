@@ -52,7 +52,18 @@ public class Project {
     @Column(name = "amount")
     private Map<FurniturePart, Integer> furnitureParts;
 
+    private String comment;
+
     public Project() {
     }
 
+    @PrePersist
+    public void created() {
+        this.created = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void updated() {
+        this.modified = LocalDateTime.now();
+    }
 }
