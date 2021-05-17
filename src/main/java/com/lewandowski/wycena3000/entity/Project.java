@@ -1,4 +1,4 @@
-package com.lewandowski.wycena3000.model;
+package com.lewandowski.wycena3000.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class Project {
     @Column(name = "total_cost", scale = 2, precision = 11)
     private BigDecimal totalCost;
 
-    @Column(scale = 11, precision = 2)
+    @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
     @OneToOne(cascade = CascadeType.ALL)

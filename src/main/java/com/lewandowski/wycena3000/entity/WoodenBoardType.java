@@ -1,4 +1,4 @@
-package com.lewandowski.wycena3000.model;
+package com.lewandowski.wycena3000.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

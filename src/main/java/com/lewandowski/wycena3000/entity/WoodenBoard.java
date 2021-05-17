@@ -1,32 +1,33 @@
-package com.lewandowski.wycena3000.model;
+package com.lewandowski.wycena3000.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
-@Table(name = "part")
+@Table(name = "board")
 @Getter
 @Setter
 @AllArgsConstructor
-public class FurniturePart {
+public class WoodenBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String name;
-
     @ManyToOne
     @JoinColumn(name = "type_id", nullable = false)
-    private FurniturePartType furniturePartType;
+    private WoodenBoardType woodenBoardType;
 
-    @Column(scale = 2, precision = 11)
-    private BigDecimal price;
+    private int height;
 
-    public FurniturePart() {
+    private int width;
+
+
+
+
+    public WoodenBoard() {
     }
 }
