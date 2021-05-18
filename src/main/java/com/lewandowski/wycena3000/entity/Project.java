@@ -2,6 +2,7 @@ package com.lewandowski.wycena3000.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Table(name = "project")
 @Getter
 @Setter
-@AllArgsConstructor
+@NoArgsConstructor
 public class Project {
 
     @Id
@@ -43,7 +44,7 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "board_id")
     @Column(name = "amount")
-    private Map<WoodenBoard, Integer> boards;
+    private Map<BoardMeasurement, Integer> boards;
 
     @ElementCollection
     @CollectionTable(name = "project_part",
@@ -54,8 +55,6 @@ public class Project {
 
     private String comment;
 
-    public Project() {
-    }
 
     @PrePersist
     public void created() {

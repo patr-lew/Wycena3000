@@ -2,6 +2,7 @@ package com.lewandowski.wycena3000.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class FurniturePart {
 
     @Id
@@ -27,6 +29,4 @@ public class FurniturePart {
     @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
-    public FurniturePart() {
-    }
 }

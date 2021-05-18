@@ -8,11 +8,11 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "board_type")
+@Table(name = "board")
 @Getter
 @Setter
 @NoArgsConstructor
-public class WoodenBoardType {
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +22,9 @@ public class WoodenBoardType {
 
     @Column(name = "price_per_m2", scale = 2, precision = 11)
     private BigDecimal pricePerM2;
+
+    @ManyToOne
+    @JoinColumn(name = "type_id", nullable = false)
+    private BoardType boardType;
 
 }
