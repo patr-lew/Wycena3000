@@ -41,4 +41,5 @@ public class Wycena3000Application {
         viewResolver.setSuffix(".html");
         return viewResolver;
     }
+
 }

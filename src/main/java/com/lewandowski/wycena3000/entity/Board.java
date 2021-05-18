@@ -20,6 +20,8 @@ public class Board {
 
     private String name;
 
+    private String code;
+
     @Column(name = "price_per_m2", scale = 2, precision = 11)
     private BigDecimal pricePerM2;
 
