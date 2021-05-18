@@ -73,7 +73,7 @@
                                     aria-label="Default select example"
                                     id="boardType"
                                     th:field="*{boardType}">
-                                <option value="empty" disabled selected>Wybierz rodzaj płyty</option>
+                                <option value="0" disabled selected>Wybierz rodzaj płyty</option>
                                 <option th:each="type : ${boardTypes}" th:value="${type.id}" th:text="${type.name}"></option>
 
                               </select>

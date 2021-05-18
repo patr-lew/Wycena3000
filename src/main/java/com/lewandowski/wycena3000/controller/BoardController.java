@@ -37,7 +37,7 @@ public class BoardController {
     public String save(@ModelAttribute Board board) {
         boardService.save(board);
 
-        return "board/board_add";
+        return "redirect:/creator/boards/edit";
     }
 
 
