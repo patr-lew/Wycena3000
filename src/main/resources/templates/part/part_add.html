@@ -58,10 +58,78 @@
 
 <!-- Main content -->
 
-<div class="container-fluid">
+<div class="container">
+    <div class="row p-md-3">
+        <h3>Dodaj nowy element</h3>
+    </div>
+
+    <div class="row p-sm-3">
+        <div class="col">
+            <form action="#" th:action="@{/creator/parts/add}" th:object="${furniturePart}" method="post">
+
+
+                <!-- Element type -->
+                <div class="row p-lg-3 g-2 align-items-center">
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select"
+                                    aria-label="Wybierz rodzaj elementu"
+                                    id="partType"
+                                    th:field="*{furniturePartType}">
+                                <option value="0" disabled selected>Wybierz rodzaj elementu</option>
+                                <option th:each="type : ${partTypes}" th:value="${type.id}" th:text="${type.name}"></option>
+
+                              </select>
+                              <label for="partType">Rodzaj elementu</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Element name -->
+                <div class="row p-lg-3 g-2 align-items-center">
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text"
+                                   th:field="*{name}"
+                                   class="form-control" id="partName"
+                                   aria-describedby="nameHelp"
+                                   placeholder="Nazwa płyty">
+                            <label for="partName">Nazwa płyty</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                      <span id="nameHelp" class="form-text">
+                        Po czym rozpoznasz element: producent, nazwa, rozmiar, kolor <br>
+                        Np. "Cargo BLUM 40 cm"
+                      </span>
+                    </div>
+                </div>
+
+
+                <!-- Element price -->
+                <div class="row p-lg-3 g-2 align-items-center">
+
+                    <div class="col-md-6">
+                        <div class="form-floating input-group">
+                            <input type="number"
+                                   th:field="*{price}"
+                                   class="form-control" id="boardPrice"
+                                   aria-describedby="nameHelp"
+                                   placeholder="Cena za sztukę / komplet">
+                            <label for="boardPrice">Cena za sztukę / komplet</label>
+                            <span class="input-group-text" id="basic-addon1">zł</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj</button>
+            </form>
+        </div>
+    </div>
 
 </div>
 
 </body>
-
 </html>

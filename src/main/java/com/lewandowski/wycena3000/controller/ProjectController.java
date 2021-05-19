@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/creator/project")
+@RequestMapping("/creator/projects")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -53,6 +53,6 @@ public class ProjectController {
     public String addProject(@ModelAttribute Project project) {
         projectService.save(project);
 
-        return "redirect:/creator/project/all";
+        return "redirect:/creator/projects/all";
     }
 }

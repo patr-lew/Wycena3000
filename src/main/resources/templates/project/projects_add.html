@@ -32,8 +32,8 @@
                        th:href="@{/}">Strona główna</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/main/resources/templates/projects_all.html"
-                       th:href="@{/creator/project/all}">Projekty</a>
+                    <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
+                       th:href="@{/creator/projects/all}">Projekty</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -46,8 +46,12 @@
                     </ul>
                 </li>
             </ul>
-            <a href="/main/resources/templates/edit_project.html" th:href="@{/creator/project/add}"
-               class="btn btn-success">Dodaj Projekt</a>
+            <a href="/main/resources/templates/part/part_add.html" th:href="@{/creator/parts/add}"
+               class="btn btn-success mx-1">Dodaj Element</a>
+            <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
+               class="btn btn-success mx-1">Dodaj Płytę</a>
+            <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
+               class="btn btn-success mx-1">Dodaj Projekt</a>
         </div>
     </div>
 </nav>

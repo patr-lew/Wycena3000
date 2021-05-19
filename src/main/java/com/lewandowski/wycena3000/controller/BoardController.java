@@ -22,7 +22,7 @@ public class BoardController {
         this.boardService = boardService;
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/add")
     public String add(Model model) {
         Board board = new Board();
         model.addAttribute("board", board);
@@ -37,7 +37,7 @@ public class BoardController {
     public String save(@ModelAttribute Board board) {
         boardService.save(board);
 
-        return "redirect:/creator/boards/edit";
+        return "redirect:/creator/boards/add";
     }
 
 
