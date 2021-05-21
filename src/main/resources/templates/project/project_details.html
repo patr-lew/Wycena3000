@@ -57,54 +57,100 @@
 </nav>
 
 <!-- Main content -->
+<div class="container">
+    <div class="m-4">
+        <div class="row">
+            <h3>Edytuj wycenę</h3>
+        </div>
+        <div class="row">
+            <form action="#"></form>
+            <div class="col-md-8">
+                    <div class="p-2">
+                        abc
+                    </div>
+            </div>
+            <div class="col-md-4">
+                    <div class="p-2">
+                        abc
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
 
 <div class="container">
     <div class="row p-md-3">
-        <h3>Dodaj nową wycenę</h3>
+        <h3>Edytuj wycenę</h3>
     </div>
 
-    <div class="row p-sm-3">
-        <div class="col">
-            <form action="#" th:action="@{/creator/projects/add}" th:object="${project}" method="post">
-                <!-- Project name -->
-                <div class="row p-lg-3 g-2 align-items-center">
+    <form action="#" th:action="@{/creator/project/add}" th:object="${project}" method="post">
+        <div class="row p-lg-3 g-2 align-items-center">
+            <div class="col-md-6">
 
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text"
-                                   th:field="*{name}"
-                                   class="form-control" id="projectName"
-                                   aria-describedby="nameHelp"
-                                   placeholder="Nazwa projektu">
-                            <label for="projectName">Nazwa projektu</label>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                      <span id="nameHelp" class="form-text">
-                     Np. "Jan Nowak, Częstochowa" albo "Mateusz Kołodziejski, kuchnia kremowa retro"
-                      </span>
+
+                <!-- Project costs???? -->
+                <div class="row p-lg-3 g-2 align-items-center">
+                    <h6>Dodaj element</h6>
+
+                    <div class="form-floating">
+                        <input type="text"
+                               th:field="*{name}"
+                               class="form-control" id="projectName"
+                               aria-describedby="nameHelp"
+                               placeholder="Nazwa projektu">
+                        <label for="projectName">Nazwa projektu</label>
                     </div>
                 </div>
 
                 <!-- Project comment -->
                 <div class="row p-lg-3 g-2 align-items-center">
 
-                    <div class="col">
-                        <div class="form-floating">
+                    <div class="form-floating">
                             <textarea class="form-control"
                                       th:field="*{comment}"
                                       id="projectComment"
                                       placeholder="Komentarz"></textarea>
-                            <label for="projectComment">Komentarz</label>
-                        </div>
+                        <label for="projectComment">Komentarz</label>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj</button>
-            </form>
+            </div>
         </div>
-    </div>
+        <div class="col-md-4">
+            <!-- Project name -->
+            <div class="row p-lg-3 g-2 align-items-center">
 
+                <div class="form-floating">
+                    <input type="text"
+                           th:field="*{name}"
+                           class="form-control" id="projectName"
+                           aria-describedby="nameHelp"
+                           placeholder="Nazwa projektu">
+                    <label for="projectName">Nazwa projektu</label>
+                </div>
+            </div>
+
+            <!-- Project comment -->
+            <div class="row p-lg-3 g-2 align-items-center">
+
+                <div class="col">
+                    <div class="form-floating">
+                            <textarea class="form-control"
+                                      th:field="*{comment}"
+                                      id="projectComment"
+                                      placeholder="Komentarz"></textarea>
+                        <label for="projectComment">Komentarz</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row p-lg-3 g-2 align-items-center">
+                <p th:text="${'Data utworzenia: ' + project.created}">Data utworzenia: dzisiaj</p>
+            </div>
+        
+        </div>
+    </form>
 </div>
-
 </body>
 </html>

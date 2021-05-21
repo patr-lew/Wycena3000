@@ -2,6 +2,7 @@ package com.lewandowski.wycena3000.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class BoardMeasurement {
 
     @Id
@@ -25,9 +27,7 @@ public class BoardMeasurement {
 
     private int width;
 
+    @Transient
+    private int amount;
 
-
-
-    public BoardMeasurement() {
-    }
 }

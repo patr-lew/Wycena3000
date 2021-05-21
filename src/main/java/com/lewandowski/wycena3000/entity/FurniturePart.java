@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "part")
@@ -29,4 +30,19 @@ public class FurniturePart {
     @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
+    @Transient
+    private int amount;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FurniturePart that = (FurniturePart) o;
+        return id == that.id && name.equals(that.name) && furniturePartType.equals(that.furniturePartType) && Objects.equals(price, that.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, furniturePartType, price);
+    }
 }

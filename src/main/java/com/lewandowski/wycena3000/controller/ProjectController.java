@@ -1,19 +1,19 @@
 package com.lewandowski.wycena3000.controller;
 
-import com.lewandowski.wycena3000.entity.Project;
-import com.lewandowski.wycena3000.entity.ProjectDetails;
+import com.lewandowski.wycena3000.entity.*;
+import com.lewandowski.wycena3000.service.BoardService;
+import com.lewandowski.wycena3000.service.FurniturePartService;
 import com.lewandowski.wycena3000.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -21,11 +21,14 @@ import java.util.stream.Collectors;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final FurniturePartService furniturePartService;
+    private final BoardService boardService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, FurniturePartService furniturePartService, BoardService boardService) {
         this.projectService = projectService;
+        this.furniturePartService = furniturePartService;
+        this.boardService = boardService;
     }
-
 
     @GetMapping("/all")
     public String findAll(Model model) {
@@ -53,6 +56,41 @@ public class ProjectController {
     public String addProject(@ModelAttribute Project project) {
         projectService.save(project);
 
-        return "redirect:/creator/projects/all";
+        return "redirect:/creator/projects/edit?projectId=" + project.getId();
+    }
+
+    @GetMapping("/edit")
+    public String editProject(@RequestParam long projectId, Model model) {
+        Project projectById = projectService.
+                findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException());
+        model.addAttribute("project", projectById);
+
+        List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
+        model.addAttribute("furnitureParts", furnitureParts);
+
+        List<Board> boards = boardService.findAll();
+        model.addAttribute("boards", boards);
+
+        BoardMeasurement boardMeasurement = new BoardMeasurement();
+        model.addAttribute("board", boardMeasurement);
+
+
+        return "project/project_edit";
+
+    }
+
+    @PostMapping("/addFurniturePart")
+    public String addFurniturePartToProject(
+            @RequestParam long projectId,
+            @RequestParam long furniturePartId,
+            @RequestParam int amount) {
+        Project projectById = projectService.
+                findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        projectService.addFurniturePartsToProject(projectById, furniturePartId, amount);
+        return "redirect:/creator/projects/edit?projectId=" + projectById.getId();
+
     }
 }

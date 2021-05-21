@@ -34,4 +34,7 @@ public class FurniturePartService {
     }
 
 
+    public List<FurniturePart> getFurnitureParts() {
+        return furniturePartRepository.findAll();
+    }
 }
