@@ -9,12 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/creator/projects")
@@ -71,7 +66,6 @@ public class ProjectController {
 
         List<Board> boards = boardService.findAll();
         model.addAttribute("boards", boards);
-
         BoardMeasurement boardMeasurement = new BoardMeasurement();
         model.addAttribute("board", boardMeasurement);
 
@@ -92,5 +86,16 @@ public class ProjectController {
         projectService.addFurniturePartsToProject(projectById, furniturePartId, amount);
         return "redirect:/creator/projects/edit?projectId=" + projectById.getId();
 
+    }
+
+    @PostMapping("/addBoard")
+    public String addBoardToProject(@RequestParam long projectId, @ModelAttribute BoardMeasurement boardMeasurement) {
+        Project projectById = projectService.
+                findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        projectService.addBoardMeasurementToProject(projectById, boardMeasurement);
+
+        return "redirect:/creator/projects/edit?projectId=" + projectById.getId();
     }
 }

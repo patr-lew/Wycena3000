@@ -44,7 +44,7 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "board_id")
     @Column(name = "amount")
-    private Map<BoardMeasurement, Integer> boards;
+    private Map<BoardMeasurement, Integer> boardMeasurements;
 
     @ElementCollection
     @CollectionTable(name = "project_part",

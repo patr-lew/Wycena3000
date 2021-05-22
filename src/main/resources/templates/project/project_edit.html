@@ -69,7 +69,8 @@
                     <div class="col-md-6">
                         <div class="p-2">
                             <!-- ADD BOARD -->
-                            <form action="#" th:action="@{/creator/project/addBoard}" th:object="${board}" method="post">
+                            <form action="#" th:action="@{/creator/projects/addBoard}" th:object="${board}" method="post">
+                                <input type="hidden" th:name="projectId" th:value="${project.id}" >
 
                                     <!-- Choose board -->
                             <div class="row p-lg-3 g-2 align-items-center">
@@ -106,7 +107,7 @@
                                 </div>
                                 <div class="col">
                                     <div class="form-floating">
-                                        <input type="number" th:field="*{width}" class="form-control" id="amount"
+                                        <input type="number" th:field="*{amount}" class="form-control" id="amount"
                                             aria-describedby="nameHelp" placeholder="Ilość">
                                         <label for="amount">Ilość</label>
                                     </div>

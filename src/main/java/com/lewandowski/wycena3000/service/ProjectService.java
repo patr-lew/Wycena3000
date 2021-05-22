@@ -1,9 +1,12 @@
 package com.lewandowski.wycena3000.service;
 
+import com.lewandowski.wycena3000.entity.BoardMeasurement;
 import com.lewandowski.wycena3000.entity.FurniturePart;
 import com.lewandowski.wycena3000.entity.Project;
+import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.FurniturePartRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -15,16 +18,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final FurniturePartRepository furniturePartRepository;
+    private final BoardMeasurementRepository boardMeasurementRepository;
 
-    public ProjectService(ProjectRepository projectRepository, FurniturePartRepository furniturePartRepository) {
+
+    public ProjectService(ProjectRepository projectRepository, FurniturePartRepository furniturePartRepository, BoardMeasurementRepository boardMeasurementRepository) {
         this.projectRepository = projectRepository;
         this.furniturePartRepository = furniturePartRepository;
+        this.boardMeasurementRepository = boardMeasurementRepository;
     }
 
     public List<Project> findAll() {
@@ -60,6 +67,28 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
+    public Project addBoardMeasurementToProject(Project project, BoardMeasurement addedBoardMeasurement) {
+
+        List<BoardMeasurement> boardMeasurementsInDb = boardMeasurementRepository.findAll();
+
+        if(!boardMeasurementsInDb.contains(addedBoardMeasurement)) {
+            boardMeasurementRepository.save(addedBoardMeasurement);
+        }
+
+        Map<BoardMeasurement, Integer> boardMeasurementsInProject = project.getBoardMeasurements();
+        int newAmount = addedBoardMeasurement.getAmount();
+        log.info(addedBoardMeasurement.getAmount() + "\n\n\n");
+
+        if(boardMeasurementsInProject.containsKey(addedBoardMeasurement)) {
+            int existingAmount = boardMeasurementsInProject.get(addedBoardMeasurement);
+            newAmount += existingAmount;
+        }
+
+        boardMeasurementsInProject.put(addedBoardMeasurement, newAmount);
+
+        return projectRepository.save(project);
+    }
+
     public List<String> computeMarginList(List<Project> projects) {
         return projects.stream()
                 .map(this::computeMargin)
@@ -69,7 +98,8 @@ public class ProjectService {
 
     public String computeMargin(Project project) {
 
-        if (null == project.getTotalCost() || null == project.getPrice()) {
+        if (null == project.getTotalCost() || null == project.getPrice() ||
+                BigDecimal.ZERO == project.getTotalCost() || BigDecimal.ZERO == project.getPrice()) {
             return "-";
         }
 
@@ -82,5 +112,5 @@ public class ProjectService {
 
         return margin + "%";
     }
-
 }
+
