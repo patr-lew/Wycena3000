@@ -14,7 +14,6 @@ import java.util.Map;
 @Table(name = "project")
 @Getter
 @Setter
-@NoArgsConstructor
 public class Project {
 
     @Id
@@ -54,6 +53,8 @@ public class Project {
 
     private String comment;
 
+    public Project() {
+    }
 
     @PrePersist
     public void created() {

@@ -1,9 +1,6 @@
 package com.lewandowski.wycena3000.service;
 
-import com.lewandowski.wycena3000.entity.BoardMeasurement;
-import com.lewandowski.wycena3000.entity.FurniturePart;
-import com.lewandowski.wycena3000.entity.Project;
-import com.lewandowski.wycena3000.entity.ProjectDetails;
+import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.FurniturePartRepository;
 import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
@@ -16,9 +13,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,6 +39,7 @@ public class ProjectService {
     }
 
     public Project save(Project project) {
+        project.setTotalCost(calculateTotalCost(project));
         return projectRepository.save(project);
     }
 
@@ -88,7 +84,7 @@ public class ProjectService {
 
         furnitureParts.put(addedPart, newAmount);
 
-        return projectRepository.save(project);
+        return save(project);
     }
 
     public Project addBoardMeasurementToProject(Project project, BoardMeasurement addedBoardMeasurement) {
@@ -110,7 +106,7 @@ public class ProjectService {
 
         boardMeasurementsInProject.put(addedBoardMeasurement, newAmount);
 
-        return projectRepository.save(project);
+        return save(project);
     }
 
     public void addProjectDetailsToProject(long projectId, ProjectDetails projectDetails) {
@@ -124,6 +120,8 @@ public class ProjectService {
 
         projectDetails.setProject(projectById);
         projectDetailsRepository.save(projectDetails);
+
+        projectById.setTotalCost(calculateTotalCost(projectById));
     }
 
     public List<String> computeMarginList(List<Project> projects) {
@@ -152,6 +150,59 @@ public class ProjectService {
 
     public void saveProjectDetails(ProjectDetails projectDetails) {
         projectDetailsRepository.save(projectDetails);
+    }
+
+    public BigDecimal calculateTotalCost(Project project) {
+        BigDecimal totalCost =project.getTotalCost();
+
+        // add costs from ProjectDetails
+        if(null != project.getProjectDetails()) {
+            ProjectDetails projectDetails = project.getProjectDetails();
+
+            totalCost = totalCost.add(projectDetails.getMontageCost())
+                    .add(projectDetails.getWorkerCost())
+                    .add(projectDetails.getOtherCosts());
+
+        }
+
+        // add costs from boards
+        Hibernate.initialize(project.getBoardMeasurements());
+        if (null != project.getBoardMeasurements()) {
+            Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
+            Map<Board, Integer> boardArea = new HashMap<>();
+
+
+            for (BoardMeasurement boardMeasurement : boardMeasurements.keySet()) {
+                int boardSurfaceArea = boardMeasurement.getHeight() * boardMeasurement.getWidth() * boardMeasurement.getAmount();
+                if (boardArea.containsKey(boardMeasurement.getBoard())) {
+                    boardSurfaceArea += boardArea.get(boardMeasurement.getBoard());
+                }
+
+                boardArea.put(boardMeasurement.getBoard(), boardSurfaceArea);
+            }
+
+
+            for (Board board : boardArea.keySet()) {
+                BigDecimal amountOfBoards = BigDecimal.valueOf(boardArea.get(board));
+                BigDecimal boardCost = board.getPricePerM2().multiply(amountOfBoards);
+                totalCost = totalCost.add(boardCost);
+            }
+        }
+
+
+        // add costs from parts
+        Hibernate.initialize(project.getFurnitureParts());
+        if (null != project.getFurnitureParts()) {
+            Map<FurniturePart, Integer> furnitureParts = project.getFurnitureParts();
+
+           for (FurniturePart part : furnitureParts.keySet()) {
+                BigDecimal amountOfParts = BigDecimal.valueOf(furnitureParts.get(part));
+                BigDecimal partCost = part.getPrice().multiply(amountOfParts);
+                totalCost = totalCost.add(partCost);
+            }
+        }
+
+        return totalCost;
     }
 }
 

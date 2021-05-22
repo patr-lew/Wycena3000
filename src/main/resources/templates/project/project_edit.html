@@ -243,6 +243,7 @@
                 <div class="card my-1 p-2">
                     <div class="row p-lg-3 g-2 align-items-center">
                         <p th:text="${'Data utworzenia: ' + project.created}">Data utworzenia: dzisiaj</p>
+                        <p th:text="${'Całkowity koszt: ' + project.totalCost}">Koszt</p>
                     </div>
                     <div class="row p-lg-3 g-2 my-2 align-items-center">
                         <h6>Dodane płyty:</h6>
@@ -256,12 +257,17 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Błękit gołębi / UNICOLORY</td>
-                                    <td>870 x 230</td>
-                                    <td>3</td>
+                                <tr th:each="measurement : ${project.getBoardMeasurements()}">
+                                    <td th:text="${measurement.getKey().board.name}">Płyta</td>
+                                    <td th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary</td>
+                                    <td th:text="${measurement.getValue()}">Ilość</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="row p-lg-3 g-2 my-2 align-items-center">
+                        <h6>Dodane płyty:</h6>
+                        <ul></ul>
                     </div>
                     <div class="row p-lg-3 g-2 align-items-center">
                         <h6>Dodane Elementy:</h6>
