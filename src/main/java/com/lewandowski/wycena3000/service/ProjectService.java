@@ -3,10 +3,13 @@ package com.lewandowski.wycena3000.service;
 import com.lewandowski.wycena3000.entity.BoardMeasurement;
 import com.lewandowski.wycena3000.entity.FurniturePart;
 import com.lewandowski.wycena3000.entity.Project;
+import com.lewandowski.wycena3000.entity.ProjectDetails;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.FurniturePartRepository;
+import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -24,12 +27,14 @@ import java.util.stream.Collectors;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ProjectDetailsRepository projectDetailsRepository;
     private final FurniturePartRepository furniturePartRepository;
     private final BoardMeasurementRepository boardMeasurementRepository;
 
 
-    public ProjectService(ProjectRepository projectRepository, FurniturePartRepository furniturePartRepository, BoardMeasurementRepository boardMeasurementRepository) {
+    public ProjectService(ProjectRepository projectRepository, ProjectDetailsRepository projectDetailsRepository, FurniturePartRepository furniturePartRepository, BoardMeasurementRepository boardMeasurementRepository) {
         this.projectRepository = projectRepository;
+        this.projectDetailsRepository = projectDetailsRepository;
         this.furniturePartRepository = furniturePartRepository;
         this.boardMeasurementRepository = boardMeasurementRepository;
     }
@@ -42,8 +47,27 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Optional<Project> findById(long id) {
-        return projectRepository.findById(id);
+    public Project findById(long id) {
+        return projectRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Project with given Id doesn't exist"));
+    }
+
+    public Project findByIdEager(long id) {
+        Project project = findById(id);
+        if (!Hibernate.isInitialized(project.getProjectDetails())) {
+            Hibernate.initialize(project.getProjectDetails());
+        }
+
+        if (!Hibernate.isInitialized(project.getBoardMeasurements())) {
+            Hibernate.initialize(project.getBoardMeasurements());
+        }
+
+        if (!Hibernate.isInitialized(project.getFurnitureParts())) {
+            Hibernate.initialize(project.getFurnitureParts());
+        }
+
+        return project;
     }
 
     /**
@@ -71,7 +95,7 @@ public class ProjectService {
 
         List<BoardMeasurement> boardMeasurementsInDb = boardMeasurementRepository.findAll();
 
-        if(!boardMeasurementsInDb.contains(addedBoardMeasurement)) {
+        if (!boardMeasurementsInDb.contains(addedBoardMeasurement)) {
             boardMeasurementRepository.save(addedBoardMeasurement);
         }
 
@@ -79,7 +103,7 @@ public class ProjectService {
         int newAmount = addedBoardMeasurement.getAmount();
         log.info(addedBoardMeasurement.getAmount() + "\n\n\n");
 
-        if(boardMeasurementsInProject.containsKey(addedBoardMeasurement)) {
+        if (boardMeasurementsInProject.containsKey(addedBoardMeasurement)) {
             int existingAmount = boardMeasurementsInProject.get(addedBoardMeasurement);
             newAmount += existingAmount;
         }
@@ -87,6 +111,19 @@ public class ProjectService {
         boardMeasurementsInProject.put(addedBoardMeasurement, newAmount);
 
         return projectRepository.save(project);
+    }
+
+    public void addProjectDetailsToProject(long projectId, ProjectDetails projectDetails) {
+        Project projectById = findById(projectId);
+
+        // TODO update a ProjectDetails without actually deleting it first
+        if (null != projectById.getProjectDetails()) {
+            ProjectDetails projectDetailsToRemove = projectById.getProjectDetails();
+            projectDetailsRepository.delete(projectDetailsToRemove);
+        }
+
+        projectDetails.setProject(projectById);
+        projectDetailsRepository.save(projectDetails);
     }
 
     public List<String> computeMarginList(List<Project> projects) {
@@ -111,6 +148,10 @@ public class ProjectService {
                 .toString();
 
         return margin + "%";
+    }
+
+    public void saveProjectDetails(ProjectDetails projectDetails) {
+        projectDetailsRepository.save(projectDetails);
     }
 }
 

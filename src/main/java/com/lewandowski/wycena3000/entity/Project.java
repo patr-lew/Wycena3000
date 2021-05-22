@@ -35,8 +35,7 @@ public class Project {
     @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "project")
     private ProjectDetails projectDetails;
 
     @ElementCollection

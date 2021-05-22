@@ -4,11 +4,11 @@ import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.FurniturePartService;
 import com.lewandowski.wycena3000.service.ProjectService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Controller
@@ -56,9 +56,12 @@ public class ProjectController {
 
     @GetMapping("/edit")
     public String editProject(@RequestParam long projectId, Model model) {
-        Project projectById = projectService.
-                findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException());
+        Project projectById = projectService.findByIdEager(projectId);
+
+        if (null == projectById.getProjectDetails()) {
+            projectById.setProjectDetails(new ProjectDetails());
+        }
+
         model.addAttribute("project", projectById);
 
         List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
@@ -79,9 +82,7 @@ public class ProjectController {
             @RequestParam long projectId,
             @RequestParam long furniturePartId,
             @RequestParam int amount) {
-        Project projectById = projectService.
-                findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException());
+        Project projectById = projectService.findById(projectId);
 
         projectService.addFurniturePartsToProject(projectById, furniturePartId, amount);
         return "redirect:/creator/projects/edit?projectId=" + projectById.getId();
@@ -90,12 +91,19 @@ public class ProjectController {
 
     @PostMapping("/addBoard")
     public String addBoardToProject(@RequestParam long projectId, @ModelAttribute BoardMeasurement boardMeasurement) {
-        Project projectById = projectService.
-                findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException());
+        Project projectById = projectService.findById(projectId);
 
         projectService.addBoardMeasurementToProject(projectById, boardMeasurement);
 
         return "redirect:/creator/projects/edit?projectId=" + projectById.getId();
+    }
+
+    @PostMapping("/addProjectDetails")
+    public String addDetailsToProject(@RequestParam long projectId, @ModelAttribute ProjectDetails projectDetails) {
+
+        projectService.addProjectDetailsToProject(projectId, projectDetails);
+
+
+        return "redirect:/creator/projects/edit?projectId=" + projectId;
     }
 }
