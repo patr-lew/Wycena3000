@@ -80,7 +80,7 @@
                             <div class="form-floating">
                                 <select class="form-select" aria-label="Default select example" id="boardType" name="board"
                                         th:with="board=*{board}">
-                                    <option th:each="type : ${boards}" th:value="${type.id}" th:text="${type.name}"
+                                    <option th:each="type : ${boards}" th:value="${type.id}" th:text="${type.name + ', ' + type.pricePerM2 + 'zł/m2'}"
                                     th:selected="${boardId == type.id}">
                                     </option>
 
@@ -94,21 +94,21 @@
                             <div class="col">
 
                                 <div class="form-floating">
-                                    <input type="number" th:field="*{height}" class="form-control" id="height"
+                                    <input type="number" name="height" class="form-control" id="height"
                                            aria-describedby="nameHelp" placeholder="Wysokość w mm">
                                     <label for="height">Wysokość w mm</label>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-floating">
-                                    <input type="number" th:field="*{width}" class="form-control" id="width"
+                                    <input type="number" name="width" class="form-control" id="width"
                                            aria-describedby="nameHelp" placeholder="Szerokość w mm">
                                     <label for="width">Szerokość w mm</label>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-floating">
-                                    <input type="number" th:field="*{amount}" class="form-control" id="amount"
+                                    <input type="number" name="amount" class="form-control" id="amount"
                                            aria-describedby="nameHelp" placeholder="Ilość">
                                     <label for="amount">Ilość</label>
                                 </div>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="col">
                             <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj element</button>
-                            <button type="button" class="btn btn-secondary my-2 mx-3">Utwórz nowy element</button>
+                            <a th:href="@{/creator/parts/add}" href="/main/resources/templates/part/part_add.html" class="btn btn-secondary my-2 mx-3">Utwórz nową płytę</a>
                         </div>
                     </form>
                 </div>
@@ -271,11 +271,8 @@
                                         <td style="text-align: center" th:text="${part.getKey().price + ' zł'}">Cena</td>
                                         <td style="text-align: right">ilość</td>
                                         <td style="text-align: left" th:text="${part.getValue()}">Ilość</td>
-
                                     </tr>
-
                                 </table>
-
                             </li>
                         </ul>                        
                     </div>

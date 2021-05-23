@@ -93,10 +93,10 @@
                                 <td th:text="${project.price}">13.000 zł</td>
                                 <td>
                                     <a href="/main/resources/templates/project/project_details.html"
-                                       th:href="@{/creator/projects/details(projectId=__${project.id}__)}"
+                                       th:href="@{/creator/projects/details/__${project.id}__}"
                                        class="btn btn-outline-success">Szczegóły</a>
                                     <a href="/main/resources/templates/project/project_edit.html"
-                                       th:href="@{/creator/projects/edit(projectId=__${project.id}__)}"
+                                       th:href="@{/creator/projects/edit/(projectId=__${project.id}__)}"
                                        class="btn btn-outline-primary">Edytuj</a>
                                 </td>
                             </tr>

@@ -1,16 +1,16 @@
 package com.lewandowski.wycena3000.controller;
 
+import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.FurniturePartService;
 import com.lewandowski.wycena3000.service.ProjectService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/creator/projects")
@@ -115,4 +115,19 @@ public class ProjectController {
 
         return "redirect:/creator/projects/edit?projectId=" + projectId;
     }
+
+    @GetMapping("/details/{projectId}")
+    public String projectDetails(@PathVariable Long projectId, Model model) {
+        Project projectById = projectService.findByIdEager(projectId);
+        model.addAttribute("project", projectById);
+
+        List<BoardByProjectDto> boards = projectService.getBoardsDetailsByProject(projectId);
+        model.addAttribute("boardsInProject", boards);
+
+        List<FurniturePartType> furniturePartTypes = furniturePartService.getFurniturePartTypes();
+        model.addAttribute("partTypes", furniturePartTypes);
+
+        return "project/project_details";
+    }
+
 }

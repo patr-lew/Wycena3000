@@ -58,99 +58,52 @@
 
 <!-- Main content -->
 <div class="container">
-    <div class="m-4">
-        <div class="row">
-            <h3>Edytuj wycenę</h3>
-        </div>
-        <div class="row">
-            <form action="#"></form>
-            <div class="col-md-8">
-                    <div class="p-2">
-                        abc
-                    </div>
-            </div>
-            <div class="col-md-4">
-                    <div class="p-2">
-                        abc
-                </div>
-            </div>
-        </div>
+ <!-- Project summary -->
+ <div class="card my-1 p-2">
+    <div class="row p-lg-3 g-2 align-items-center">
+        <p th:text="${'Data utworzenia: ' + project.created}">Data utworzenia: dzisiaj</p>
+        <p th:text="${'Data utworzenia: ' + project.modified}">Data aktualizacji: dzisiaj</p>
+        <p th:text="${'Całkowity koszt: ' + project.totalCost}">Koszt</p>
+    </div>
+    <div class="row p-lg-3 g-2 my-2 align-items-center">
+        <h6>Dodane płyty:</h6>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="boardByProjectDto : ${boardsInProject}"> <p th:text="${boardByProjectDto.name}">Pierwsza płyta</p>
+                <table class="table table-sm table-striped">
+                    <tr th:each="measurement : ${project.boardMeasurements}" th:if="${boardByProjectDto.boardId == measurement.getKey().board.id}">
+                        <td style="text-align: center" th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary</td>
+                        <td style="text-align: right">ilość:</td>
+                        <td style="text-align: left" th:text="${measurement.getValue()}">Ilość</td>
+                    </tr>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <p th:utext="${'Całkowita powierzchnia: ' + boardByProjectDto.totalArea + 'm<sup>2</sup>'}">Całkowita wielkość: 3,4m2</p>
+                            <p th:text="${'Całkowita cena: ' + boardByProjectDto.totalCost + 'zł'}">Całkowita cena: 203 zł</p>
+                        </li>
+                    </ul>
+                </table>
+
+            </li>
+        </ul>
+    </div>
+    <div class="row p-lg-3 g-2 align-items-center">
+        <h6>Dodane Elementy:</h6>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="type : ${partTypes}"> <p th:text="${type.name}">typ rzeczy</p>
+                <table class="table table-sm table-striped">
+                    <tr th:each="part : ${project.furnitureParts}" th:if="${part.getKey().furniturePartType.id == type.id}">
+                        <td style="text-align: center" th:text="${part.getKey().name}">Nazwa</td>
+                        <td style="text-align: center" th:text="${part.getKey().price + ' zł'}">Cena</td>
+                        <td style="text-align: right">ilość</td>
+                        <td style="text-align: left" th:text="${part.getValue()}">Ilość</td>
+
+                    </tr>
+
+                </table>
+            </li>
+        </ul>                        
     </div>
 </div>
-
-<!-- Main content -->
-
-<div class="container">
-    <div class="row p-md-3">
-        <h3>Edytuj wycenę</h3>
-    </div>
-
-    <form action="#" th:action="@{/creator/project/add}" th:object="${project}" method="post">
-        <div class="row p-lg-3 g-2 align-items-center">
-            <div class="col-md-6">
-
-
-                <!-- Project costs???? -->
-                <div class="row p-lg-3 g-2 align-items-center">
-                    <h6>Dodaj element</h6>
-
-                    <div class="form-floating">
-                        <input type="text"
-                               th:field="*{name}"
-                               class="form-control" id="projectName"
-                               aria-describedby="nameHelp"
-                               placeholder="Nazwa projektu">
-                        <label for="projectName">Nazwa projektu</label>
-                    </div>
-                </div>
-
-                <!-- Project comment -->
-                <div class="row p-lg-3 g-2 align-items-center">
-
-                    <div class="form-floating">
-                            <textarea class="form-control"
-                                      th:field="*{comment}"
-                                      id="projectComment"
-                                      placeholder="Komentarz"></textarea>
-                        <label for="projectComment">Komentarz</label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj</button>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <!-- Project name -->
-            <div class="row p-lg-3 g-2 align-items-center">
-
-                <div class="form-floating">
-                    <input type="text"
-                           th:field="*{name}"
-                           class="form-control" id="projectName"
-                           aria-describedby="nameHelp"
-                           placeholder="Nazwa projektu">
-                    <label for="projectName">Nazwa projektu</label>
-                </div>
-            </div>
-
-            <!-- Project comment -->
-            <div class="row p-lg-3 g-2 align-items-center">
-
-                <div class="col">
-                    <div class="form-floating">
-                            <textarea class="form-control"
-                                      th:field="*{comment}"
-                                      id="projectComment"
-                                      placeholder="Komentarz"></textarea>
-                        <label for="projectComment">Komentarz</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row p-lg-3 g-2 align-items-center">
-                <p th:text="${'Data utworzenia: ' + project.created}">Data utworzenia: dzisiaj</p>
-            </div>
-        
-        </div>
-    </form>
 </div>
 </body>
 </html>
