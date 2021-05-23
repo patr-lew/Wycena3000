@@ -38,4 +38,8 @@ public class BoardService {
                 .findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("Board with given Id doesn't exist"));
     }
+
+    public List<Board> findAllByProjectId(long projectId) {
+        return boardRepository.findAllByProjectId(projectId);
+    }
 }

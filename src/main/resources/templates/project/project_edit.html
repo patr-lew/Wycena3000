@@ -63,7 +63,7 @@
 <div class="container-fluid">
     <div class="m-4">
         <div class="row">
-            <h3>Edytuj wycenę</h3>
+            <h3 th:text="${'Edytuj wycenę ' + project.name}">Edytuj wycenę</h3>
             <div class="py-1 text-info">Uzupełniaj jeden formularz na raz, potwierdź <b>enter</b>.</div>
         </div>
         <div class="row">
@@ -78,10 +78,10 @@
                             <h5>Dodaj płytę</h5>
 
                             <div class="form-floating">
-                                <select class="form-select" aria-label="Default select example" id="boardType"
-                                        th:field="*{board}">
-                                    <option value="0" disabled selected>Wybierz rodzaj płyty</option>
-                                    <option th:each="type : ${boards}" th:value="${type.id}" th:text="${type.name}">
+                                <select class="form-select" aria-label="Default select example" id="boardType" name="board"
+                                        th:with="board=*{board}">
+                                    <option th:each="type : ${boards}" th:value="${type.id}" th:text="${type.name}"
+                                    th:selected="${boardId == type.id}">
                                     </option>
 
                                 </select>
@@ -95,15 +95,15 @@
 
                                 <div class="form-floating">
                                     <input type="number" th:field="*{height}" class="form-control" id="height"
-                                           aria-describedby="nameHelp" placeholder="Wysokość">
-                                    <label for="height">Wysokość</label>
+                                           aria-describedby="nameHelp" placeholder="Wysokość w mm">
+                                    <label for="height">Wysokość w mm</label>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-floating">
                                     <input type="number" th:field="*{width}" class="form-control" id="width"
-                                           aria-describedby="nameHelp" placeholder="Szerokość">
-                                    <label for="width">Szerokość</label>
+                                           aria-describedby="nameHelp" placeholder="Szerokość w mm">
+                                    <label for="width">Szerokość w mm</label>
                                 </div>
                             </div>
                             <div class="col">
@@ -116,7 +116,7 @@
                         </div>
                         <div class="col">
                             <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj płytę</button>
-                            <button type="button" class="btn btn-secondary my-2 mx-3">Utwórz nową płytę</button>
+                            <a th:href="@{/creator/boards/add}" href="/main/resources/templates/board/board_add.html" class="btn btn-secondary my-2 mx-3">Utwórz nową płytę</a>
 
                         </div>
                     </form>
@@ -240,6 +240,8 @@
                         </div>
                     </form>
                 </div>
+
+                <!-- Project summary -->
                 <div class="card my-1 p-2">
                     <div class="row p-lg-3 g-2 align-items-center">
                         <p th:text="${'Data utworzenia: ' + project.created}">Data utworzenia: dzisiaj</p>
@@ -247,44 +249,35 @@
                     </div>
                     <div class="row p-lg-3 g-2 my-2 align-items-center">
                         <h6>Dodane płyty:</h6>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Płyta</th>
-                                    <th>Wymiary</th>
-                                    <th>Ilość</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                <tr th:each="measurement : ${project.getBoardMeasurements()}">
-                                    <td th:text="${measurement.getKey().board.name}">Płyta</td>
-                                    <td th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary</td>
-                                    <td th:text="${measurement.getValue()}">Ilość</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="row p-lg-3 g-2 my-2 align-items-center">
-                        <h6>Dodane płyty:</h6>
-                        <ul></ul>
+                        <ul class="list-group">
+                            <li class="list-group-item" th:each="boardsName : ${boardsInProject}"> <p th:text="${boardsName.name}">Pierwsza płyta</p>
+                                <table class="table table-sm table-striped">
+                                    <tr th:each="measurement : ${project.boardMeasurements}" th:if="${boardsName.id == measurement.getKey().board.id}">
+                                        <td style="text-align: center" th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary</td>
+                                        <td style="text-align: right">ilość:</td>
+                                        <td style="text-align: left" th:text="${measurement.getValue()}">Ilość</td>
+                                    </tr>
+                                </table>
+                            </li>
+                        </ul>
                     </div>
                     <div class="row p-lg-3 g-2 align-items-center">
                         <h6>Dodane Elementy:</h6>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Element</th>
-                                    <th>Ilość</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Jakaś szuflada</td>
-                                    <td>8</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <ul class="list-group">
+                            <li class="list-group-item" th:each="type : ${partTypes}"> <p th:text="${type.name}">typ rzeczy</p>
+                                <table class="table table-sm table-striped">
+                                    <tr th:each="part : ${project.furnitureParts}" th:if="${part.getKey().furniturePartType.id == type.id}">
+                                        <td style="text-align: center" th:text="${part.getKey().name}">Nazwa</td>
+                                        <td style="text-align: center" th:text="${part.getKey().price + ' zł'}">Cena</td>
+                                        <td style="text-align: right">ilość</td>
+                                        <td style="text-align: left" th:text="${part.getValue()}">Ilość</td>
+
+                                    </tr>
+
+                                </table>
+
+                            </li>
+                        </ul>                        
                     </div>
                 </div>
             </div>

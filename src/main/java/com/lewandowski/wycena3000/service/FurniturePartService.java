@@ -44,4 +44,8 @@ public class FurniturePartService {
                 .findById(partId)
                 .orElseThrow(() -> new EntityNotFoundException("FurniturePart with given Id doesn't exist"));
     }
+
+    public List<FurniturePartType> getFurniturePartTypesByProject(Long projectId) {
+        return furniturePartTypeRepository.findByProjectId(projectId);
+    }
 }

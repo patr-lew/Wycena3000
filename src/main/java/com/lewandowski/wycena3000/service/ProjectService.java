@@ -10,8 +10,10 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.swing.event.MouseInputListener;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ public class ProjectService {
     private final ProjectDetailsRepository projectDetailsRepository;
     private final FurniturePartRepository furniturePartRepository;
     private final BoardMeasurementRepository boardMeasurementRepository;
+    private final BigDecimal MILLIMETER_TO_METER_CONVERSION = BigDecimal.valueOf(1000);
 
 
     public ProjectService(ProjectRepository projectRepository, ProjectDetailsRepository projectDetailsRepository, FurniturePartRepository furniturePartRepository, BoardMeasurementRepository boardMeasurementRepository) {
@@ -121,7 +124,9 @@ public class ProjectService {
         projectDetails.setProject(projectById);
         projectDetailsRepository.save(projectDetails);
 
+        projectById.setProjectDetails(projectDetails);
         projectById.setTotalCost(calculateTotalCost(projectById));
+        projectRepository.save(projectById);
     }
 
     public List<String> computeMarginList(List<Project> projects) {
@@ -134,7 +139,7 @@ public class ProjectService {
     public String computeMargin(Project project) {
 
         if (null == project.getTotalCost() || null == project.getPrice() ||
-                BigDecimal.ZERO == project.getTotalCost() || BigDecimal.ZERO == project.getPrice()) {
+                BigDecimal.ZERO.equals(project.getTotalCost()) || BigDecimal.ZERO.equals(project.getPrice())) {
             return "-";
         }
 
@@ -169,13 +174,20 @@ public class ProjectService {
         Hibernate.initialize(project.getBoardMeasurements());
         if (null != project.getBoardMeasurements()) {
             Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
-            Map<Board, Integer> boardArea = new HashMap<>();
+            Map<Board, BigDecimal> boardArea = new HashMap<>();
 
 
             for (BoardMeasurement boardMeasurement : boardMeasurements.keySet()) {
-                int boardSurfaceArea = boardMeasurement.getHeight() * boardMeasurement.getWidth() * boardMeasurement.getAmount();
+                BigDecimal width = BigDecimal.valueOf(boardMeasurement.getWidth())
+                        .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
+                BigDecimal height = BigDecimal.valueOf(boardMeasurement.getHeight())
+                        .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
+
+                BigDecimal boardSurfaceArea =
+                        width.multiply(height).multiply(BigDecimal.valueOf(boardMeasurements.get(boardMeasurement)));
+
                 if (boardArea.containsKey(boardMeasurement.getBoard())) {
-                    boardSurfaceArea += boardArea.get(boardMeasurement.getBoard());
+                   boardSurfaceArea = boardSurfaceArea.add(boardArea.get(boardMeasurement.getBoard()));
                 }
 
                 boardArea.put(boardMeasurement.getBoard(), boardSurfaceArea);
@@ -183,7 +195,7 @@ public class ProjectService {
 
 
             for (Board board : boardArea.keySet()) {
-                BigDecimal amountOfBoards = BigDecimal.valueOf(boardArea.get(board));
+                BigDecimal amountOfBoards = boardArea.get(board);
                 BigDecimal boardCost = board.getPricePerM2().multiply(amountOfBoards);
                 totalCost = totalCost.add(boardCost);
             }
