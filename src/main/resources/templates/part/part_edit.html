@@ -35,14 +35,14 @@
                     <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
                        th:href="@{/creator/projects/all}">Projekty</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                <li class="nav-item dropdown active">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         Baza danych
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/main/resources/templates/board/board_all.html" th:href="@{/creator/boards/all}">Płyty</a></li>
-                        <li><a class="dropdown-item" href="/main/resources/templates/part/part_all.html" th:href="@{/creator/parts/all}">Inne elementy</a></li>
+                        <li><a class="dropdown-item" href="#">Płyty</a></li>
+                        <li><a class="dropdown-item" href="#">Inne elementy</a></li>
                     </ul>
                 </li>
             </ul>
@@ -60,91 +60,71 @@
 
 <div class="container">
     <div class="row p-md-3">
-        <h3>Edytuj płytę</h3>
+        <h3>Dodaj nowy element</h3>
     </div>
 
     <div class="row p-sm-3">
         <div class="col">
-            <form action="#" th:action="@{/creator/boards/add}" th:object="${board}" method="post">
+            <form action="#" th:action="@{/creator/parts/add}" th:object="${furniturePart}" method="post">
                 <input type="hidden" th:field="*{id}">
 
 
-                <!-- Board type -->
+                <!-- Element type -->
                 <div class="row p-lg-3 g-2 align-items-center">
 
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select class="form-select"
-                                    aria-label="Default select example"
-                                    id="boardType"
-                                    th:field="*{boardType}">
-                                <option value="0" disabled selected>Wybierz rodzaj płyty</option>
-                                <option th:each="type : ${boardTypes}" th:value="${type.id}" th:text="${type.name}"></option>
+                                    aria-label="Wybierz rodzaj elementu"
+                                    id="partType"
+                                    th:field="*{furniturePartType}">
+                                <option value="0" disabled selected>Wybierz rodzaj elementu</option>
+                                <option th:each="type : ${partTypes}" th:value="${type.id}" th:text="${type.name}"></option>
 
                               </select>
-                              <label for="boardType">Rodzaj płyty</label>
+                              <label for="partType">Rodzaj elementu</label>
                         </div>
                     </div>
                 </div>
 
-                <!-- Board name -->
+                <!-- Element name -->
                 <div class="row p-lg-3 g-2 align-items-center">
 
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text"
                                    th:field="*{name}"
-                                   class="form-control" id="boardName"
+                                   class="form-control" id="partName"
                                    aria-describedby="nameHelp"
                                    placeholder="Nazwa płyty">
-                            <label for="boardName">Nazwa płyty</label>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                      <span id="nameHelp" class="form-text">
-                        Po czym rozpoznasz płytę: producent, rodzaj i kolor płyty <br>
-                        Np. "KRONOPOL unikolor biały",<br> "KRONOPOL, MDF, buk jasny"
-                      </span>
-                    </div>
-                </div>
-
-
-                <!-- Board code -->
-                <div class="row p-lg-3 g-2 align-items-center">
-
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text"
-                                   th:field="*{code}"
-                                   class="form-control" id="boardCode"
-                                   aria-describedby="nameHelp"
-                                   placeholder="Kod płyty">
-                            <label for="boardCode">Kod płyty</label>
+                            <label for="partName">Nazwa elementu</label>
                         </div>
                     </div>
                 </div>
 
-                <!-- Board price per m2 -->
+
+                <!-- Element price -->
                 <div class="row p-lg-3 g-2 align-items-center">
 
                     <div class="col-md-6">
                         <div class="form-floating input-group">
                             <input type="number"
-                                   th:field="*{pricePerM2}"
+                                   th:field="*{price}"
                                    class="form-control" id="boardPrice"
-                                   aria-describedby="nameHelp"
-                                   placeholder="Cena za m2">
-                            <label for="boardPrice">Cena za m<sup>2</sup></label>
-                            <span class="input-group-text" id="basic-addon1">zł/m<sup>2</sup></span>
+                                   aria-describedby="nameHelp" step="0.01"
+                                   placeholder="Cena za sztukę / komplet">
+                            <label for="boardPrice">Cena za sztukę / komplet</label>
+                            <span class="input-group-text" id="basic-addon1">zł</span>
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary my-2 mx-3">Uaktualnij</button>
+
+                <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj</button>
             </form>
         </div>
     </div>
 
 </div>
-</body>
 
+</body>
 </html>

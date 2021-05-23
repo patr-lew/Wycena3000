@@ -96,7 +96,7 @@
                                    class="form-control" id="partName"
                                    aria-describedby="nameHelp"
                                    placeholder="Nazwa płyty">
-                            <label for="partName">Nazwa płyty</label>
+                            <label for="partName">Nazwa elementu</label>
                         </div>
                     </div>
                     <div class="col-auto">
@@ -116,7 +116,7 @@
                             <input type="number"
                                    th:field="*{price}"
                                    class="form-control" id="boardPrice"
-                                   aria-describedby="nameHelp"
+                                   aria-describedby="nameHelp" step="0.01"
                                    placeholder="Cena za sztukę / komplet">
                             <label for="boardPrice">Cena za sztukę / komplet</label>
                             <span class="input-group-text" id="basic-addon1">zł</span>

@@ -5,10 +5,7 @@ import com.lewandowski.wycena3000.entity.FurniturePartType;
 import com.lewandowski.wycena3000.service.FurniturePartService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,7 +34,26 @@ public class FurniturePartController {
     public String save(@ModelAttribute FurniturePart furniturePart) {
         furniturePartService.save(furniturePart);
 
-        return "redirect:/creator/parts/add";
+        return "redirect:/creator/parts/all";
+    }
+
+    @GetMapping("/edit")
+    public String edit(@RequestParam long partId, Model model) {
+        FurniturePart furniturePart = furniturePartService.findById(partId);
+        model.addAttribute("furniturePart", furniturePart);
+
+        List<FurniturePartType> partTypes = furniturePartService.getFurniturePartTypes();
+        model.addAttribute("partTypes", partTypes);
+
+        return "part/part_edit";
+    }
+
+    @GetMapping("/all")
+    public String all(Model model) {
+        List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
+        model.addAttribute("furnitureParts", furnitureParts);
+
+        return "part/part_all";
     }
 
 

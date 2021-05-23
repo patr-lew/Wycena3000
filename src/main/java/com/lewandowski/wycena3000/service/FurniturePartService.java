@@ -8,6 +8,7 @@ import com.lewandowski.wycena3000.repository.FurniturePartRepository;
 import com.lewandowski.wycena3000.repository.FurniturePartTypeRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -36,5 +37,11 @@ public class FurniturePartService {
 
     public List<FurniturePart> getFurnitureParts() {
         return furniturePartRepository.findAll();
+    }
+
+    public FurniturePart findById(long partId) {
+        return furniturePartRepository
+                .findById(partId)
+                .orElseThrow(() -> new EntityNotFoundException("FurniturePart with given Id doesn't exist"));
     }
 }
