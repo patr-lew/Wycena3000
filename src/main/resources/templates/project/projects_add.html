@@ -78,6 +78,7 @@
                                    placeholder="Nazwa projektu">
                             <label for="projectName">Nazwa projektu</label>
                         </div>
+                        <p class="alert-danger" th:if="${#fields.hasErrors('name')}">Projekt musi mieć nazwę</p>
                     </div>
                     <div class="col-auto">
                       <span id="nameHelp" class="form-text">

@@ -38,7 +38,6 @@ public class ProjectController {
 
         model.addAttribute("projects", projects);
         model.addAttribute("margins", margins);
-
         return "project/projects_all";
     }
 
@@ -47,14 +46,17 @@ public class ProjectController {
         Project project = new Project();
 
         model.addAttribute("project", project);
-
         return "project/projects_add";
     }
 
     @PostMapping("/add")
-    public String addProject(@ModelAttribute Project project) {
-        projectService.save(project);
+    public String addProject(@Valid Project project, BindingResult result) {
 
+        if(result.hasErrors()) {
+            return "project/projects_add";
+        }
+
+        projectService.save(project);
         return "redirect:/creator/projects/edit?projectId=" + project.getId();
     }
 
@@ -91,16 +93,29 @@ public class ProjectController {
     }
 
     @PostMapping("/addFurniturePart")
-    public String addFurniturePartToProject(@ModelAttribute AddingPartDto partDto) {
+    public String addFurniturePartToProject(@Valid AddingPartDto partDto, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "redirect:/creator/projects/edit?projectId=" + partDto.getProjectId() + "&error=true";
+        }
+
         projectService.addFurniturePartsToProject(partDto);
         return "redirect:/creator/projects/edit?projectId=" + partDto.getProjectId();
-
     }
 
     @PostMapping("/calculatePrice")
-    public String calculatePrice(@ModelAttribute PriceCalculationDto priceCalculationDto) {
-        projectService.setNewPrice(priceCalculationDto);
+    public String calculatePrice(@Valid PriceCalculationDto priceCalculationDto, BindingResult result) {
 
+        if (result.hasErrors()) {
+            return "redirect:/creator/projects/edit?projectId=" + priceCalculationDto.getProjectId() + "&error=true";
+        }
+
+        if (priceCalculationDto.getPrice() == null && priceCalculationDto.getMargin() == null ||
+            priceCalculationDto.getPrice() != null && priceCalculationDto.getMargin() != null) {
+            return "redirect:/creator/projects/edit?projectId=" + priceCalculationDto.getProjectId() + "&error=true";
+        }
+
+        projectService.setNewPrice(priceCalculationDto);
         return "redirect:/creator/projects/edit?projectId=" + priceCalculationDto.getProjectId();
     }
 
@@ -112,17 +127,18 @@ public class ProjectController {
         }
 
         projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
-
         return "redirect:/creator/projects/edit?projectId=" + projectId +
                 "&boardId=" + boardMeasurement.getBoard().getId();
     }
 
     @PostMapping("/addProjectDetails")
-    public String addDetailsToProject(@RequestParam long projectId, @ModelAttribute ProjectDetails projectDetails) {
+    public String addDetailsToProject(@RequestParam long projectId, @Valid ProjectDetails projectDetails, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "redirect:/creator/projects/edit?projectId=" + projectId + "&error=true";
+        }
 
         projectService.addProjectDetailsToProject(projectId, projectDetails);
-
-
         return "redirect:/creator/projects/edit?projectId=" + projectId;
     }
 
@@ -139,5 +155,4 @@ public class ProjectController {
 
         return "project/project_details";
     }
-
 }

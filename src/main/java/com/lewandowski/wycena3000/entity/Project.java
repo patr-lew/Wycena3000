@@ -31,10 +31,10 @@ public class Project {
     private LocalDateTime modified;
 
     @Column(name = "total_cost", scale = 2, precision = 11)
-    private BigDecimal totalCost;
+    private BigDecimal totalCost = BigDecimal.ZERO;
 
     @Column(scale = 2, precision = 11)
-    private BigDecimal price;
+    private BigDecimal price = BigDecimal.ZERO;
 
     @OneToOne(mappedBy = "project")
     private ProjectDetails projectDetails;

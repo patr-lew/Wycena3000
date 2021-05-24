@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -25,14 +26,17 @@ public class ProjectDetails {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    @DecimalMin(value = "0")
     @Column(name = "worker_cost", scale = 2, precision = 11)
-    private BigDecimal workerCost;
+    private BigDecimal workerCost = BigDecimal.ZERO;
 
+    @DecimalMin(value = "0")
     @Column(name = "other_costs", scale = 2, precision = 11)
-    private BigDecimal otherCosts;
+    private BigDecimal otherCosts = BigDecimal.ZERO;
 
+    @DecimalMin(value = "0")
     @Column(name = "montage_cost", scale = 2, precision = 11)
-    private BigDecimal montageCost;
+    private BigDecimal montageCost = BigDecimal.ZERO;
 
     @Override
     public String toString() {
