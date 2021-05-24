@@ -104,13 +104,22 @@ public class ProjectService {
 
         Map<BoardMeasurement, Integer> boardMeasurementsInProject = project.getBoardMeasurements();
         int newAmount = addedBoardMeasurement.getAmount();
-        log.info(addedBoardMeasurement.getAmount() + "\n\n\n");
+        BoardMeasurement toBeRemoved = null;
 
-        if (boardMeasurementsInProject.containsKey(addedBoardMeasurement)) {
-            int existingAmount = boardMeasurementsInProject.get(addedBoardMeasurement);
-            newAmount += existingAmount;
+        for (BoardMeasurement measurement : boardMeasurementsInProject.keySet()) {
+            if (measurement.getBoard().equals(addedBoardMeasurement.getBoard()) &&
+                    measurement.getHeight() == addedBoardMeasurement.getAmount() &&
+                    measurement.getWidth() == addedBoardMeasurement.getWidth()) {
+
+                int existingAmount = boardMeasurementsInProject.get(measurement);
+                toBeRemoved = measurement;
+                newAmount += existingAmount;
+            }
         }
-
+        if (null != toBeRemoved) {
+            boardMeasurementsInProject.remove(toBeRemoved);
+            boardMeasurementRepository.delete(toBeRemoved);
+        }
         boardMeasurementsInProject.put(addedBoardMeasurement, newAmount);
 
         return save(project);
@@ -269,7 +278,7 @@ public class ProjectService {
      * parameter
      */
     public void setNewPrice(PriceCalculationDto priceCalculationDto) {
-        if(null != priceCalculationDto.getPrice()) {
+        if (null != priceCalculationDto.getPrice()) {
             Project project = findById(priceCalculationDto.getProjectId());
             project.setPrice(priceCalculationDto.getPrice());
             save(project);
