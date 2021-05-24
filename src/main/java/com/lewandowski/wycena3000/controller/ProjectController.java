@@ -9,8 +9,10 @@ import com.lewandowski.wycena3000.service.FurniturePartService;
 import com.lewandowski.wycena3000.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -58,7 +60,9 @@ public class ProjectController {
 
     @GetMapping("/edit")
     public String editProject(@RequestParam long projectId,
-                              @RequestParam(required = false) Long boardId, Model model) {
+                              @RequestParam(required = false) Long boardId,
+                              @RequestParam(required = false) boolean error,
+                              Model model) {
         Project projectById = projectService.findByIdEager(projectId);
         String margin = projectService.computeMargin(projectById);
 
@@ -72,7 +76,7 @@ public class ProjectController {
         List<Board> boardsAll = boardService.findAll();
         BoardMeasurement boardMeasurement = new BoardMeasurement();
 
-
+        model.addAttribute("error", error);
         model.addAttribute("project", projectById);
         model.addAttribute("boardId", boardId);
         model.addAttribute("furnitureParts", furnitureParts);
@@ -101,12 +105,15 @@ public class ProjectController {
     }
 
     @PostMapping("/addBoard")
-    public String addBoardToProject(@RequestParam long projectId, @ModelAttribute BoardMeasurement boardMeasurement) {
-        Project projectById = projectService.findById(projectId);
+    public String addBoardToProject(@RequestParam long projectId, @Valid BoardMeasurement boardMeasurement, BindingResult result) {
 
-        projectService.addBoardMeasurementToProject(projectById, boardMeasurement);
+        if (result.hasErrors()) {
+            return "redirect:/creator/projects/edit?projectId=" + projectId + "&error=true";
+        }
 
-        return "redirect:/creator/projects/edit?projectId=" + projectById.getId() +
+        projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
+
+        return "redirect:/creator/projects/edit?projectId=" + projectId +
                 "&boardId=" + boardMeasurement.getBoard().getId();
     }
 

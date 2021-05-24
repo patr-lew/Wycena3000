@@ -65,6 +65,7 @@
             <div class="row">
                 <h3 th:text="${'Edytuj wycenę ' + project.name}">Edytuj wycenę</h3>
                 <div class="py-1 text-info">Uzupełniaj jeden formularz na raz, potwierdź <b>enter</b>.</div>
+                <div class="py-1 alert-danger" th:if="${error}">Błąd podczas dodawania danych do projektu - niepoprawne dane</div>
             </div>
             <div class="row">
 
@@ -83,7 +84,7 @@
                                     <select class="form-select" aria-label="Default select example" id="boardType"
                                         name="board" th:with="board=*{board}">
                                         <option th:each="type : ${boards}" th:value="${type.id}"
-                                            th:text="${type.name + ', ' + type.pricePerM2 + 'zł/m2'}"
+                                            th:text="${type.boardType.name + ': ' + type.name + ', ' + type.pricePerM2 + 'zł/m2'}"
                                             th:selected="${boardId == type.id}">
                                         </option>
 

@@ -93,7 +93,8 @@ public class ProjectService {
         return save(project);
     }
 
-    public Project addBoardMeasurementToProject(Project project, BoardMeasurement addedBoardMeasurement) {
+    public Project addBoardMeasurementToProject(Long projectId, BoardMeasurement addedBoardMeasurement) {
+        Project project = findById(projectId);
 
         List<BoardMeasurement> boardMeasurementsInDb = boardMeasurementRepository.findAll();
 
