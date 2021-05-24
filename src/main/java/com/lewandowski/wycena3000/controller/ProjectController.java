@@ -1,6 +1,7 @@
 package com.lewandowski.wycena3000.controller;
 
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
+import com.lewandowski.wycena3000.dto.PriceCalculationDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.FurniturePartService;
@@ -10,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/creator/projects")
@@ -59,27 +59,27 @@ public class ProjectController {
     public String editProject(@RequestParam long projectId,
                               @RequestParam(required = false) Long boardId, Model model) {
         Project projectById = projectService.findByIdEager(projectId);
+        String margin = projectService.computeMargin(projectById);
 
         if (null == projectById.getProjectDetails()) {
             projectById.setProjectDetails(new ProjectDetails());
         }
 
+        List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
+        List<Board> boardsInProject = boardService.findAllByProjectId(projectId);
+        List<FurniturePartType> partTypesInProject = furniturePartService.getFurniturePartTypesByProject(projectId);
+        List<Board> boardsAll = boardService.findAll();
+        BoardMeasurement boardMeasurement = new BoardMeasurement();
+
+
         model.addAttribute("project", projectById);
         model.addAttribute("boardId", boardId);
-
-        List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
         model.addAttribute("furnitureParts", furnitureParts);
-
-        List<Board> boardsInProject = boardService.findAllByProjectId(projectId);
         model.addAttribute("boardsInProject", boardsInProject);
-
-        List<FurniturePartType> partTypesInProject = furniturePartService.getFurniturePartTypesByProject(projectId);
         model.addAttribute("partTypes", partTypesInProject);
-
-        List<Board> boardsAll = boardService.findAll();
         model.addAttribute("boards", boardsAll);
-        BoardMeasurement boardMeasurement = new BoardMeasurement();
         model.addAttribute("board", boardMeasurement);
+        model.addAttribute("projectMargin", margin);
 
         return "project/project_edit";
 
@@ -90,11 +90,16 @@ public class ProjectController {
             @RequestParam long projectId,
             @RequestParam long furniturePartId,
             @RequestParam int amount) {
-        Project projectById = projectService.findById(projectId);
+        projectService.addFurniturePartsToProject(projectId, furniturePartId, amount);
+        return "redirect:/creator/projects/edit?projectId=" + projectId;
 
-        projectService.addFurniturePartsToProject(projectById, furniturePartId, amount);
-        return "redirect:/creator/projects/edit?projectId=" + projectById.getId();
+    }
 
+    @PostMapping("/calculatePrice")
+    public String calculatePrice(@ModelAttribute PriceCalculationDto priceCalculationDto) {
+        projectService.setNewPrice(priceCalculationDto);
+
+        return "redirect:/creator/projects/edit?projectId=" + priceCalculationDto.getProjectId();
     }
 
     @PostMapping("/addBoard")

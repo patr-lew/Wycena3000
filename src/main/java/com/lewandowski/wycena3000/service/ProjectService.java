@@ -1,6 +1,7 @@
 package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
+import com.lewandowski.wycena3000.dto.PriceCalculationDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.FurniturePartRepository;
@@ -75,7 +76,8 @@ public class ProjectService {
      * updates the number of furnitureParts objects in relation to the project
      * by updating the value in furnitureParts hashMap
      */
-    public Project addFurniturePartsToProject(Project project, long furniturePartId, int newAmount) {
+    public Project addFurniturePartsToProject(long projectId, long furniturePartId, int newAmount) {
+        Project project = findById(projectId);
 
         FurniturePart addedPart = furniturePartRepository
                 .findById(furniturePartId)
@@ -141,7 +143,7 @@ public class ProjectService {
     public String computeMargin(Project project) {
 
         if (null == project.getTotalCost() || null == project.getPrice() ||
-                BigDecimal.ZERO.equals(project.getTotalCost()) || BigDecimal.ZERO.equals(project.getPrice())) {
+                BigDecimal.ZERO.compareTo(project.getTotalCost()) == 0 || BigDecimal.ZERO.compareTo(project.getPrice()) == 0) {
             return "-";
         }
 
@@ -162,9 +164,6 @@ public class ProjectService {
     public BigDecimal calculateTotalCost(Project project) {
         BigDecimal totalCost = BigDecimal.ZERO;
 
-        if (null != project.getTotalCost()) {
-            totalCost = totalCost.add(project.getTotalCost());
-        }
 
         // add costs from ProjectDetails
         if (null != project.getProjectDetails()) {
@@ -272,6 +271,28 @@ public class ProjectService {
         BigDecimal boardSurfaceArea =
                 width.multiply(height).multiply(BigDecimal.valueOf(boardMeasurements.get(boardMeasurement)));
         return boardSurfaceArea;
+    }
+
+    /**
+     * Calculate price based on data from the form. If both new price and new margin
+     * are given, calculate based on new price. Otherwise calculate based on one given
+     * parameter
+     */
+    public void setNewPrice(PriceCalculationDto priceCalculationDto) {
+        if(null != priceCalculationDto.getPrice()) {
+            Project project = findById(priceCalculationDto.getProjectId());
+            project.setPrice(priceCalculationDto.getPrice());
+            save(project);
+        } else if (null != priceCalculationDto.getMargin()) {
+            Project project = findById(priceCalculationDto.getProjectId());
+            BigDecimal margin = BigDecimal.valueOf(priceCalculationDto.getMargin());
+            BigDecimal cost = project.getTotalCost();
+
+            BigDecimal newPrice = cost.multiply(margin).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+            newPrice = newPrice.add(cost);
+            project.setPrice(newPrice);
+            save(project);
+        }
     }
 }
 
