@@ -39,6 +39,9 @@ public class Project {
     @OneToOne(mappedBy = "project")
     private ProjectDetails projectDetails;
 
+    @Column(scale = 5, precision = 10)
+    private BigDecimal margin;
+
     @ElementCollection
     @CollectionTable(name = "project_board",
             joinColumns = @JoinColumn(name = "project_id"))

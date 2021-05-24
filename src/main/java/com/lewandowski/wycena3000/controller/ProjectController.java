@@ -63,15 +63,11 @@ public class ProjectController {
 
     @GetMapping("/edit")
     public String editProject(@RequestParam long projectId,
-                              @RequestParam(required = false) Long boardId,
+                              @RequestParam(required = false) Long lastAddedBoardId,
                               @RequestParam(required = false) boolean error,
                               Model model) {
         Project projectById = projectService.findByIdEager(projectId);
         String margin = projectService.computeMargin(projectById);
-
-        if (null == projectById.getProjectDetails()) {
-            projectService.setNewProjectDetails(projectById);
-        }
 
         List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
         List<Board> boardsInProject = boardService.findAllByProjectId(projectId);
@@ -81,7 +77,7 @@ public class ProjectController {
 
         model.addAttribute("error", error);
         model.addAttribute("project", projectById);
-        model.addAttribute("boardId", boardId);
+        model.addAttribute("boardId", lastAddedBoardId);
         model.addAttribute("furnitureParts", furnitureParts);
         model.addAttribute("boardsInProject", boardsInProject);
         model.addAttribute("partTypes", partTypesInProject);

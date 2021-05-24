@@ -285,11 +285,7 @@ public class ProjectService {
         } else if (null != priceCalculationDto.getMargin()) {
             Project project = findById(priceCalculationDto.getProjectId());
             BigDecimal margin = BigDecimal.valueOf(priceCalculationDto.getMargin());
-            BigDecimal cost = project.getTotalCost();
-
-            BigDecimal newPrice = cost.multiply(margin).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-            newPrice = newPrice.add(cost);
-            project.setPrice(newPrice);
+            project.setMargin(margin);
             save(project);
         }
     }
@@ -305,8 +301,12 @@ public class ProjectService {
         return boardSurfaceArea;
     }
 
-    public void setNewProjectDetails(Project projectById) {
 
+    private void updatePrice(Project project, BigDecimal margin) {
+        BigDecimal cost = project.getTotalCost();
+        BigDecimal newPrice = cost.multiply(margin).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+        newPrice = newPrice.add(cost);
+        project.setPrice(newPrice);
     }
 }
 
