@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -21,15 +25,21 @@ public class FurniturePart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank
     private String name;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "type_id", nullable = false)
     private FurniturePartType furniturePartType;
 
+    @NotNull
+    @DecimalMin(value = "0.01")
     @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
+    @NotNull
+    @Min(value = 1)
     @Transient
     private int amount;
 

@@ -5,8 +5,10 @@ import com.lewandowski.wycena3000.entity.FurniturePartType;
 import com.lewandowski.wycena3000.service.FurniturePartService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -31,7 +33,13 @@ public class FurniturePartController {
     }
 
     @PostMapping("/add")
-    public String save(@ModelAttribute FurniturePart furniturePart) {
+    public String save(@Valid FurniturePart furniturePart, BindingResult result, Model model) {
+
+        if(result.hasErrors()) {
+            model.addAttribute("partTypes", furniturePartService.getFurniturePartTypes());
+            return "part/part_add";
+        }
+
         furniturePartService.save(furniturePart);
 
         return "redirect:/creator/parts/all";

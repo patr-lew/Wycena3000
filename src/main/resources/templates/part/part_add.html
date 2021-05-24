@@ -83,6 +83,7 @@
                               </select>
                               <label for="partType">Rodzaj elementu</label>
                         </div>
+                        <p class="alert-danger" th:if="${#fields.hasErrors('furniturePartType')}">Wybierz rodzaj elementu</p>
                     </div>
                 </div>
 
@@ -98,6 +99,7 @@
                                    placeholder="Nazwa płyty">
                             <label for="partName">Nazwa elementu</label>
                         </div>
+                        <p class="alert-danger" th:if="${#fields.hasErrors('name')}">Element musi mieć nazwę</p>
                     </div>
                     <div class="col-auto">
                       <span id="nameHelp" class="form-text">
@@ -121,9 +123,9 @@
                             <label for="boardPrice">Cena za sztukę / komplet</label>
                             <span class="input-group-text" id="basic-addon1">zł</span>
                         </div>
+                        <p class="alert-danger" th:if="${#fields.hasErrors('price')}">Musisz podać cenę, która jest liczbą dodatnią</p>
                     </div>
                 </div>
-
                 <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj</button>
             </form>
         </div>
