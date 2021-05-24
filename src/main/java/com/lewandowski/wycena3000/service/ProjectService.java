@@ -129,6 +129,7 @@ public class ProjectService {
         projectDetailsRepository.save(projectDetails);
 
         projectById.setProjectDetails(projectDetails);
+
         projectById.setTotalCost(calculateTotalCost(projectById));
         projectRepository.save(projectById);
     }
@@ -293,6 +294,10 @@ public class ProjectService {
         BigDecimal boardSurfaceArea =
                 width.multiply(height).multiply(BigDecimal.valueOf(boardMeasurements.get(boardMeasurement)));
         return boardSurfaceArea;
+    }
+
+    public void setNewProjectDetails(Project projectById) {
+
     }
 }
 

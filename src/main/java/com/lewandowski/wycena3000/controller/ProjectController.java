@@ -55,8 +55,9 @@ public class ProjectController {
         if(result.hasErrors()) {
             return "project/projects_add";
         }
-
-        projectService.save(project);
+        ProjectDetails projectDetails = new ProjectDetails();
+        projectDetails.setProject(project);
+        projectService.saveProjectDetails(projectDetails);
         return "redirect:/creator/projects/edit?projectId=" + project.getId();
     }
 
@@ -69,7 +70,7 @@ public class ProjectController {
         String margin = projectService.computeMargin(projectById);
 
         if (null == projectById.getProjectDetails()) {
-            projectById.setProjectDetails(new ProjectDetails());
+            projectService.setNewProjectDetails(projectById);
         }
 
         List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();

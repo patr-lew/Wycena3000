@@ -21,7 +21,8 @@ public class ProjectDetails {
     @Column(name = "project_id")
     private long id;
 
-    @OneToOne
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.DETACH,
+                            CascadeType.MERGE, CascadeType.REFRESH})
     @MapsId
     @JoinColumn(name = "project_id")
     private Project project;
