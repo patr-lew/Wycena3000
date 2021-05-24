@@ -1,5 +1,6 @@
 package com.lewandowski.wycena3000.service;
 
+import com.lewandowski.wycena3000.dto.AddingPartDto;
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.dto.PriceCalculationDto;
 import com.lewandowski.wycena3000.entity.*;
@@ -12,11 +13,8 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.swing.event.MouseInputListener;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,12 +74,13 @@ public class ProjectService {
      * updates the number of furnitureParts objects in relation to the project
      * by updating the value in furnitureParts hashMap
      */
-    public Project addFurniturePartsToProject(long projectId, long furniturePartId, int newAmount) {
-        Project project = findById(projectId);
+    public Project addFurniturePartsToProject(AddingPartDto partDto) {
+        Project project = findById(partDto.getProjectId());
+        int newAmount = partDto.getAmount();
 
         FurniturePart addedPart = furniturePartRepository
-                .findById(furniturePartId)
-                .orElseThrow(() -> new EntityNotFoundException());
+                .findById(partDto.getFurniturePartId())
+                .orElseThrow(() -> new EntityNotFoundException("FurniturePart with ID '" + partDto.getFurniturePartId() + "' not found."));
         Map<FurniturePart, Integer> furnitureParts = project.getFurnitureParts();
 
         if (furnitureParts.containsKey(addedPart)) {
@@ -262,17 +261,6 @@ public class ProjectService {
         return new ArrayList<>(boardsDetails.values());
     }
 
-    private BigDecimal getBoardSurfaceArea(Map<BoardMeasurement, Integer> boardMeasurements, BoardMeasurement boardMeasurement) {
-        BigDecimal width = BigDecimal.valueOf(boardMeasurement.getWidth())
-                .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
-        BigDecimal height = BigDecimal.valueOf(boardMeasurement.getHeight())
-                .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
-
-        BigDecimal boardSurfaceArea =
-                width.multiply(height).multiply(BigDecimal.valueOf(boardMeasurements.get(boardMeasurement)));
-        return boardSurfaceArea;
-    }
-
     /**
      * Calculate price based on data from the form. If both new price and new margin
      * are given, calculate based on new price. Otherwise calculate based on one given
@@ -293,6 +281,17 @@ public class ProjectService {
             project.setPrice(newPrice);
             save(project);
         }
+    }
+
+    private BigDecimal getBoardSurfaceArea(Map<BoardMeasurement, Integer> boardMeasurements, BoardMeasurement boardMeasurement) {
+        BigDecimal width = BigDecimal.valueOf(boardMeasurement.getWidth())
+                .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
+        BigDecimal height = BigDecimal.valueOf(boardMeasurement.getHeight())
+                .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
+
+        BigDecimal boardSurfaceArea =
+                width.multiply(height).multiply(BigDecimal.valueOf(boardMeasurements.get(boardMeasurement)));
+        return boardSurfaceArea;
     }
 }
 

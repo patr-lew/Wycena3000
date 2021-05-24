@@ -1,5 +1,6 @@
 package com.lewandowski.wycena3000.controller;
 
+import com.lewandowski.wycena3000.dto.AddingPartDto;
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.dto.PriceCalculationDto;
 import com.lewandowski.wycena3000.entity.*;
@@ -86,12 +87,9 @@ public class ProjectController {
     }
 
     @PostMapping("/addFurniturePart")
-    public String addFurniturePartToProject(
-            @RequestParam long projectId,
-            @RequestParam long furniturePartId,
-            @RequestParam int amount) {
-        projectService.addFurniturePartsToProject(projectId, furniturePartId, amount);
-        return "redirect:/creator/projects/edit?projectId=" + projectId;
+    public String addFurniturePartToProject(@ModelAttribute AddingPartDto partDto) {
+        projectService.addFurniturePartsToProject(partDto);
+        return "redirect:/creator/projects/edit?projectId=" + partDto.getProjectId();
 
     }
 
