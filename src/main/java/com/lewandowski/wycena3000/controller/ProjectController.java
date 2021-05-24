@@ -122,7 +122,7 @@ public class ProjectController {
     @PostMapping("/addBoard")
     public String addBoardToProject(@RequestParam long projectId, @Valid BoardMeasurement boardMeasurement, BindingResult result) {
 
-        if (result.hasErrors()) {
+        if (result.hasErrors() || boardMeasurement.getAmount() < 1) {
             return "redirect:/creator/projects/edit?projectId=" + projectId + "&error=true";
         }
 

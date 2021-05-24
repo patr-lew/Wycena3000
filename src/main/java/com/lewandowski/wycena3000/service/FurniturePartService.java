@@ -9,9 +9,11 @@ import com.lewandowski.wycena3000.repository.FurniturePartTypeRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class FurniturePartService {
 
     private final FurniturePartTypeRepository furniturePartTypeRepository;

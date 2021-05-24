@@ -35,8 +35,6 @@ public class BoardMeasurement {
     @Min(value = 1)
     private int width;
 
-    @NotNull
-    @Min(value = 1)
     @Transient
     private int amount;
 

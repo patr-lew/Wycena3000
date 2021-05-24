@@ -68,7 +68,13 @@
     <div class="row p-lg-3 g-2 my-2 align-items-center">
         <h6>Dodane płyty:</h6>
         <ul class="list-group">
-            <li class="list-group-item" th:each="boardByProjectDto : ${boardsInProject}"> <p th:text="${boardByProjectDto.name}">Pierwsza płyta</p>
+            <li class="list-group-item" th:each="boardByProjectDto : ${boardsInProject}"> 
+                <div class="row flex-fill">
+                    <div class="col" th:text="${boardByProjectDto.name}">Pierwsza płyta</div>
+                    <div class="col text-end">
+                        <a class="btn btn-outline-success m-1" href="/main/resources/templates/board/board_change.html" 
+                        th:href="@{/creator/boards/change/__${boardByProjectDto.boardId}__?projectId=__${project.id}__}">Zmień płytę</a></div>
+                </div>
                 <table class="table table-sm table-striped">
                     <tr th:each="measurement : ${project.boardMeasurements}" th:if="${boardByProjectDto.boardId == measurement.getKey().board.id}">
                         <td style="text-align: center" th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary</td>

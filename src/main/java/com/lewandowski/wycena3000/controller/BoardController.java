@@ -1,8 +1,11 @@
 package com.lewandowski.wycena3000.controller;
 
+import com.lewandowski.wycena3000.dto.BoardChangeDto;
 import com.lewandowski.wycena3000.entity.Board;
 import com.lewandowski.wycena3000.entity.BoardType;
+import com.lewandowski.wycena3000.entity.Project;
 import com.lewandowski.wycena3000.service.BoardService;
+import com.lewandowski.wycena3000.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,9 +19,11 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ProjectService projectService;
 
-    public BoardController(BoardService boardService) {
+    public BoardController(BoardService boardService, ProjectService projectService) {
         this.boardService = boardService;
+        this.projectService = projectService;
     }
 
     @GetMapping("/add")
@@ -65,6 +70,26 @@ public class BoardController {
 
         return "board/board_all";
 
+    }
+
+    @GetMapping("/change/{boardId}")
+    public String changeBoard(@PathVariable Long boardId,
+                              @RequestParam Long projectId, Model model) {
+        Board previousBoard = boardService.findById(boardId);
+        Project project = projectService.findById(projectId);
+        List<Board> boards = boardService.findAll();
+
+        model.addAttribute("project", project);
+        model.addAttribute("oldBoard", previousBoard);
+        model.addAttribute("boards", boards);
+        return "board/board_change";
+    }
+
+    @PostMapping("/change")
+    public String changeBoard(@ModelAttribute BoardChangeDto dto) {
+        boardService.changeBoardInProject(dto);
+
+        return "redirect:/creator/projects/details/" + dto.getProjectId();
     }
 
 
