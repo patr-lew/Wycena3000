@@ -5,9 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Entity
 @Table(name = "board")
@@ -20,16 +22,17 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank
     private String name;
 
     private String code;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
-    private List<BoardMeasurement> boardMeasurements = new ArrayList<>();
-
+    @NotNull
+    @DecimalMin(value = "0.01")
     @Column(name = "price_per_m2", scale = 2, precision = 11)
     private BigDecimal pricePerM2;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "type_id", nullable = false)
     private BoardType boardType;

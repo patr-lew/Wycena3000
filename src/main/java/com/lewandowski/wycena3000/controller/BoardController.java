@@ -5,8 +5,10 @@ import com.lewandowski.wycena3000.entity.BoardType;
 import com.lewandowski.wycena3000.service.BoardService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -31,7 +33,14 @@ public class BoardController {
     }
 
     @PostMapping("/add")
-    public String save(@ModelAttribute Board board) {
+    public String save(@Valid Board board, BindingResult result, Model model) {
+        if(result.hasErrors()) {
+            List<BoardType> boardTypes = boardService.getBoardTypes();
+            model.addAttribute("boardTypes", boardTypes);
+
+            return "board/board_add";
+        }
+
         boardService.save(board);
 
         return "redirect:/creator/boards/all";
