@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
 @Getter @Setter
-public class PriceCalculationDto {
+public class NewPriceRequestDto {
 
     private Long projectId;
 

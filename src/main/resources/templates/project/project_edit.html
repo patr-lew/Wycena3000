@@ -82,10 +82,10 @@
 
                                 <div class="form-floating">
                                     <select class="form-select" aria-label="Default select example" id="boardType"
-                                        name="board" th:with="board=*{board}">
+                                        name="board">
                                         <option th:each="type : ${boards}" th:value="${type.id}"
-                                            th:text="${type.boardType.name + ': ' + type.name + ', ' + type.pricePerM2 + 'zł/m2'}"
-                                            th:selected="${boardId == type.id}">
+                                            th:text="${type.boardType.name.toUpperCase() + ': ' + type.name + ', ' + type.pricePerM2 + 'zł/m2'}"
+                                            th:selected="${type.id} == ${boardId}">
                                         </option>
 
                                     </select>

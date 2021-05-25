@@ -2,7 +2,7 @@ package com.lewandowski.wycena3000.controller;
 
 import com.lewandowski.wycena3000.dto.AddingPartDto;
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
-import com.lewandowski.wycena3000.dto.PriceCalculationDto;
+import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.FurniturePartService;
@@ -63,11 +63,11 @@ public class ProjectController {
 
     @GetMapping("/edit")
     public String editProject(@RequestParam long projectId,
-                              @RequestParam(required = false) Long lastAddedBoardId,
+                              @RequestParam(name = "boardId", required = false) Long lastAddedBoardId,
                               @RequestParam(required = false) boolean error,
                               Model model) {
         Project projectById = projectService.findByIdEager(projectId);
-        String margin = projectService.computeMargin(projectById);
+        String margin = projectService.marginToString(projectById);
 
         List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
         List<Board> boardsInProject = boardService.findAllByProjectId(projectId);
@@ -101,19 +101,19 @@ public class ProjectController {
     }
 
     @PostMapping("/calculatePrice")
-    public String calculatePrice(@Valid PriceCalculationDto priceCalculationDto, BindingResult result) {
+    public String calculatePrice(@Valid NewPriceRequestDto newPriceRequestDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "redirect:/creator/projects/edit?projectId=" + priceCalculationDto.getProjectId() + "&error=true";
+            return "redirect:/creator/projects/edit?projectId=" + newPriceRequestDto.getProjectId() + "&error=true";
         }
 
-        if (priceCalculationDto.getPrice() == null && priceCalculationDto.getMargin() == null ||
-            priceCalculationDto.getPrice() != null && priceCalculationDto.getMargin() != null) {
-            return "redirect:/creator/projects/edit?projectId=" + priceCalculationDto.getProjectId() + "&error=true";
+        if (newPriceRequestDto.getPrice() == null && newPriceRequestDto.getMargin() == null ||
+            newPriceRequestDto.getPrice() != null && newPriceRequestDto.getMargin() != null) {
+            return "redirect:/creator/projects/edit?projectId=" + newPriceRequestDto.getProjectId() + "&error=true";
         }
 
-        projectService.setNewPrice(priceCalculationDto);
-        return "redirect:/creator/projects/edit?projectId=" + priceCalculationDto.getProjectId();
+        projectService.setNewPrice(newPriceRequestDto);
+        return "redirect:/creator/projects/edit?projectId=" + newPriceRequestDto.getProjectId();
     }
 
     @PostMapping("/addBoard")

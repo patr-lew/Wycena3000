@@ -2,7 +2,7 @@ package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.AddingPartDto;
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
-import com.lewandowski.wycena3000.dto.PriceCalculationDto;
+import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.FurniturePartRepository;
@@ -44,13 +44,14 @@ public class ProjectService {
 
     public Project save(Project project) {
         project.setTotalCost(calculateTotalCost(project));
+        project.setMargin(calculateMargin(project));
         return projectRepository.save(project);
     }
 
     public Project findById(long id) {
         return projectRepository
                 .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Project with given Id doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Project with id '" + id + "' doesn't exist"));
     }
 
     public Project findByIdEager(long id) {
@@ -145,25 +146,21 @@ public class ProjectService {
 
     public List<String> computeMarginList(List<Project> projects) {
         return projects.stream()
-                .map(this::computeMargin)
+                .map(this::marginToString)
                 .collect(Collectors.toList());
 
     }
 
-    public String computeMargin(Project project) {
+    public String marginToString(Project project) {
 
-        if (null == project.getTotalCost() || null == project.getPrice() ||
+        if (null == project.getTotalCost() || null == project.getPrice() || null == project.getMargin() ||
                 BigDecimal.ZERO.compareTo(project.getTotalCost()) == 0 || BigDecimal.ZERO.compareTo(project.getPrice()) == 0) {
             return "-";
         }
 
-        String margin = project.getPrice()
-                .divide(project.getTotalCost(), 2, RoundingMode.HALF_UP)
-                .subtract(BigDecimal.ONE)
-                .multiply(BigDecimal.valueOf(100))
+        String margin = project.getMargin()
                 .setScale(0, RoundingMode.HALF_UP)
                 .toString();
-
         return margin + "%";
     }
 
@@ -273,21 +270,40 @@ public class ProjectService {
     }
 
     /**
-     * Calculate price based on data from the form. If both new price and new margin
+     * Set new price based on data from the form. If both new price and new margin
      * are given, calculate based on new price. Otherwise calculate based on one given
      * parameter
      */
-    public void setNewPrice(PriceCalculationDto priceCalculationDto) {
-        if (null != priceCalculationDto.getPrice()) {
-            Project project = findById(priceCalculationDto.getProjectId());
-            project.setPrice(priceCalculationDto.getPrice());
-            save(project);
-        } else if (null != priceCalculationDto.getMargin()) {
-            Project project = findById(priceCalculationDto.getProjectId());
-            BigDecimal margin = BigDecimal.valueOf(priceCalculationDto.getMargin());
+    public void setNewPrice(NewPriceRequestDto newPriceRequestDto) {
+        Project project = findById(newPriceRequestDto.getProjectId());
+
+        if (null != newPriceRequestDto.getPrice()) {
+            BigDecimal price = newPriceRequestDto.getPrice();
+            project.setPrice(price);
+            project.setMargin(calculateMargin(project));
+        } else if (null != newPriceRequestDto.getMargin()) {
+            BigDecimal margin = BigDecimal.valueOf(newPriceRequestDto.getMargin());
             project.setMargin(margin);
-            save(project);
+            updatePrice(project, margin);
         }
+
+        projectRepository.save(project);
+    }
+
+    private void updatePrice(Project project, BigDecimal margin) {
+        BigDecimal cost = project.getTotalCost();
+        BigDecimal newPrice = cost.multiply(margin).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+        newPrice = newPrice.add(cost);
+        project.setPrice(newPrice);
+    }
+
+    private BigDecimal calculateMargin(Project project) {
+        return project.getPrice()
+                .divide(project.getTotalCost(), 2, RoundingMode.HALF_UP)
+                .subtract(BigDecimal.ONE)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
+
     }
 
     private BigDecimal getBoardSurfaceArea(Map<BoardMeasurement, Integer> boardMeasurements, BoardMeasurement boardMeasurement) {
@@ -301,12 +317,5 @@ public class ProjectService {
         return boardSurfaceArea;
     }
 
-
-    private void updatePrice(Project project, BigDecimal margin) {
-        BigDecimal cost = project.getTotalCost();
-        BigDecimal newPrice = cost.multiply(margin).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-        newPrice = newPrice.add(cost);
-        project.setPrice(newPrice);
-    }
 }
 
