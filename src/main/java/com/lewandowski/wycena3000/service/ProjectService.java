@@ -109,7 +109,7 @@ public class ProjectService {
 
         for (BoardMeasurement measurement : boardMeasurementsInProject.keySet()) {
             if (measurement.getBoard().equals(addedBoardMeasurement.getBoard()) &&
-                    measurement.getHeight() == addedBoardMeasurement.getAmount() &&
+                    measurement.getHeight() == addedBoardMeasurement.getHeight() &&
                     measurement.getWidth() == addedBoardMeasurement.getWidth()) {
 
                 int existingAmount = boardMeasurementsInProject.get(measurement);

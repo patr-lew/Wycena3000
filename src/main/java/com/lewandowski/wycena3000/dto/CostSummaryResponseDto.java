@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ProjectCostSummaryDto {
+public class CostSummaryResponseDto {
 
     private Project Project;
 

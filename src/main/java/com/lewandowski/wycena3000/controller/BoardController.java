@@ -1,6 +1,6 @@
 package com.lewandowski.wycena3000.controller;
 
-import com.lewandowski.wycena3000.dto.BoardChangeDto;
+import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Board;
 import com.lewandowski.wycena3000.entity.BoardType;
 import com.lewandowski.wycena3000.entity.Project;
@@ -86,7 +86,7 @@ public class BoardController {
     }
 
     @PostMapping("/change")
-    public String changeBoard(@ModelAttribute BoardChangeDto dto) {
+    public String changeBoard(@ModelAttribute BoardChangeRequestDto dto) {
         boardService.changeBoardInProject(dto);
 
         return "redirect:/creator/projects/details/" + dto.getProjectId();

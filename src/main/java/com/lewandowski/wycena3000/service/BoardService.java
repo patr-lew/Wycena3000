@@ -1,17 +1,21 @@
 package com.lewandowski.wycena3000.service;
 
-import com.lewandowski.wycena3000.dto.BoardChangeDto;
+import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Board;
 import com.lewandowski.wycena3000.entity.BoardMeasurement;
 import com.lewandowski.wycena3000.entity.BoardType;
+import com.lewandowski.wycena3000.entity.Project;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
+import com.lewandowski.wycena3000.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class BoardService {
@@ -19,11 +23,13 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardTypeRepository boardTypeRepository;
     private final BoardMeasurementRepository boardMeasurementRepository;
+    private final ProjectRepository projectRepository;
 
-    public BoardService(BoardRepository boardRepository, BoardTypeRepository boardTypeRepository, BoardMeasurementRepository boardMeasurementRepository) {
+    public BoardService(BoardRepository boardRepository, BoardTypeRepository boardTypeRepository, BoardMeasurementRepository boardMeasurementRepository, ProjectRepository projectRepository) {
         this.boardRepository = boardRepository;
         this.boardTypeRepository = boardTypeRepository;
         this.boardMeasurementRepository = boardMeasurementRepository;
+        this.projectRepository = projectRepository;
     }
 
     public List<Board> findAll() {
@@ -49,19 +55,54 @@ public class BoardService {
         return boardRepository.findAllByProjectId(projectId);
     }
 
-    public void changeBoardInProject(BoardChangeDto changeDto) {
+    public void changeBoardInProject(BoardChangeRequestDto changeDto) {
 
-        Board newBoard = findById(changeDto.getNewBoardId());
+        Project project = projectRepository.findById(changeDto.getProjectId())
+                .orElseThrow(() -> new EntityNotFoundException("Project with id '" + changeDto.getProjectId() + "' doesn't exist"));
 
+        Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
+        Board newBoard = findById((changeDto.getNewBoardId()));
 
-        List<BoardMeasurement> boardMeasurements = boardMeasurementRepository.findAllByProjectId(changeDto.getProjectId());
+        // updating BoardMeasurements in the project. If a measurement is duplicated,
+        // move amount to new entry and set old one to 0
+        for (Map.Entry<BoardMeasurement, Integer> measurementEntry : boardMeasurements.entrySet()) {
+            BoardMeasurement measurement = measurementEntry.getKey();
 
-        boardMeasurements.forEach(measurement -> {
             if (measurement.getBoard().getId() == changeDto.getOldBoardId()) {
+                int firstAmount = boardMeasurements.get(measurement);
                 measurement.setBoard(newBoard);
-                boardMeasurementRepository.save(measurement);
+
+                for (Map.Entry<BoardMeasurement, Integer> sameMeasurementEntry : boardMeasurements.entrySet()) {
+                    BoardMeasurement changedMeasurement = sameMeasurementEntry.getKey();
+
+                    if (changedMeasurement.getBoard().equals(newBoard) &&
+                            changedMeasurement.getHeight() == measurement.getHeight() &&
+                            changedMeasurement.getWidth() == measurement.getWidth() &&
+                            !changedMeasurement.equals(measurement)) {
+
+                        int secondAmount = boardMeasurements.get(changedMeasurement);
+
+                        measurementEntry.setValue(firstAmount + secondAmount);
+                        sameMeasurementEntry.setValue(0);
+
+                    }
+                }
             }
-        });
+        }
+
+        // removing entries with amount of board set to 0
+        Set<Map.Entry<BoardMeasurement, Integer>> entrySet = boardMeasurements.entrySet();
+        Iterator<Map.Entry<BoardMeasurement, Integer>> iterator = entrySet.iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<BoardMeasurement, Integer> entry = iterator.next();
+            if (entry.getValue() == 0) {
+//                boardMeasurementRepository.delete(entry.getKey());
+                iterator.remove();
+            }
+        }
+
+        projectRepository.save(project);
 
 
     }

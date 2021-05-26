@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BoardChangeDto {
+public class BoardChangeRequestDto {
     private Long projectId;
     private Long oldBoardId;
     private Long newBoardId;

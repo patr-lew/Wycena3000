@@ -6,3 +6,4 @@ insert into part(name, price, type_id) values ('szuflada blum', 19.99, 1), ('uch
 insert into board_measurement (height, width, board_id) values (720, 560, 1), (500, 360, 1), (720, 560, 2);
 insert into project_board (project_id, amount, board_id) values (1, 20, 1), (1, 15, 2), (1, 25, 3);
 insert into project_part (project_id, amount, part_id) values (1, 12, 1), (1, 25, 2);
+insert into project_details(project_id, montage_cost, other_costs, worker_cost) values (1, 1000, 2000, 3000), (2, 1000, 2000, 3000), (3, 1000, 2000, 3000), (4, 1000, 2000, 3000);
