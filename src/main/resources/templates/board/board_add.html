@@ -35,16 +35,17 @@
                     <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
                        th:href="@{/creator/projects/all}">Projekty</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        Baza danych
+                <li>
+                    <a class="nav-link" href="/main/resources/templates/board/board_all.html" th:href="@{/creator/boards/all}">
+                        Płyty
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Płyty</a></li>
-                        <li><a class="dropdown-item" href="#">Inne elementy</a></li>
-                    </ul>
                 </li>
+                <li>
+                    <a class="nav-link" href="/main/resources/templates/part/part_all.html" th:href="@{/creator/parts/all}">
+                        Elementy
+                    </a>
+                </li>
+
             </ul>
             <a href="/main/resources/templates/part/part_add.html" th:href="@{/creator/parts/add}"
                class="btn btn-success mx-1">Dodaj Element</a>
