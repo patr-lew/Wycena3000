@@ -58,7 +58,7 @@ public class ProjectController {
         ProjectDetails projectDetails = new ProjectDetails();
         projectDetails.setProject(project);
         projectService.saveProjectDetails(projectDetails);
-        return "redirect:/creator/projects/edit?projectId=" + project.getId();
+        return "redirect:/creator/projects/edit/" + project.getId();
     }
 
     @GetMapping("/edit/{projectId}")
@@ -93,50 +93,50 @@ public class ProjectController {
     public String addFurniturePartToProject(@Valid AddingPartDto partDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "redirect:/creator/projects/edit?projectId=" + partDto.getProjectId() + "&error=true";
+            return "redirect:/creator/projects/edit/" + partDto.getProjectId() + "?error=true";
         }
 
         projectService.addFurniturePartsToProject(partDto);
-        return "redirect:/creator/projects/edit?projectId=" + partDto.getProjectId();
+        return "redirect:/creator/projects/edit/" + partDto.getProjectId();
     }
 
     @PostMapping("/calculatePrice")
     public String calculatePrice(@Valid NewPriceRequestDto newPriceRequestDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "redirect:/creator/projects/edit?projectId=" + newPriceRequestDto.getProjectId() + "&error=true";
+            return "redirect:/creator/projects/edit/" + newPriceRequestDto.getProjectId() + "?error=true";
         }
 
         if (newPriceRequestDto.getPrice() == null && newPriceRequestDto.getMargin() == null ||
             newPriceRequestDto.getPrice() != null && newPriceRequestDto.getMargin() != null) {
-            return "redirect:/creator/projects/edit?projectId=" + newPriceRequestDto.getProjectId() + "&error=true";
+            return "redirect:/creator/projects/edit/" + newPriceRequestDto.getProjectId() + "?error=true";
         }
 
         projectService.setNewPrice(newPriceRequestDto);
-        return "redirect:/creator/projects/edit?projectId=" + newPriceRequestDto.getProjectId();
+        return "redirect:/creator/projects/edit/" + newPriceRequestDto.getProjectId();
     }
 
     @PostMapping("/addBoard")
     public String addBoardToProject(@RequestParam long projectId, @Valid BoardMeasurement boardMeasurement, BindingResult result) {
 
         if (result.hasErrors() || boardMeasurement.getAmount() < 1) {
-            return "redirect:/creator/projects/edit?projectId=" + projectId + "&error=true";
+            return "redirect:/creator/projects/edit/" + projectId + "?error=true";
         }
 
         projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
-        return "redirect:/creator/projects/edit?projectId=" + projectId +
-                "&boardId=" + boardMeasurement.getBoard().getId();
+        return "redirect:/creator/projects/edit/" + projectId +
+                "?boardId=" + boardMeasurement.getBoard().getId();
     }
 
     @PostMapping("/addProjectDetails")
     public String addDetailsToProject(@RequestParam long projectId, @Valid ProjectDetails projectDetails, BindingResult result) {
 
         if (result.hasErrors()) {
-            return "redirect:/creator/projects/edit?projectId=" + projectId + "&error=true";
+            return "redirect:/creator/projects/edit/" + projectId + "?error=true";
         }
 
         projectService.addProjectDetailsToProject(projectId, projectDetails);
-        return "redirect:/creator/projects/edit?projectId=" + projectId;
+        return "redirect:/creator/projects/edit/" + projectId;
     }
 
     @GetMapping("/details/{projectId}")
