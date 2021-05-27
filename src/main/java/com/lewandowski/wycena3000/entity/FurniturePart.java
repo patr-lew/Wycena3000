@@ -38,8 +38,6 @@ public class FurniturePart {
     @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
-    @NotNull
-    @Min(value = 1)
     @Transient
     private int amount;
 
@@ -48,11 +46,11 @@ public class FurniturePart {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FurniturePart that = (FurniturePart) o;
-        return id == that.id && name.equals(that.name) && furniturePartType.equals(that.furniturePartType) && Objects.equals(price, that.price);
+        return id == that.id && Objects.equals(name, that.name) && furniturePartType.equals(that.furniturePartType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, furniturePartType, price);
+        return Objects.hash(id, name, furniturePartType);
     }
 }

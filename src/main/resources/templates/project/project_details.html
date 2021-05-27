@@ -58,58 +58,84 @@
 
 <!-- Main content -->
 <div class="container">
- <!-- Project summary -->
- <div class="card my-1 p-2">
-    <div class="row p-lg-3 g-2 align-items-center">
-        <p th:text="${'Data utworzenia: ' + project.created}">Data utworzenia: dzisiaj</p>
-        <p th:text="${'Data utworzenia: ' + project.modified}">Data aktualizacji: dzisiaj</p>
-        <p th:text="${'Całkowity koszt: ' + project.totalCost}">Koszt</p>
-    </div>
-    <div class="row p-lg-3 g-2 my-2 align-items-center">
-        <h6>Dodane płyty:</h6>
-        <ul class="list-group">
-            <li class="list-group-item" th:each="boardByProjectDto : ${boardsInProject}"> 
-                <div class="row flex-fill">
-                    <div class="col" th:text="${boardByProjectDto.name}">Pierwsza płyta</div>
-                    <div class="col text-end">
-                        <a class="btn btn-outline-success m-1" href="/main/resources/templates/board/board_change.html" 
-                        th:href="@{/creator/boards/change?boardId=__${boardByProjectDto.boardId}__&projectId=__${project.id}__}">Zmień płytę</a></div>
-                </div>
-                <table class="table table-sm table-striped">
-                    <tr th:each="measurement : ${project.boardMeasurements}" th:if="${boardByProjectDto.boardId == measurement.getKey().board.id}">
-                        <td style="text-align: center" th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary</td>
-                        <td style="text-align: right">ilość:</td>
-                        <td style="text-align: left" th:text="${measurement.getValue()}">Ilość</td>
-                    </tr>
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <p th:utext="${'Całkowita powierzchnia: ' + boardByProjectDto.totalArea + 'm<sup>2</sup>'}">Całkowita wielkość: 3,4m2</p>
-                            <p th:text="${'Całkowita cena: ' + boardByProjectDto.totalCost + 'zł'}">Całkowita cena: 203 zł</p>
-                        </li>
-                    </ul>
-                </table>
+    <!-- Project summary -->
+    <div class="card my-1 p-2 align-content-around">
+        <div class="row p-lg-3 g-2">
+            <h3 th:text="${'Wycena ''' + project.name + ''''}">Nazwa projektu</h3>
+            <p th:text="${'Data utworzenia: ' + project.created}">Data utworzenia: dzisiaj</p>
+            <p th:text="${'Data aktualizacji: ' + project.modified}">Data aktualizacji: dzisiaj</p>
+            <p th:text="${'Całkowity koszt: ' + project.totalCost}">Koszt</p>
+        </div>
+        <div class="row p-lg-3 g-2">
+            <a href="/main/resources/templates/project/project_edit.html"
+            th:href="@{/creator/projects/edit/__${project.id}__}"
+            class="btn btn-outline-primary">Edytuj projekt</a>
+        </div>
+        <div class="row p-lg-3 g-2 my-2 align-items-center">
+            <h6>Dodane płyty:</h6>
+            <ul class="list-group">
+                <li class="list-group-item" th:each="boardByProjectDto : ${boardsInProject}">
+                    <div class="row flex-fill">
+                        <div class="col" th:text="${boardByProjectDto.name}">Pierwsza płyta</div>
+                        <div class="col text-end">
+                            <a class="btn btn-outline-success m-2"
+                               href="/main/resources/templates/board/board_change.html"
+                               th:href="@{/creator/boards/change?boardId=__${boardByProjectDto.boardId}__&projectId=__${project.id}__}">
+                                Zmień płytę
+                            </a>
+                        </div>
+                    </div>
+                    <table class="table table-sm table-striped">
+                        <tr th:each="measurement : ${project.boardMeasurements}"
+                            th:if="${boardByProjectDto.boardId == measurement.getKey().board.id}">
+                            <td style="text-align: center"
+                                th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary
+                            </td>
+                            <td style="text-align: right">ilość:</td>
+                            <td style="text-align: left" th:text="${measurement.getValue()}">Ilość</td>
+                        </tr>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <p th:utext="${'Całkowita powierzchnia: ' + boardByProjectDto.totalArea + 'm<sup>2</sup>'}">
+                                    Całkowita wielkość: 3,4m2</p>
+                                <p th:text="${'Całkowita cena: ' + boardByProjectDto.totalCost + 'zł'}">Całkowita cena:
+                                    203 zł</p>
+                            </li>
+                        </ul>
+                    </table>
 
-            </li>
-        </ul>
-    </div>
-    <div class="row p-lg-3 g-2 align-items-center">
-        <h6>Dodane Elementy:</h6>
-        <ul class="list-group">
-            <li class="list-group-item" th:each="type : ${partTypes}"> <p th:text="${type.name}">typ rzeczy</p>
-                <table class="table table-sm table-striped">
-                    <tr th:each="part : ${project.furnitureParts}" th:if="${part.getKey().furniturePartType.id == type.id}">
-                        <td style="text-align: center" th:text="${part.getKey().name}">Nazwa</td>
-                        <td style="text-align: center" th:text="${part.getKey().price + ' zł'}">Cena</td>
-                        <td style="text-align: right">ilość</td>
-                        <td style="text-align: left" th:text="${part.getValue()}">Ilość</td>
+                </li>
+            </ul>
+        </div>
+        <div class="row p-lg-3 g-2 align-items-center">
+            <h6>Dodane Elementy:</h6>
+            <ul class="list-group">
+                <li class="list-group-item" th:each="type : ${partTypes}">
+                    <div class="row flex-fill">
+                        <div class="col" th:text="${type.name}">Typ rzeczy</div>
+                        <div class="col text-end">
+                            <a class="btn btn-outline-success m-2"
+                               href="/main/resources/templates/part/board_change.html"
+                               th:href="@{/creator/parts/change?partId=__${type.id}__&projectId=__${project.id}__}">
+                                Zmień element
+                            </a>
+                        </div>
+                    </div>
+                    <table class="table table-sm table-striped">
+                        <tr th:each="part : ${project.furnitureParts}"
+                            th:if="${part.getKey().furniturePartType.id == type.id}">
+                            <td style="text-align: center" th:text="${part.getKey().name}">Nazwa</td>
+                            <td style="text-align: center" th:text="${part.getKey().price + ' zł'}">Cena</td>
+                            <td style="text-align: right">ilość</td>
+                            <td style="text-align: left" th:text="${part.getValue()}">Ilość</td>
 
-                    </tr>
+                        </tr>
 
-                </table>
-            </li>
-        </ul>                        
+                    </table>
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
 </div>
 </body>
 </html>

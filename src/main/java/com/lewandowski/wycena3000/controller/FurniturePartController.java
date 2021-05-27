@@ -2,7 +2,10 @@ package com.lewandowski.wycena3000.controller;
 
 import com.lewandowski.wycena3000.entity.FurniturePart;
 import com.lewandowski.wycena3000.entity.FurniturePartType;
+import com.lewandowski.wycena3000.dto.PartChangeRequestDto;
+import com.lewandowski.wycena3000.entity.Project;
 import com.lewandowski.wycena3000.service.FurniturePartService;
+import com.lewandowski.wycena3000.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,9 +19,11 @@ import java.util.List;
 public class FurniturePartController {
 
     private final FurniturePartService furniturePartService;
+    private final ProjectService projectService;
 
-    public FurniturePartController(FurniturePartService furniturePartService) {
+    public FurniturePartController(FurniturePartService furniturePartService, ProjectService projectService) {
         this.furniturePartService = furniturePartService;
+        this.projectService = projectService;
     }
 
     @GetMapping("/add")
@@ -35,7 +40,7 @@ public class FurniturePartController {
     @PostMapping("/add")
     public String save(@Valid FurniturePart furniturePart, BindingResult result, Model model) {
 
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             model.addAttribute("partTypes", furniturePartService.getFurniturePartTypes());
             return "part/part_add";
         }
@@ -64,6 +69,25 @@ public class FurniturePartController {
         return "part/part_all";
     }
 
+    @GetMapping("/change")
+    public String changePart(@RequestParam Long partId,
+                         @RequestParam Long projectId, Model model) {
+        Project project = projectService.findById(projectId);
+        List<FurniturePart> parts = furniturePartService.findAll();
+
+        model.addAttribute("project", project);
+        model.addAttribute("oldPartId", partId);
+        model.addAttribute("parts", parts);
+        return "part/part_change";
+    }
+
+    @PostMapping("/change")
+    public String changePart(@ModelAttribute PartChangeRequestDto dto) {
+        furniturePartService.changePartInProject(dto);
+
+        return "redirect:/creator/projects/details/" + dto.getProjectId();
+
+    }
 
 
 }

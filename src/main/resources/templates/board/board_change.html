@@ -74,11 +74,11 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select class="form-select" aria-label="Default select example" id="boardType"
+                            <select class="form-select" aria-label="Wybierz rodzaj płyty" id="boardType"
                                 name="newBoardId">
                                 <option th:each="type : ${boards}" th:value="${type.id}"
                                     th:text="${type.boardType.name + ': ' + type.name + ', ' + type.pricePerM2 + 'zł/m2'}"
-                                    th:selected="${oldBoard.id == type.id}">
+                                    th:selected="${oldBoardId == type.id}">
                                 </option>
                             </select>
                             <label for="boardType">Rodzaj płyty</label>

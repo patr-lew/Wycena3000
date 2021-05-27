@@ -66,23 +66,23 @@ public class BoardService {
         // updating BoardMeasurements in the project. If a measurement is duplicated,
         // move amount to new entry and set old one to 0
         for (Map.Entry<BoardMeasurement, Integer> measurementEntry : boardMeasurements.entrySet()) {
-            BoardMeasurement measurement = measurementEntry.getKey();
+            BoardMeasurement currentMeasurement = measurementEntry.getKey();
 
-            if (measurement.getBoard().getId() == changeDto.getOldBoardId()) {
-                int firstAmount = boardMeasurements.get(measurement);
+            if (currentMeasurement.getBoard().getId() == changeDto.getOldBoardId()) {
                 boolean isDoubled = false;
 
                 for (Map.Entry<BoardMeasurement, Integer> sameMeasurementEntry : boardMeasurements.entrySet()) {
                     BoardMeasurement changedMeasurement = sameMeasurementEntry.getKey();
 
                     if (changedMeasurement.getBoard().equals(newBoard) &&
-                            changedMeasurement.getHeight() == measurement.getHeight() &&
-                            changedMeasurement.getWidth() == measurement.getWidth() &&
-                            !changedMeasurement.equals(measurement)) {
+                            changedMeasurement.getHeight() == currentMeasurement.getHeight() &&
+                            changedMeasurement.getWidth() == currentMeasurement.getWidth() &&
+                            !changedMeasurement.equals(currentMeasurement)) {
 
-                        int secondAmount = boardMeasurements.get(changedMeasurement);
+                        int oldAmount = boardMeasurements.get(currentMeasurement);
+                        int newAmount = boardMeasurements.get(changedMeasurement);
 
-                        sameMeasurementEntry.setValue(firstAmount + secondAmount);
+                        sameMeasurementEntry.setValue(oldAmount + newAmount);
                         measurementEntry.setValue(0);
                         isDoubled = true;
                     }
@@ -91,7 +91,7 @@ public class BoardService {
                 // change board only if there is no doubled entry, otherwise there is
                 // repetition of primary keys in the table
                 if (!isDoubled) {
-                    measurement.setBoard(newBoard);
+                    currentMeasurement.setBoard(newBoard);
                 }
             }
         }

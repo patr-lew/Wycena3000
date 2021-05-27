@@ -61,8 +61,8 @@ public class ProjectController {
         return "redirect:/creator/projects/edit?projectId=" + project.getId();
     }
 
-    @GetMapping("/edit")
-    public String editProject(@RequestParam long projectId,
+    @GetMapping("/edit/{projectId}")
+    public String editProject(@PathVariable long projectId,
                               @RequestParam(name = "boardId", required = false) Long lastAddedBoardId,
                               @RequestParam(required = false) boolean error,
                               Model model) {
