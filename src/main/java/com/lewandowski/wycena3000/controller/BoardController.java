@@ -72,15 +72,14 @@ public class BoardController {
 
     }
 
-    @GetMapping("/change/{boardId}")
-    public String changeBoard(@PathVariable Long boardId,
+    @GetMapping("/change")
+    public String changeBoard(@RequestParam Long boardId,
                               @RequestParam Long projectId, Model model) {
-        Board previousBoard = boardService.findById(boardId);
         Project project = projectService.findById(projectId);
         List<Board> boards = boardService.findAll();
 
         model.addAttribute("project", project);
-        model.addAttribute("oldBoard", previousBoard);
+        model.addAttribute("oldBoardId", boardId);
         model.addAttribute("boards", boards);
         return "board/board_change";
     }

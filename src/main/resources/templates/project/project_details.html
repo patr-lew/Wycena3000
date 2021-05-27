@@ -73,7 +73,7 @@
                     <div class="col" th:text="${boardByProjectDto.name}">Pierwsza płyta</div>
                     <div class="col text-end">
                         <a class="btn btn-outline-success m-1" href="/main/resources/templates/board/board_change.html" 
-                        th:href="@{/creator/boards/change/__${boardByProjectDto.boardId}__?projectId=__${project.id}__}">Zmień płytę</a></div>
+                        th:href="@{/creator/boards/change?boardId=__${boardByProjectDto.boardId}__&projectId=__${project.id}__}">Zmień płytę</a></div>
                 </div>
                 <table class="table table-sm table-striped">
                     <tr th:each="measurement : ${project.boardMeasurements}" th:if="${boardByProjectDto.boardId == measurement.getKey().board.id}">
