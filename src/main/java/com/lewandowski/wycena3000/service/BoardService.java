@@ -70,7 +70,7 @@ public class BoardService {
 
             if (measurement.getBoard().getId() == changeDto.getOldBoardId()) {
                 int firstAmount = boardMeasurements.get(measurement);
-                measurement.setBoard(newBoard);
+                boolean isDoubled = false;
 
                 for (Map.Entry<BoardMeasurement, Integer> sameMeasurementEntry : boardMeasurements.entrySet()) {
                     BoardMeasurement changedMeasurement = sameMeasurementEntry.getKey();
@@ -82,10 +82,16 @@ public class BoardService {
 
                         int secondAmount = boardMeasurements.get(changedMeasurement);
 
-                        measurementEntry.setValue(firstAmount + secondAmount);
-                        sameMeasurementEntry.setValue(0);
-
+                        sameMeasurementEntry.setValue(firstAmount + secondAmount);
+                        measurementEntry.setValue(0);
+                        isDoubled = true;
                     }
+                }
+
+                // change board only if there is no doubled entry, otherwise there is
+                // repetition of primary keys in the table
+                if (!isDoubled) {
+                    measurement.setBoard(newBoard);
                 }
             }
         }
@@ -97,13 +103,11 @@ public class BoardService {
         while (iterator.hasNext()) {
             Map.Entry<BoardMeasurement, Integer> entry = iterator.next();
             if (entry.getValue() == 0) {
-//                boardMeasurementRepository.delete(entry.getKey());
                 iterator.remove();
             }
         }
 
         projectRepository.save(project);
-
 
     }
 }
