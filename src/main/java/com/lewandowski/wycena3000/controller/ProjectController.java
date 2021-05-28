@@ -89,6 +89,13 @@ public class ProjectController {
 
     }
 
+    @GetMapping("/delete/{projectId}")
+    public String delete(@PathVariable Long projectId) {
+        projectService.delete(projectId);
+
+        return "redirect:/creator/projects/all";
+    }
+
     @PostMapping("/addFurniturePart")
     public String addFurniturePartToProject(@Valid AddingPartDto partDto, BindingResult result) {
 

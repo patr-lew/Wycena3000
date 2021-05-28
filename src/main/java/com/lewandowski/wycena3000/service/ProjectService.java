@@ -55,7 +55,7 @@ public class ProjectService {
     }
 
     public Project findByIdEager(long id) {
-        Project project = findById(id);
+        Project project = this.findById(id);
         if (!Hibernate.isInitialized(project.getProjectDetails())) {
             Hibernate.initialize(project.getProjectDetails());
         }
@@ -69,6 +69,11 @@ public class ProjectService {
         }
 
         return project;
+    }
+
+    public void delete(Long projectId) {
+        Project projectToDelete = this.findById(projectId);
+        projectRepository.delete(projectToDelete);
     }
 
     /**
@@ -316,6 +321,5 @@ public class ProjectService {
                 width.multiply(height).multiply(BigDecimal.valueOf(boardMeasurements.get(boardMeasurement)));
         return boardSurfaceArea;
     }
-
 }
 

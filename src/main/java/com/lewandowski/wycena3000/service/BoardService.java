@@ -19,7 +19,6 @@ import java.util.Set;
 
 @Service
 public class BoardService {
-
     private final BoardRepository boardRepository;
     private final BoardTypeRepository boardTypeRepository;
     private final BoardMeasurementRepository boardMeasurementRepository;
@@ -49,6 +48,15 @@ public class BoardService {
         return boardRepository
                 .findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("Board with id '" + boardId + "' doesn't exist"));
+    }
+
+    public void delete(Long boardId) {
+        Board boardToDelete = this.findById(boardId);
+        boardRepository.delete(boardToDelete);
+    }
+
+    public Set<Long> getEnabledDeleteSet() {
+        return boardRepository.enabledDeleteSet();
     }
 
     public List<Board> findAllByProjectId(long projectId) {

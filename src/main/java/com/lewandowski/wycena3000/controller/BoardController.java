@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/creator/boards")
@@ -62,11 +63,20 @@ public class BoardController {
         return "board/board_edit";
     }
 
+    @GetMapping("/delete/{boardId}")
+    public String delete(@PathVariable Long boardId) {
+        boardService.delete(boardId);
+
+        return "redirect:/creator/boards/all";
+    }
+
 
     @GetMapping("/all")
     public String all(Model model) {
         List<Board> boards = boardService.findAll();
+        Set<Long> enabledDeleteSet = boardService.getEnabledDeleteSet();
         model.addAttribute("boards", boards);
+        model.addAttribute("enabledDelete", enabledDeleteSet);
 
         return "board/board_all";
 

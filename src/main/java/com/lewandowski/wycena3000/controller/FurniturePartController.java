@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/creator/parts")
@@ -61,10 +62,19 @@ public class FurniturePartController {
         return "part/part_edit";
     }
 
+    @GetMapping("/delete/{partId}")
+    public String delete(@PathVariable long partId) {
+        furniturePartService.delete(partId);
+
+        return "redirect:/creator/parts/all";
+    }
+
     @GetMapping("/all")
     public String all(Model model) {
         List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
+        Set<Long> enabledDeleteSet = furniturePartService.getEnabledDeleteSet();
         model.addAttribute("furnitureParts", furnitureParts);
+        model.addAttribute("enabledDelete", enabledDeleteSet);
 
         return "part/part_all";
     }

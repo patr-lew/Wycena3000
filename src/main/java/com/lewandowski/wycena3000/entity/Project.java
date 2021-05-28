@@ -42,14 +42,14 @@ public class Project {
     @Column(scale = 5, precision = 10)
     private BigDecimal margin;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "project_board",
             joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "board_id")
     @Column(name = "amount")
     private Map<BoardMeasurement, Integer> boardMeasurements;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "project_part",
             joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "part_id")

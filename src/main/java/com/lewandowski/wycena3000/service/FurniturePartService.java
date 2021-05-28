@@ -51,8 +51,17 @@ public class FurniturePartService {
                 .orElseThrow(() -> new EntityNotFoundException("FurniturePart with given Id doesn't exist"));
     }
 
+    public void delete(long partId) {
+        FurniturePart part = this.findById(partId);
+        furniturePartRepository.delete(part);
+    }
+
     public List<FurniturePartType> getFurniturePartTypesByProject(Long projectId) {
         return furniturePartTypeRepository.findByProjectId(projectId);
+    }
+
+    public Set<Long> getEnabledDeleteSet() {
+        return furniturePartRepository.enabledDeleteSet();
     }
 
     public void changePartInProject(PartChangeRequestDto changeDto) {
