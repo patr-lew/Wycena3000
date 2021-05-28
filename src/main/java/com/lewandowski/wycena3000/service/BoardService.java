@@ -105,17 +105,8 @@ public class BoardService {
         }
 
         // removing entries with amount of board set to 0
-        Set<Map.Entry<BoardMeasurement, Integer>> entrySet = boardMeasurements.entrySet();
-        Iterator<Map.Entry<BoardMeasurement, Integer>> iterator = entrySet.iterator();
-
-        while (iterator.hasNext()) {
-            Map.Entry<BoardMeasurement, Integer> entry = iterator.next();
-            if (entry.getValue() == 0) {
-                iterator.remove();
-            }
-        }
+        boardMeasurements.entrySet().removeIf(entry -> entry.getValue() == 0);
 
         projectRepository.save(project);
-
     }
 }

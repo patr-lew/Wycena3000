@@ -19,7 +19,7 @@ import java.util.Objects;
 public class BoardMeasurement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotNull

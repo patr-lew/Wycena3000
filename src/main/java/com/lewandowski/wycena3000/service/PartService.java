@@ -87,15 +87,7 @@ public class PartService {
         }
 
         // removing entries with amount of board set to 0
-        Set<Map.Entry<com.lewandowski.wycena3000.entity.Part, Integer>> entrySet = parts.entrySet();
-        Iterator<Map.Entry<com.lewandowski.wycena3000.entity.Part, Integer>> iterator = entrySet.iterator();
-
-        while (iterator.hasNext()) {
-            Map.Entry<com.lewandowski.wycena3000.entity.Part, Integer> entry = iterator.next();
-            if (entry.getValue() == 0) {
-                iterator.remove();
-            }
-        }
+        parts.entrySet().removeIf(entry -> entry.getValue() == 0);
 
         projectRepository.save(project);
     }

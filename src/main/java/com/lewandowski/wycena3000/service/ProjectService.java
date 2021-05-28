@@ -73,7 +73,21 @@ public class ProjectService {
 
     public void delete(Long projectId) {
         Project projectToDelete = this.findById(projectId);
+
+        // delete all relations to boards and parts
+        projectToDelete.getBoardMeasurements().clear();
+        projectToDelete.getParts().clear();
+        projectRepository.save(projectToDelete);
+
+        projectDetailsRepository.delete(projectToDelete.getProjectDetails());
         projectRepository.delete(projectToDelete);
+
+        // delete all orphaned BoardMeasurements
+        Iterator<BoardMeasurement> orphansIterator = boardMeasurementRepository.findAllOrphans().iterator();
+        while (orphansIterator.hasNext()) {
+            boardMeasurementRepository.delete(orphansIterator.next());
+        }
+
     }
 
     /**
@@ -211,7 +225,6 @@ public class ProjectService {
                 totalCost = totalCost.add(boardCost);
             }
         }
-
 
         // add costs from parts
         Hibernate.initialize(project.getParts());
