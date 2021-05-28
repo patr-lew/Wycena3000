@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FurniturePartType {
+public class PartType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

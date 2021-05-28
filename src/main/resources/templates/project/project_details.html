@@ -41,13 +41,13 @@
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/part/part_all.html" th:href="@{/creator/parts/all}">
+                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html" th:href="@{/creator/parts/all}">
                         Elementy
                     </a>
                 </li>
 
             </ul>
-            <a href="/main/resources/templates/part/part_add.html" th:href="@{/creator/parts/add}"
+            <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
                class="btn btn-success mx-1">Dodaj Element</a>
             <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
                class="btn btn-success mx-1">Dodaj Płytę</a>
@@ -116,19 +116,19 @@
                         <div class="col" th:text="${type.name}">Typ rzeczy</div>
                         <div class="col text-end">
                             <a class="btn btn-outline-success m-2"
-                               href="/main/resources/templates/part/board_change.html"
+                               href="/main/resources/templates/partRepository/board_change.html"
                                th:href="@{/creator/parts/change?partId=__${type.id}__&projectId=__${project.id}__}">
                                 Zmień element
                             </a>
                         </div>
                     </div>
                     <table class="table table-sm table-striped">
-                        <tr th:each="part : ${project.furnitureParts}"
-                            th:if="${part.getKey().furniturePartType.id == type.id}">
-                            <td style="text-align: center" th:text="${part.getKey().name}">Nazwa</td>
-                            <td style="text-align: center" th:text="${part.getKey().price + ' zł'}">Cena</td>
+                        <tr th:each="partRepository : ${project.parts}"
+                            th:if="${partRepository.getKey().getPartType.id == type.id}">
+                            <td style="text-align: center" th:text="${partRepository.getKey().name}">Nazwa</td>
+                            <td style="text-align: center" th:text="${partRepository.getKey().price + ' zł'}">Cena</td>
                             <td style="text-align: right">ilość</td>
-                            <td style="text-align: left" th:text="${part.getValue()}">Ilość</td>
+                            <td style="text-align: left" th:text="${partRepository.getValue()}">Ilość</td>
 
                         </tr>
 

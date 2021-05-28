@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -19,7 +18,7 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FurniturePart {
+public class Part {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -31,7 +30,7 @@ public class FurniturePart {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "type_id", nullable = false)
-    private FurniturePartType furniturePartType;
+    private PartType partType;
 
     @NotNull
     @DecimalMin(value = "0.01")
@@ -45,12 +44,12 @@ public class FurniturePart {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FurniturePart that = (FurniturePart) o;
-        return id == that.id && Objects.equals(name, that.name) && furniturePartType.equals(that.furniturePartType);
+        Part that = (Part) o;
+        return id == that.id && Objects.equals(name, that.name) && partType.equals(that.partType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, furniturePartType);
+        return Objects.hash(id, name, partType);
     }
 }

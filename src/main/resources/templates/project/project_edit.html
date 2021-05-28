@@ -43,13 +43,13 @@
                         </a>
                     </li>
                     <li>
-                        <a class="nav-link" href="/main/resources/templates/part/part_all.html" th:href="@{/creator/parts/all}">
+                        <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html" th:href="@{/creator/parts/all}">
                             Elementy
                         </a>
                     </li>
     
                 </ul>
-                <a href="/main/resources/templates/part/part_add.html" th:href="@{/creator/parts/add}"
+                <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
                    class="btn btn-success mx-1">Dodaj Element</a>
                 <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
                    class="btn btn-success mx-1">Dodaj Płytę</a>
@@ -129,19 +129,19 @@
                     </div>
                     <div class="card my-1 p-2">
                         <!-- ADD PART -->
-                        <form action="#" th:action="@{/creator/projects/addFurniturePart}" method="post">
+                        <form action="#" th:action="@{/creator/projects/addpart}" method="post">
                             <input type="hidden" th:name="projectId" th:value="${project.id}">
 
-                            <!-- Choose part -->
+                            <!-- Choose partRepository -->
                             <div class="row p-lg-3 g-2 align-items-center">
                                 <h5>Dodaj element</h5>
 
                                 <div class="form-floating">
-                                    <select class="form-select" aria-label="Wybierz element" id="part"
-                                        th:name="furniturePartId">
+                                    <select class="form-select" aria-label="Wybierz element" id="partRepository"
+                                        th:name="partId">
                                         <option value="0" disabled selected>Wybierz element</option>
-                                        <option th:each="part : ${furnitureParts}" th:value="${part.id}"
-                                            th:text="${part.name}"></option>
+                                        <option th:each="partRepository : ${parts}" th:value="${partRepository.id}"
+                                            th:text="${partRepository.name}"></option>
 
                                     </select>
                                     <label for="boardType">Element</label>
@@ -164,7 +164,7 @@
                             </div>
                             <div class="col">
                                 <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj element</button>
-                                <a th:href="@{/creator/parts/add}" href="/main/resources/templates/part/part_add.html"
+                                <a th:href="@{/creator/parts/add}" href="/main/resources/templates/partRepository/part_add.html"
                                     class="btn btn-secondary my-2 mx-3">Utwórz nową płytę</a>
                             </div>
                         </form>
@@ -267,15 +267,15 @@
                                                 <p th:text="${type.name}">typ
                                                     rzeczy</p>
                                                 <table class="table table-sm table-striped">
-                                                    <tr th:each="part : ${project.furnitureParts}"
-                                                        th:if="${part.getKey().furniturePartType.id == type.id}">
-                                                        <td style="text-align: center" th:text="${part.getKey().name}">
+                                                    <tr th:each="partRepository : ${project.parts}"
+                                                        th:if="${partRepository.getKey().getPartType.id == type.id}">
+                                                        <td style="text-align: center" th:text="${partRepository.getKey().name}">
                                                             Nazwa</td>
                                                         <td style="text-align: center"
-                                                            th:text="${part.getKey().price + ' zł'}">Cena
+                                                            th:text="${partRepository.getKey().price + ' zł'}">Cena
                                                         </td>
                                                         <td style="text-align: right">ilość</td>
-                                                        <td style="text-align: left" th:text="${part.getValue()}">
+                                                        <td style="text-align: left" th:text="${partRepository.getValue()}">
                                                             Ilość</td>
                                                     </tr>
                                                 </table>

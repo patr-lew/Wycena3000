@@ -41,13 +41,13 @@
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/part/part_all.html" th:href="@{/creator/parts/all}">
+                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html" th:href="@{/creator/parts/all}">
                         Elementy
                     </a>
                 </li>
 
             </ul>
-            <a href="/main/resources/templates/part/part_add.html" th:href="@{/creator/parts/add}"
+            <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
                class="btn btn-success mx-1">Dodaj Element</a>
             <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
                class="btn btn-success mx-1">Dodaj Płytę</a>
@@ -70,19 +70,19 @@
                 <input type="hidden" th:name="projectId" th:value="${project.id}">
                 <input type="hidden" th:name="oldPartId" th:value="${oldPartId}">
 
-                <!-- Part type -->
+                <!-- PartRepository type -->
                 <div class="row p-lg-3 g-2 align-items-center">
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select class="form-select" aria-label="Wybierz element" id="part"
+                            <select class="form-select" aria-label="Wybierz element" id="partRepository"
                                 name="newPartId">
-                                <option th:each="part : ${parts}" th:value="${part.id}"
-                                    th:text="${part.furniturePartType.name + ': ' + part.name + ', ' + part.price + 'zł'}"
-                                    th:selected="${oldPartId == part.id}">
+                                <option th:each="partRepository : ${parts}" th:value="${partRepository.id}"
+                                    th:text="${partRepository.getPartType.name + ': ' + partRepository.name + ', ' + partRepository.price + 'zł'}"
+                                    th:selected="${oldPartId == partRepository.id}">
                                 </option>
                             </select>
-                            <label for="part">Element</label>
+                            <label for="partRepository">Element</label>
                         </div>
                     </div>
                 </div>

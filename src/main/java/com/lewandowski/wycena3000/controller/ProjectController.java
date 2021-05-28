@@ -5,7 +5,7 @@ import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.service.BoardService;
-import com.lewandowski.wycena3000.service.FurniturePartService;
+import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +20,12 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
-    private final FurniturePartService furniturePartService;
+    private final PartService partService;
     private final BoardService boardService;
 
-    public ProjectController(ProjectService projectService, FurniturePartService furniturePartService, BoardService boardService) {
+    public ProjectController(ProjectService projectService, PartService partService, BoardService boardService) {
         this.projectService = projectService;
-        this.furniturePartService = furniturePartService;
+        this.partService = partService;
         this.boardService = boardService;
     }
 
@@ -69,16 +69,16 @@ public class ProjectController {
         Project projectById = projectService.findByIdEager(projectId);
         String margin = projectService.marginToString(projectById);
 
-        List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
+        List<Part> parts = partService.getParts();
         List<Board> boardsInProject = boardService.findAllByProjectId(projectId);
-        List<FurniturePartType> partTypesInProject = furniturePartService.getFurniturePartTypesByProject(projectId);
+        List<PartType> partTypesInProject = partService.getPartTypesByProject(projectId);
         List<Board> boardsAll = boardService.findAll();
         BoardMeasurement boardMeasurement = new BoardMeasurement();
 
         model.addAttribute("error", error);
         model.addAttribute("project", projectById);
         model.addAttribute("boardId", lastAddedBoardId);
-        model.addAttribute("furnitureParts", furnitureParts);
+        model.addAttribute("parts", parts);
         model.addAttribute("boardsInProject", boardsInProject);
         model.addAttribute("partTypes", partTypesInProject);
         model.addAttribute("boards", boardsAll);
@@ -96,14 +96,14 @@ public class ProjectController {
         return "redirect:/creator/projects/all";
     }
 
-    @PostMapping("/addFurniturePart")
-    public String addFurniturePartToProject(@Valid AddingPartDto partDto, BindingResult result) {
+    @PostMapping("/addpart")
+    public String addpartToProject(@Valid AddingPartDto partDto, BindingResult result) {
 
         if (result.hasErrors()) {
             return "redirect:/creator/projects/edit/" + partDto.getProjectId() + "?error=true";
         }
 
-        projectService.addFurniturePartsToProject(partDto);
+        projectService.addpartsToProject(partDto);
         return "redirect:/creator/projects/edit/" + partDto.getProjectId();
     }
 
@@ -154,8 +154,8 @@ public class ProjectController {
         List<BoardByProjectDto> boards = projectService.getBoardsDetailsByProject(projectId);
         model.addAttribute("boardsInProject", boards);
 
-        List<FurniturePartType> furniturePartTypes = furniturePartService.getFurniturePartTypes();
-        model.addAttribute("partTypes", furniturePartTypes);
+        List<PartType> partTypes = partService.getPartTypes();
+        model.addAttribute("partTypes", partTypes);
 
         return "project/project_details";
     }

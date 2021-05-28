@@ -1,8 +1,6 @@
 package com.lewandowski.wycena3000.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -54,7 +52,7 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "part_id")
     @Column(name = "amount")
-    private Map<FurniturePart, Integer> furnitureParts;
+    private Map<Part, Integer> parts;
 
     private String comment;
 

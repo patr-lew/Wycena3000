@@ -14,7 +14,7 @@ public class AddingPartDto {
 
     @NotNull
     @Min(value = 1)
-    private Long furniturePartId;
+    private Long partId;
 
     @NotNull
     @Min(value = 1)

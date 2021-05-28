@@ -5,7 +5,7 @@ import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
-import com.lewandowski.wycena3000.repository.FurniturePartRepository;
+import com.lewandowski.wycena3000.repository.PartRepository;
 import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +26,15 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectDetailsRepository projectDetailsRepository;
-    private final FurniturePartRepository furniturePartRepository;
+    private final PartRepository partRepository;
     private final BoardMeasurementRepository boardMeasurementRepository;
     private final BigDecimal MILLIMETER_TO_METER_CONVERSION = BigDecimal.valueOf(1000);
 
 
-    public ProjectService(ProjectRepository projectRepository, ProjectDetailsRepository projectDetailsRepository, FurniturePartRepository furniturePartRepository, BoardMeasurementRepository boardMeasurementRepository) {
+    public ProjectService(ProjectRepository projectRepository, ProjectDetailsRepository projectDetailsRepository, PartRepository partRepository, BoardMeasurementRepository boardMeasurementRepository) {
         this.projectRepository = projectRepository;
         this.projectDetailsRepository = projectDetailsRepository;
-        this.furniturePartRepository = furniturePartRepository;
+        this.partRepository = partRepository;
         this.boardMeasurementRepository = boardMeasurementRepository;
     }
 
@@ -64,8 +64,8 @@ public class ProjectService {
             Hibernate.initialize(project.getBoardMeasurements());
         }
 
-        if (!Hibernate.isInitialized(project.getFurnitureParts())) {
-            Hibernate.initialize(project.getFurnitureParts());
+        if (!Hibernate.isInitialized(project.getParts())) {
+            Hibernate.initialize(project.getParts());
         }
 
         return project;
@@ -77,24 +77,24 @@ public class ProjectService {
     }
 
     /**
-     * updates the number of furnitureParts objects in relation to the project
-     * by updating the value in furnitureParts hashMap
+     * updates the number of parts objects in relation to the project
+     * by updating the value in parts hashMap
      */
-    public Project addFurniturePartsToProject(AddingPartDto partDto) {
+    public Project addpartsToProject(AddingPartDto partDto) {
         Project project = findById(partDto.getProjectId());
         int newAmount = partDto.getAmount();
 
-        FurniturePart addedPart = furniturePartRepository
-                .findById(partDto.getFurniturePartId())
-                .orElseThrow(() -> new EntityNotFoundException("FurniturePart with ID '" + partDto.getFurniturePartId() + "' not found."));
-        Map<FurniturePart, Integer> furnitureParts = project.getFurnitureParts();
+        com.lewandowski.wycena3000.entity.Part addedPart = partRepository
+                .findById(partDto.getPartId())
+                .orElseThrow(() -> new EntityNotFoundException("part with ID '" + partDto.getPartId() + "' not found."));
+        Map<com.lewandowski.wycena3000.entity.Part, Integer> parts = project.getParts();
 
-        if (furnitureParts.containsKey(addedPart)) {
-            int existingAmount = furnitureParts.get(addedPart);
+        if (parts.containsKey(addedPart)) {
+            int existingAmount = parts.get(addedPart);
             newAmount += existingAmount;
         }
 
-        furnitureParts.put(addedPart, newAmount);
+        parts.put(addedPart, newAmount);
 
         return save(project);
     }
@@ -214,12 +214,12 @@ public class ProjectService {
 
 
         // add costs from parts
-        Hibernate.initialize(project.getFurnitureParts());
-        if (null != project.getFurnitureParts()) {
-            Map<FurniturePart, Integer> furnitureParts = project.getFurnitureParts();
+        Hibernate.initialize(project.getParts());
+        if (null != project.getParts()) {
+            Map<com.lewandowski.wycena3000.entity.Part, Integer> parts = project.getParts();
 
-            for (FurniturePart part : furnitureParts.keySet()) {
-                BigDecimal amountOfParts = BigDecimal.valueOf(furnitureParts.get(part));
+            for (com.lewandowski.wycena3000.entity.Part part : parts.keySet()) {
+                BigDecimal amountOfParts = BigDecimal.valueOf(parts.get(part));
                 BigDecimal partCost = part.getPrice().multiply(amountOfParts);
                 totalCost = totalCost.add(partCost);
             }

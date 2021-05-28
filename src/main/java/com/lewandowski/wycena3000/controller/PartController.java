@@ -1,10 +1,10 @@
 package com.lewandowski.wycena3000.controller;
 
-import com.lewandowski.wycena3000.entity.FurniturePart;
-import com.lewandowski.wycena3000.entity.FurniturePartType;
+import com.lewandowski.wycena3000.entity.Part;
+import com.lewandowski.wycena3000.entity.PartType;
 import com.lewandowski.wycena3000.dto.PartChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Project;
-import com.lewandowski.wycena3000.service.FurniturePartService;
+import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,46 +17,46 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("/creator/parts")
-public class FurniturePartController {
+public class PartController {
 
-    private final FurniturePartService furniturePartService;
+    private final PartService partService;
     private final ProjectService projectService;
 
-    public FurniturePartController(FurniturePartService furniturePartService, ProjectService projectService) {
-        this.furniturePartService = furniturePartService;
+    public PartController(PartService partService, ProjectService projectService) {
+        this.partService = partService;
         this.projectService = projectService;
     }
 
     @GetMapping("/add")
     public String add(Model model) {
-        FurniturePart furniturePart = new FurniturePart();
-        model.addAttribute("furniturePart", furniturePart);
+        Part part = new Part();
+        model.addAttribute("part", part);
 
-        List<FurniturePartType> partTypes = furniturePartService.getFurniturePartTypes();
+        List<PartType> partTypes = partService.getPartTypes();
         model.addAttribute("partTypes", partTypes);
 
         return "part/part_add";
     }
 
     @PostMapping("/add")
-    public String save(@Valid FurniturePart furniturePart, BindingResult result, Model model) {
+    public String save(@Valid Part part, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
-            model.addAttribute("partTypes", furniturePartService.getFurniturePartTypes());
+            model.addAttribute("partTypes", partService.getPartTypes());
             return "part/part_add";
         }
 
-        furniturePartService.save(furniturePart);
+        partService.save(part);
 
         return "redirect:/creator/parts/all";
     }
 
     @GetMapping("/edit")
     public String edit(@RequestParam long partId, Model model) {
-        FurniturePart furniturePart = furniturePartService.findById(partId);
-        model.addAttribute("furniturePart", furniturePart);
+        Part part = partService.findById(partId);
+        model.addAttribute("part", part);
 
-        List<FurniturePartType> partTypes = furniturePartService.getFurniturePartTypes();
+        List<PartType> partTypes = partService.getPartTypes();
         model.addAttribute("partTypes", partTypes);
 
         return "part/part_edit";
@@ -64,16 +64,16 @@ public class FurniturePartController {
 
     @GetMapping("/delete/{partId}")
     public String delete(@PathVariable long partId) {
-        furniturePartService.delete(partId);
+        partService.delete(partId);
 
         return "redirect:/creator/parts/all";
     }
 
     @GetMapping("/all")
     public String all(Model model) {
-        List<FurniturePart> furnitureParts = furniturePartService.getFurnitureParts();
-        Set<Long> enabledDeleteSet = furniturePartService.getEnabledDeleteSet();
-        model.addAttribute("furnitureParts", furnitureParts);
+        List<Part> parts = partService.getParts();
+        Set<Long> enabledDeleteSet = partService.getEnabledDeleteSet();
+        model.addAttribute("parts", parts);
         model.addAttribute("enabledDelete", enabledDeleteSet);
 
         return "part/part_all";
@@ -83,7 +83,7 @@ public class FurniturePartController {
     public String changePart(@RequestParam Long partId,
                          @RequestParam Long projectId, Model model) {
         Project project = projectService.findById(projectId);
-        List<FurniturePart> parts = furniturePartService.findAll();
+        List<Part> parts = partService.findAll();
 
         model.addAttribute("project", project);
         model.addAttribute("oldPartId", partId);
@@ -93,7 +93,7 @@ public class FurniturePartController {
 
     @PostMapping("/change")
     public String changePart(@ModelAttribute PartChangeRequestDto dto) {
-        furniturePartService.changePartInProject(dto);
+        partService.changePartInProject(dto);
 
         return "redirect:/creator/projects/details/" + dto.getProjectId();
 
