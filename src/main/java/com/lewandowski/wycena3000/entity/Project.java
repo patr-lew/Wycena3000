@@ -1,6 +1,8 @@
 package com.lewandowski.wycena3000.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,6 +15,8 @@ import java.util.Map;
 @Table(name = "project")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Project {
 
     @Id
@@ -56,8 +60,6 @@ public class Project {
 
     private String comment;
 
-    public Project() {
-    }
 
     @PrePersist
     public void created() {

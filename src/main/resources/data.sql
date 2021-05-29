@@ -7,3 +7,6 @@ insert into board_measurement (height, width, board_id) values (720, 560, 1), (5
 insert into project_board (project_id, amount, board_id) values (1, 20, 1), (1, 15, 2), (1, 25, 3);
 insert into project_part (project_id, amount, part_id) values (1, 12, 1), (1, 25, 2);
 insert into project_details(project_id, montage_cost, other_costs, worker_cost) values (1, 1000, 2000, 3000), (2, 1000, 2000, 3000), (3, 1000, 2000, 3000), (4, 1000, 2000, 3000);
+insert into role(name) values ('ADMIN'), ('USER');
+insert into service_user(enabled, password, username) values (true, '$2y$12$Vr1JC.8zjFBY89XZzrbdWenDIlLpNaiVWonXba34Mvof/D1x07yo2', 'admin'), (true, '$2y$12$43zFIhaYK05gJ/jJxtR1AOh1L03JlAlntm0xfOOdMcq3kv8CP/m36', 'test'); -- password admin 'wycena3210', -- password test 'test'
+insert into user_role(user_id, role_id) values (1, 1), (2, 2);
