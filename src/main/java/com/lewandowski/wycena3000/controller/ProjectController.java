@@ -4,9 +4,11 @@ import com.lewandowski.wycena3000.dto.AddingPartDto;
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
+import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,8 +32,8 @@ public class ProjectController {
     }
 
     @GetMapping("/all")
-    public String findAll(Model model) {
-        List<Project> projects = projectService.findAll();
+    public String findAll(Model model, @AuthenticationPrincipal CurrentUser currentUser) {
+        List<Project> projects = projectService.findAllByUserId(currentUser.getUser());
 
         // pass computed margin (price/cost) to the view
         List<String> margins = projectService.computeMarginList(projects);
@@ -50,11 +52,13 @@ public class ProjectController {
     }
 
     @PostMapping("/add")
-    public String addProject(@Valid Project project, BindingResult result) {
+    public String addProject(@Valid Project project, BindingResult result, @AuthenticationPrincipal CurrentUser currentUser) {
 
         if(result.hasErrors()) {
             return "project/projects_add";
         }
+        project.setUser(currentUser.getUser());
+
         ProjectDetails projectDetails = new ProjectDetails();
         projectDetails.setProject(project);
         projectService.saveProjectDetails(projectDetails);
@@ -65,8 +69,12 @@ public class ProjectController {
     public String editProject(@PathVariable long projectId,
                               @RequestParam(name = "boardId", required = false) Long lastAddedBoardId,
                               @RequestParam(required = false) boolean error,
-                              Model model) {
+                              Model model,
+                              @AuthenticationPrincipal CurrentUser currentUser) {
         Project projectById = projectService.findByIdEager(projectId);
+        if(projectById.getUser().getId() != currentUser.getUser().getId()) {
+            return "redirect:/creator/projects/all"; // todo add 403 screen
+        }
         String margin = projectService.marginToString(projectById);
 
         List<Part> parts = partService.getParts();
@@ -90,20 +98,25 @@ public class ProjectController {
     }
 
     @GetMapping("/delete/{projectId}")
-    public String delete(@PathVariable Long projectId) {
+    public String delete(@PathVariable Long projectId,
+                         @AuthenticationPrincipal CurrentUser currentUser) {
+        Project projectById = projectService.findById(projectId);
+        if(projectById.getUser().getId() != currentUser.getUser().getId()) {
+            return "redirect:/creator/projects/all"; // todo add 403 screen
+        }
         projectService.delete(projectId);
 
         return "redirect:/creator/projects/all";
     }
 
-    @PostMapping("/addpart")
-    public String addpartToProject(@Valid AddingPartDto partDto, BindingResult result) {
+    @PostMapping("/addPart")
+    public String addPartToProject(@Valid AddingPartDto partDto, BindingResult result) {
 
         if (result.hasErrors()) {
             return "redirect:/creator/projects/edit/" + partDto.getProjectId() + "?error=true";
         }
 
-        projectService.addpartsToProject(partDto);
+        projectService.addPartToProject(partDto);
         return "redirect:/creator/projects/edit/" + partDto.getProjectId();
     }
 
@@ -147,8 +160,11 @@ public class ProjectController {
     }
 
     @GetMapping("/details/{projectId}")
-    public String projectDetails(@PathVariable Long projectId, Model model) {
+    public String projectDetails(@PathVariable Long projectId, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
         Project projectById = projectService.findByIdEager(projectId);
+        if(projectById.getUser().getId() != currentUser.getUser().getId()) {
+            return "redirect:/creator/projects/all"; // todo add 403 screen
+        }
         model.addAttribute("project", projectById);
 
         List<BoardByProjectDto> boards = projectService.getBoardsDetailsByProject(projectId);

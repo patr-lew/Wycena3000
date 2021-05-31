@@ -32,6 +32,10 @@ public class Project {
     @Column(name = "modified_at")
     private LocalDateTime modified;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(name = "total_cost", scale = 2, precision = 11)
     private BigDecimal totalCost = BigDecimal.ZERO;
 

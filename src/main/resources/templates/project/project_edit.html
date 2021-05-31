@@ -129,10 +129,10 @@
                     </div>
                     <div class="card my-1 p-2">
                         <!-- ADD PART -->
-                        <form action="#" th:action="@{/creator/projects/addpart}" method="post">
+                        <form action="#" th:action="@{/creator/projects/addPart}" method="post">
                             <input type="hidden" th:name="projectId" th:value="${project.id}">
 
-                            <!-- Choose partRepository -->
+                            <!-- Choose part -->
                             <div class="row p-lg-3 g-2 align-items-center">
                                 <h5>Dodaj element</h5>
 
@@ -140,8 +140,8 @@
                                     <select class="form-select" aria-label="Wybierz element" id="partRepository"
                                         th:name="partId">
                                         <option value="0" disabled selected>Wybierz element</option>
-                                        <option th:each="partRepository : ${parts}" th:value="${partRepository.id}"
-                                            th:text="${partRepository.name}"></option>
+                                        <option th:each="part : ${parts}" th:value="${part.id}"
+                                            th:text="${part.name}"></option>
 
                                     </select>
                                     <label for="boardType">Element</label>

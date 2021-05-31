@@ -42,6 +42,10 @@ public class ProjectService {
         return projectRepository.findAllByOrderByCreatedAsc();
     }
 
+    public List<Project> findAllByUserId(User user) {
+        return projectRepository.findAllByUserIdOrderByCreatedAsc(user.getId());
+    }
+
     public Project save(Project project) {
         project.setTotalCost(calculateTotalCost(project));
         project.setMargin(calculateMargin(project));
@@ -94,7 +98,7 @@ public class ProjectService {
      * updates the number of parts objects in relation to the project
      * by updating the value in parts hashMap
      */
-    public Project addpartsToProject(AddingPartDto partDto) {
+    public Project addPartToProject(AddingPartDto partDto) {
         Project project = findById(partDto.getProjectId());
         int newAmount = partDto.getAmount();
 
