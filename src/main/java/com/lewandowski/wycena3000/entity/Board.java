@@ -43,19 +43,11 @@ public class Board {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return id == board.id;
+        return Objects.equals(name, board.name) && Objects.equals(pricePerM2, board.pricePerM2) && Objects.equals(boardType, board.boardType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Board{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return Objects.hash(name, pricePerM2, boardType);
     }
 }

@@ -44,12 +44,12 @@ public class Part {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Part that = (Part) o;
-        return id == that.id && Objects.equals(name, that.name) && partType.equals(that.partType);
+        Part part = (Part) o;
+        return name.equals(part.name) && partType.equals(part.partType) && price.equals(part.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, partType);
+        return Objects.hash(name, partType, price);
     }
 }
