@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/creator/projects")
@@ -65,6 +66,23 @@ public class ProjectController {
         return "redirect:/creator/projects/edit/" + project.getId();
     }
 
+    @GetMapping("/details/{projectId}")
+    public String projectDetails(@PathVariable Long projectId, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
+        Project projectById = projectService.findByIdEager(projectId);
+        if(projectById.getUser().getId() != currentUser.getUser().getId()) {
+            return "redirect:/creator/projects/all"; // todo add 403 screen
+        }
+        model.addAttribute("project", projectById);
+
+        List<BoardByProjectDto> boards = projectService.getBoardsDetailsByProject(projectId);
+        model.addAttribute("boardsInProject", boards);
+
+        List<PartType> partTypes = partService.getPartTypesByProject(projectId);
+        model.addAttribute("partTypes", partTypes);
+
+        return "project/project_details";
+    }
+
     @GetMapping("/edit/{projectId}")
     public String editProject(@PathVariable long projectId,
                               @RequestParam(name = "boardId", required = false) Long lastAddedBoardId,
@@ -77,10 +95,10 @@ public class ProjectController {
         }
         String margin = projectService.marginToString(projectById);
 
-        List<Part> parts = partService.getParts();
+        List<Part> parts = partService.getPartsByUser(currentUser.getUser());
         List<Board> boardsInProject = boardService.findAllByProjectId(projectId);
         List<PartType> partTypesInProject = partService.getPartTypesByProject(projectId);
-        List<Board> boardsAll = boardService.findAll();
+        List<Board> boardsAll = boardService.findAllByUser(currentUser.getUser());
         BoardMeasurement boardMeasurement = new BoardMeasurement();
 
         model.addAttribute("error", error);
@@ -159,20 +177,5 @@ public class ProjectController {
         return "redirect:/creator/projects/edit/" + projectId;
     }
 
-    @GetMapping("/details/{projectId}")
-    public String projectDetails(@PathVariable Long projectId, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
-        Project projectById = projectService.findByIdEager(projectId);
-        if(projectById.getUser().getId() != currentUser.getUser().getId()) {
-            return "redirect:/creator/projects/all"; // todo add 403 screen
-        }
-        model.addAttribute("project", projectById);
 
-        List<BoardByProjectDto> boards = projectService.getBoardsDetailsByProject(projectId);
-        model.addAttribute("boardsInProject", boards);
-
-        List<PartType> partTypes = partService.getPartTypes();
-        model.addAttribute("partTypes", partTypes);
-
-        return "project/project_details";
-    }
 }

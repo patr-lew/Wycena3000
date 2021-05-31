@@ -77,9 +77,9 @@
                         <div class="form-floating">
                             <select class="form-select" aria-label="Wybierz element" id="partRepository"
                                 name="newPartId">
-                                <option th:each="partRepository : ${parts}" th:value="${partRepository.id}"
-                                    th:text="${partRepository.getPartType.name + ': ' + partRepository.name + ', ' + partRepository.price + 'zł'}"
-                                    th:selected="${oldPartId == partRepository.id}">
+                                <option th:each="part : ${parts}" th:value="${part.id}"
+                                    th:text="${part.getPartType.name + ': ' + part.name + ', ' + part.price + 'zł'}"
+                                    th:selected="${oldPartId == part.id}">
                                 </option>
                             </select>
                             <label for="partRepository">Element</label>

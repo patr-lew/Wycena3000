@@ -37,6 +37,10 @@ public class Part {
     @Column(scale = 2, precision = 11)
     private BigDecimal price;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Transient
     private int amount;
 
@@ -45,11 +49,11 @@ public class Part {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Part part = (Part) o;
-        return name.equals(part.name) && partType.equals(part.partType) && price.equals(part.price);
+        return Objects.equals(name, part.name) && Objects.equals(partType, part.partType) && Objects.equals(price, part.price) && Objects.equals(user, part.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, partType, price);
+        return Objects.hash(name, partType, price, user);
     }
 }

@@ -114,22 +114,21 @@
                 <li class="list-group-item" th:each="type : ${partTypes}">
                     <div class="row flex-fill">
                         <div class="col" th:text="${type.name}">Typ rzeczy</div>
-                        <div class="col text-end">
-                            <a class="btn btn-outline-success m-2"
-                               href="/main/resources/templates/partRepository/board_change.html"
-                               th:href="@{/creator/parts/change?partId=__${type.id}__&projectId=__${project.id}__}">
-                                Zmień element
-                            </a>
-                        </div>
                     </div>
                     <table class="table table-sm table-striped">
-                        <tr th:each="partRepository : ${project.parts}"
-                            th:if="${partRepository.getKey().getPartType.id == type.id}">
-                            <td style="text-align: center" th:text="${partRepository.getKey().name}">Nazwa</td>
-                            <td style="text-align: center" th:text="${partRepository.getKey().price + ' zł'}">Cena</td>
+                        <tr th:each="part : ${project.parts}"
+                            th:if="${part.getKey().getPartType.id == type.id}">
+                            <td style="text-align: center" th:text="${part.getKey().name}">Nazwa</td>
+                            <td style="text-align: center" th:text="${part.getKey().price + ' zł'}">Cena</td>
                             <td style="text-align: right">ilość</td>
-                            <td style="text-align: left" th:text="${partRepository.getValue()}">Ilość</td>
-
+                            <td style="text-align: left" th:text="${part.getValue()}">Ilość</td>
+                            <td class="col text-end">
+                                <a class="btn btn-outline-success m-2"
+                                   href="/main/resources/templates/partRepository/board_change.html"
+                                   th:href="@{/creator/parts/change?partId=__${part.key.id}__&projectId=__${project.id}__}">
+                                    Zmień element
+                                </a>
+                            </td>
                         </tr>
 
                     </table>

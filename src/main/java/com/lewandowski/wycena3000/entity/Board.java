@@ -28,6 +28,10 @@ public class Board {
 
     private String code;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @NotNull
     @DecimalMin(value = "0.01")
     @Column(name = "price_per_m2", scale = 2, precision = 11)
@@ -43,11 +47,11 @@ public class Board {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return Objects.equals(name, board.name) && Objects.equals(pricePerM2, board.pricePerM2) && Objects.equals(boardType, board.boardType);
+        return Objects.equals(name, board.name) && Objects.equals(user, board.user) && Objects.equals(pricePerM2, board.pricePerM2) && Objects.equals(boardType, board.boardType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, pricePerM2, boardType);
+        return Objects.hash(name, user, pricePerM2, boardType);
     }
 }

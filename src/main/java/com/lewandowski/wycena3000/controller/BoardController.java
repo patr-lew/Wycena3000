@@ -4,8 +4,10 @@ import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Board;
 import com.lewandowski.wycena3000.entity.BoardType;
 import com.lewandowski.wycena3000.entity.Project;
+import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.ProjectService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +29,17 @@ public class BoardController {
         this.projectService = projectService;
     }
 
+    @GetMapping("/all")
+    public String all(Model model, @AuthenticationPrincipal CurrentUser currentUser) {
+        List<Board> boards = boardService.findAllByUser(currentUser.getUser());
+        Set<Long> enabledDeleteSet = boardService.getEnabledDeleteSet();
+        model.addAttribute("boards", boards);
+        model.addAttribute("enabledDelete", enabledDeleteSet);
+
+        return "board/board_all";
+
+    }
+
     @GetMapping("/add")
     public String add(Model model) {
         Board board = new Board();
@@ -39,22 +52,27 @@ public class BoardController {
     }
 
     @PostMapping("/add")
-    public String save(@Valid Board board, BindingResult result, Model model) {
-        if(result.hasErrors()) {
+    public String save(@Valid Board board, BindingResult result, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
+
+        if (result.hasErrors()) {
             List<BoardType> boardTypes = boardService.getBoardTypes();
             model.addAttribute("boardTypes", boardTypes);
 
             return "board/board_add";
         }
-
+        board.setUser(currentUser.getUser());
         boardService.save(board);
 
         return "redirect:/creator/boards/all";
     }
 
-    @GetMapping("/edit")
-    public String edit(@RequestParam long boardId, Model model) {
+    @GetMapping("/edit/{boardId}")
+    public String edit(@PathVariable long boardId, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
         Board board = boardService.findById(boardId);
+        if (board.getUser().getId() != currentUser.getUser().getId()) {
+            return "redirect:/creator/boards/all"; //todo add 403 screen
+        }
+
         model.addAttribute("board", board);
 
         List<BoardType> boardTypes = boardService.getBoardTypes();
@@ -64,29 +82,26 @@ public class BoardController {
     }
 
     @GetMapping("/delete/{boardId}")
-    public String delete(@PathVariable Long boardId) {
+    public String delete(@PathVariable Long boardId, @AuthenticationPrincipal CurrentUser currentUser) {
+        Board board = boardService.findById(boardId);
+        if (board.getUser().getId() != currentUser.getUser().getId()) {
+            return "redirect:/creator/boards/all"; // todo add 403 screen
+        }
         boardService.delete(boardId);
 
         return "redirect:/creator/boards/all";
     }
 
 
-    @GetMapping("/all")
-    public String all(Model model) {
-        List<Board> boards = boardService.findAll();
-        Set<Long> enabledDeleteSet = boardService.getEnabledDeleteSet();
-        model.addAttribute("boards", boards);
-        model.addAttribute("enabledDelete", enabledDeleteSet);
-
-        return "board/board_all";
-
-    }
-
     @GetMapping("/change")
     public String changeBoard(@RequestParam Long boardId,
-                              @RequestParam Long projectId, Model model) {
+                              @RequestParam Long projectId, Model model,
+                              @AuthenticationPrincipal CurrentUser currentUser) {
         Project project = projectService.findById(projectId);
-        List<Board> boards = boardService.findAll();
+        if (project.getUser().getId() != currentUser.getUser().getId()) {
+            return "redirect:/creator/projects/all"; // todo add 403 screen
+        }
+        List<Board> boards = boardService.findAllByUser(currentUser.getUser());
 
         model.addAttribute("project", project);
         model.addAttribute("oldBoardId", boardId);

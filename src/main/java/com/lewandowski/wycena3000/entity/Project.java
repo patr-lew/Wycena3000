@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 @Table(name = "project")
@@ -73,5 +74,19 @@ public class Project {
     @PreUpdate
     public void updated() {
         this.modified = LocalDateTime.now();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return Objects.equals(name, project.name) && Objects.equals(user, project.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, user);
     }
 }

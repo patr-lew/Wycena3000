@@ -1,10 +1,7 @@
 package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
-import com.lewandowski.wycena3000.entity.Board;
-import com.lewandowski.wycena3000.entity.BoardMeasurement;
-import com.lewandowski.wycena3000.entity.BoardType;
-import com.lewandowski.wycena3000.entity.Project;
+import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
@@ -33,6 +30,10 @@ public class BoardService {
 
     public List<Board> findAll() {
         return boardRepository.findAll();
+    }
+
+    public List<Board> findAllByUser(User user) {
+        return boardRepository.findAllByUserIdOrderByIdAsc(user.getId());
     }
 
     public Board save(Board board) {

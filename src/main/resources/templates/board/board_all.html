@@ -99,7 +99,7 @@
                                         <td th:text="${board.pricePerM2}">13 zł</td>
                                         <td>
                                             <a href="/main/resources/templates/board/board_edit.html"
-                                                th:href="@{/creator/boards/edit(boardId=__${board.id}__)}"
+                                                th:href="@{/creator/boards/edit/__${board.id}__}"
                                                 class="btn btn-outline-success">Edytuj</a>
                                             <a th:unless="${!enabledDelete.contains(board.id)}"
                                                 onclick="return confirm('Czy na pewno chcesz usunąć tą płytę?');"

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +42,10 @@ public class PartService {
 
     public List<com.lewandowski.wycena3000.entity.Part> getParts() {
         return partRepository.findAll();
+    }
+
+    public List<Part> getPartsByUser(User user) {
+        return partRepository.findAllByUserIdOrderByIdAsc(user.getId());
     }
 
     public com.lewandowski.wycena3000.entity.Part findById(long partId) {

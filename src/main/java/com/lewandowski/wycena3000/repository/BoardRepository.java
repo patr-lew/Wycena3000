@@ -14,4 +14,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query(value = "select b.id from board_measurement bm right join board b on b.id = bm.board_id where bm.id is null", nativeQuery = true)
     Set<Long> enabledDeleteSet();
+
+    List<Board> findAllByUserIdOrderByIdAsc(long userId);
 }

@@ -90,20 +90,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="partRepository, countVal : ${parts}">
+                                    <tr th:each="part, countVal : ${parts}">
                                         <td th:text="${countVal.index + 1}">1</td>
-                                        <td th:text="${partRepository.name}">Moja pierwsza rzecz w życiu</td>
-                                        <td th:text="${partRepository.partType.name}">Klamka</td>
-                                        <td th:text="${partRepository.price}">13 zł</td>
+                                        <td th:text="${part.name}">Moja pierwsza rzecz w życiu</td>
+                                        <td th:text="${part.partType.name}">Klamka</td>
+                                        <td th:text="${part.price}">13 zł</td>
                                         <td class="inline">
                                             <a href="/main/resources/templates/partRepository/part_edit.html"
-                                                th:href="@{/creator/parts/edit(partId=__${partRepository.id}__)}"
+                                                th:href="@{/creator/parts/edit/__${part.id}__}"
                                                 class="btn btn-outline-success">Edytuj</a>
 
-                                            <a th:unless="${!enabledDelete.contains(partRepository.id)}"
+                                            <a th:unless="${!enabledDelete.contains(part.id)}"
                                                 onclick="return confirm('Czy na pewno chcesz usunąć ten element?');"
                                                 href="/main/resources/templates/project/project_edit.html"
-                                                th:href="@{/creator/parts/delete/__${partRepository.id}__}"
+                                                th:href="@{/creator/parts/delete/__${part.id}__}"
                                                 class="btn btn-outline-danger">Usuń</a>
 
                                         </td>
