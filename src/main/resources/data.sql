@@ -1,7 +1,7 @@
 insert into board_type(name) values ('Blat'), ('Płyta'), ('Front'), ('Inne');
 insert into part_type(name) values ('Szuflada'), ('Cargo'), ('Zawias'), ('Uchwyt'), ('Elektronika'), ('System montażowy'), ('Inne');
 insert into service_user(enabled, password, username) values (true, '$2y$12$Vr1JC.8zjFBY89XZzrbdWenDIlLpNaiVWonXba34Mvof/D1x07yo2', 'admin'), (true, '$2y$12$43zFIhaYK05gJ/jJxtR1AOh1L03JlAlntm0xfOOdMcq3kv8CP/m36', 'test'); -- password admin 'wycena3210', -- password test 'test'
-insert into role(name) values ('ADMIN'), ('USER');
+insert into role(name) values ('ROLE_ADMIN'), ('ROLE_USER');
 insert into user_role(user_id, role_id) values (1, 1), (2, 2);
 insert into board(code, name, price_per_m2, type_id, user_id) values ('U120 VL', 'Błękit gołębi / UNIKOLORY', 19.99, 2, 2), ('K300 SM', 'Biały kremowy / UNIKOLORY', 14.99, 2, 2), ('B750 SM', 'Sraczkowaty kremowy / UNIKOLORY', 99.99, 2, 2);
 insert into part( name, price, type_id, user_id) values ('szuflada blum', 19.99, 1, 2), ('uchwyt czarny', 5.99, 4, 2), ('do usunięcia', 20.00, 1, 2);

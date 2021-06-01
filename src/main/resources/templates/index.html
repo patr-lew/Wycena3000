@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -36,33 +36,47 @@
                        th:href="@{/creator/projects/all}">Projekty</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/board/board_all.html" th:href="@{/creator/boards/all}">
+                    <a class="nav-link" href="/main/resources/templates/board/board_all.html"
+                       th:href="@{/creator/boards/all}">
                         Płyty
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html" th:href="@{/creator/parts/all}">
+                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html"
+                       th:href="@{/creator/parts/all}">
                         Elementy
                     </a>
                 </li>
 
             </ul>
-            <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
-               class="btn btn-success mx-1">Dodaj Element</a>
-            <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
-               class="btn btn-success mx-1">Dodaj Płytę</a>
-            <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
-               class="btn btn-success mx-1">Dodaj Projekt</a>
+            <div sec:authorize="isAuthenticated()">
+                <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
+                   class="btn btn-success mx-1">Dodaj Element</a>
+                <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
+                   class="btn btn-success mx-1">Dodaj Płytę</a>
+                <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
+                   class="btn btn-success mx-1">Dodaj Projekt</a>
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn btn-warning mx-3" type="submit">Wyloguj</button>
+                </form>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
+                   class="btn btn-secondary mx-1">Rejestracja</a>
+                <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
+                   class="btn btn-success mx-1">Logowanie</a>
+            </div>
         </div>
     </div>
 </nav>
 
 <!-- Main content -->
-
 <div class="container-fluid">
+
+
+
 
 </div>
 
 </body>
-
 </html>

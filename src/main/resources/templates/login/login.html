@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -28,7 +28,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/main/resources/templates/index.html"
+                    <a class="nav-link active" aria-current="page" href="/main/resources/templates/index.html"
                        th:href="@{/}">Strona główna</a>
                 </li>
                 <li class="nav-item">
@@ -47,15 +47,17 @@
                 </li>
 
             </ul>
-            <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
-               class="btn btn-success mx-1">Dodaj Element</a>
-            <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
-               class="btn btn-success mx-1">Dodaj Płytę</a>
-            <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
-               class="btn btn-success mx-1">Dodaj Projekt</a>
-            <form th:action="@{/logout}" method="post">
-                <button class="btn btn-warning mx-3" type="submit">Wyloguj</button>
-            </form>
+            <div sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn btn-warning mx-3" type="submit">Wyloguj</button>
+                </form>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
+                   class="btn btn-success mx-1">Rejestracja</a>
+                <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
+                   class="btn btn-success mx-1">Logowanie</a>
+            </div>
         </div>
     </div>
 </nav>
@@ -63,41 +65,25 @@
 <!-- Main content -->
 
 <div class="container">
-    <div class="row p-md-3">
-        <h3 th:text="${'Zmień element w projekcie: ' + project.name}">Zmień element w projekcie</h3>
+
+    <form class="form-signin" method="post" th:action="@{/user/login}">
+        <h2 class="form-signin-heading">Logowanie</h2>
+        <p>
+            <label for="username" class="sr-only">Nazwa użytkownika</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Nazwa użytkownika" required autofocus>
+        </p>
+        <p>
+            <label for="password" class="sr-only">Hasło</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Hasło" required>
+        </p>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Wejdź</button>
+    </form>
+
+    <div>
+        <p>W celu zalogowania się jako testowy użytkownik, <br> proszę podać login: test, hasło: test</p>
     </div>
-
-    <div class="row p-sm-3">
-        <div class="col">
-            <form action="#" th:action="@{/creator/parts/change}" method="post">
-                <input type="hidden" th:name="projectId" th:value="${project.id}">
-                <input type="hidden" th:name="oldPartId" th:value="${oldPartId}">
-
-                <!-- PartRepository type -->
-                <div class="row p-lg-3 g-2 align-items-center">
-
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select class="form-select" aria-label="Wybierz element" id="partRepository"
-                                name="newPartId">
-                                <option th:each="part : ${parts}" th:value="${part.id}"
-                                    th:text="${part.getPartType.name + ': ' + part.name + ', ' + part.price + 'zł'}"
-                                    th:selected="${oldPartId == part.id}">
-                                </option>
-                            </select>
-                            <label for="partRepository">Element</label>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary my-2 mx-3">Zmień</button>
-                <a href="/main/resources/templates/project/project_details.html"
-                th:href="@{/creator/projects/details/__${project.id}__}" class="btn btn-outline-success">Cofnij</a>
-            </form>
-        </div>
-    </div>
-
 </div>
 
 </body>
+
 </html>
