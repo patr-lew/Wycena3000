@@ -2,14 +2,12 @@ package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.*;
-import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,13 +16,11 @@ import java.util.Set;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardTypeRepository boardTypeRepository;
-    private final BoardMeasurementRepository boardMeasurementRepository;
     private final ProjectRepository projectRepository;
 
-    public BoardService(BoardRepository boardRepository, BoardTypeRepository boardTypeRepository, BoardMeasurementRepository boardMeasurementRepository, ProjectRepository projectRepository) {
+    public BoardService(BoardRepository boardRepository, BoardTypeRepository boardTypeRepository, ProjectRepository projectRepository) {
         this.boardRepository = boardRepository;
         this.boardTypeRepository = boardTypeRepository;
-        this.boardMeasurementRepository = boardMeasurementRepository;
         this.projectRepository = projectRepository;
     }
 

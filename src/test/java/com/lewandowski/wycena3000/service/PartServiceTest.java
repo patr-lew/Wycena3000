@@ -29,6 +29,7 @@ class PartServiceTest {
     private PartRepository partRepository;
     @Mock
     private ProjectRepository projectRepository;
+
     private PartService partService;
 
     @BeforeEach
@@ -57,13 +58,14 @@ class PartServiceTest {
         testProject.setParts(new HashMap<>());
         testProject.getParts().put(oldPart, AMOUNT_OF_PARTS);
 
+        PartChangeRequestDto dto = new PartChangeRequestDto(PROJECT_ID, OLD_PART_ID, NEW_PART_ID);
+
+
+        // when
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
         when(partRepository.findById(OLD_PART_ID)).thenReturn(Optional.of(oldPart));
         when(partRepository.findById(NEW_PART_ID)).thenReturn(Optional.of(newPart));
 
-        PartChangeRequestDto dto = new PartChangeRequestDto(PROJECT_ID, OLD_PART_ID, NEW_PART_ID);
-
-        // when
         partService.changePartInProject(dto);
 
         // then
