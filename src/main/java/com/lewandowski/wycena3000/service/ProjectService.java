@@ -1,6 +1,6 @@
 package com.lewandowski.wycena3000.service;
 
-import com.lewandowski.wycena3000.dto.AddingPartDto;
+import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
@@ -98,14 +98,14 @@ public class ProjectService {
      * updates the number of parts objects in relation to the project
      * by updating the value in parts hashMap
      */
-    public Project addPartToProject(AddingPartDto partDto) {
+    public Project addPartToProject(AddPartToProjectRequestDto partDto) {
         Project project = findById(partDto.getProjectId());
         int newAmount = partDto.getAmount();
 
-        com.lewandowski.wycena3000.entity.Part addedPart = partRepository
+        Part addedPart = partRepository
                 .findById(partDto.getPartId())
                 .orElseThrow(() -> new EntityNotFoundException("part with ID '" + partDto.getPartId() + "' not found."));
-        Map<com.lewandowski.wycena3000.entity.Part, Integer> parts = project.getParts();
+        Map<Part, Integer> parts = project.getParts();
 
         if (parts.containsKey(addedPart)) {
             int existingAmount = parts.get(addedPart);
@@ -149,7 +149,7 @@ public class ProjectService {
         return save(project);
     }
 
-    public void addProjectDetailsToProject(long projectId, ProjectDetails projectDetails) {
+    public void updateProjectDetailsInProject(long projectId, ProjectDetails projectDetails) {
         Project projectById = findById(projectId);
 
         // TODO update a ProjectDetails without actually deleting it first
@@ -162,8 +162,8 @@ public class ProjectService {
         projectDetailsRepository.save(projectDetails);
 
         projectById.setProjectDetails(projectDetails);
-
         projectById.setTotalCost(calculateTotalCost(projectById));
+
         projectRepository.save(projectById);
     }
 
@@ -189,60 +189,6 @@ public class ProjectService {
 
     public void saveProjectDetails(ProjectDetails projectDetails) {
         projectDetailsRepository.save(projectDetails);
-    }
-
-    public BigDecimal calculateTotalCost(Project project) {
-        BigDecimal totalCost = BigDecimal.ZERO;
-
-
-        // add costs from ProjectDetails
-        if (null != project.getProjectDetails()) {
-            ProjectDetails projectDetails = project.getProjectDetails();
-
-            totalCost = totalCost.add(projectDetails.getMontageCost())
-                    .add(projectDetails.getWorkerCost())
-                    .add(projectDetails.getOtherCosts());
-
-        }
-
-        // add costs from boards
-        Hibernate.initialize(project.getBoardMeasurements());
-        if (null != project.getBoardMeasurements()) {
-            Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
-            Map<Board, BigDecimal> boardArea = new HashMap<>();
-
-
-            for (BoardMeasurement boardMeasurement : boardMeasurements.keySet()) {
-                BigDecimal boardSurfaceArea = getBoardSurfaceArea(boardMeasurements, boardMeasurement);
-
-                if (boardArea.containsKey(boardMeasurement.getBoard())) {
-                    boardSurfaceArea = boardSurfaceArea.add(boardArea.get(boardMeasurement.getBoard()));
-                }
-
-                boardArea.put(boardMeasurement.getBoard(), boardSurfaceArea);
-            }
-
-
-            for (Board board : boardArea.keySet()) {
-                BigDecimal amountOfBoards = boardArea.get(board);
-                BigDecimal boardCost = board.getPricePerM2().multiply(amountOfBoards);
-                totalCost = totalCost.add(boardCost);
-            }
-        }
-
-        // add costs from parts
-        Hibernate.initialize(project.getParts());
-        if (null != project.getParts()) {
-            Map<com.lewandowski.wycena3000.entity.Part, Integer> parts = project.getParts();
-
-            for (com.lewandowski.wycena3000.entity.Part part : parts.keySet()) {
-                BigDecimal amountOfParts = BigDecimal.valueOf(parts.get(part));
-                BigDecimal partCost = part.getPrice().multiply(amountOfParts);
-                totalCost = totalCost.add(partCost);
-            }
-        }
-
-        return totalCost;
     }
 
     public List<BoardByProjectDto> getBoardsDetailsByProject(Long projectId) {
@@ -310,6 +256,60 @@ public class ProjectService {
         }
 
         projectRepository.save(project);
+    }
+
+    private BigDecimal calculateTotalCost(Project project) {
+        BigDecimal totalCost = BigDecimal.ZERO;
+
+
+        // add costs from ProjectDetails
+        if (null != project.getProjectDetails()) {
+            ProjectDetails projectDetails = project.getProjectDetails();
+
+            totalCost = totalCost.add(projectDetails.getMontageCost())
+                    .add(projectDetails.getWorkerCost())
+                    .add(projectDetails.getOtherCosts());
+
+        }
+
+        // add costs from boards
+        Hibernate.initialize(project.getBoardMeasurements());
+        if (null != project.getBoardMeasurements()) {
+            Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
+            Map<Board, BigDecimal> boardArea = new HashMap<>();
+
+
+            for (BoardMeasurement boardMeasurement : boardMeasurements.keySet()) {
+                BigDecimal boardSurfaceArea = getBoardSurfaceArea(boardMeasurements, boardMeasurement);
+
+                if (boardArea.containsKey(boardMeasurement.getBoard())) {
+                    boardSurfaceArea = boardSurfaceArea.add(boardArea.get(boardMeasurement.getBoard()));
+                }
+
+                boardArea.put(boardMeasurement.getBoard(), boardSurfaceArea);
+            }
+
+
+            for (Board board : boardArea.keySet()) {
+                BigDecimal amountOfBoards = boardArea.get(board);
+                BigDecimal boardCost = board.getPricePerM2().multiply(amountOfBoards);
+                totalCost = totalCost.add(boardCost);
+            }
+        }
+
+        // add costs from parts
+        Hibernate.initialize(project.getParts());
+        if (null != project.getParts()) {
+            Map<Part, Integer> parts = project.getParts();
+
+            for (Part part : parts.keySet()) {
+                BigDecimal amountOfParts = BigDecimal.valueOf(parts.get(part));
+                BigDecimal partCost = part.getPrice().multiply(amountOfParts);
+                totalCost = totalCost.add(partCost);
+            }
+        }
+
+        return totalCost;
     }
 
     private void updatePrice(Project project, BigDecimal margin) {

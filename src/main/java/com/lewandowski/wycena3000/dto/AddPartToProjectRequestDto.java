@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class AddingPartDto {
+public class AddPartToProjectRequestDto {
     @NotNull
     private Long projectId;
 

@@ -1,6 +1,6 @@
 package com.lewandowski.wycena3000.controller;
 
-import com.lewandowski.wycena3000.dto.AddingPartDto;
+import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
 import com.lewandowski.wycena3000.dto.BoardByProjectDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/creator/projects")
@@ -128,7 +127,7 @@ public class ProjectController {
     }
 
     @PostMapping("/addPart")
-    public String addPartToProject(@Valid AddingPartDto partDto, BindingResult result) {
+    public String addPartToProject(@Valid AddPartToProjectRequestDto partDto, BindingResult result) {
 
         if (result.hasErrors()) {
             return "redirect:/creator/projects/edit/" + partDto.getProjectId() + "?error=true";
@@ -173,7 +172,7 @@ public class ProjectController {
             return "redirect:/creator/projects/edit/" + projectId + "?error=true";
         }
 
-        projectService.addProjectDetailsToProject(projectId, projectDetails);
+        projectService.updateProjectDetailsInProject(projectId, projectDetails);
         return "redirect:/creator/projects/edit/" + projectId;
     }
 
