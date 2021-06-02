@@ -27,11 +27,11 @@ public class PartService {
         this.projectRepository = projectRepository;
     }
 
-    public List<com.lewandowski.wycena3000.entity.Part> findAll() {
+    public List<Part> findAll() {
         return partRepository.findAll();
     }
 
-    public com.lewandowski.wycena3000.entity.Part save(com.lewandowski.wycena3000.entity.Part part) {
+    public Part save(Part part) {
         return this.partRepository.save(part);
     }
 
@@ -40,7 +40,7 @@ public class PartService {
     }
 
 
-    public List<com.lewandowski.wycena3000.entity.Part> getParts() {
+    public List<Part> getParts() {
         return partRepository.findAll();
     }
 
@@ -48,14 +48,14 @@ public class PartService {
         return partRepository.findAllByUserIdOrderByIdAsc(user.getId());
     }
 
-    public com.lewandowski.wycena3000.entity.Part findById(long partId) {
+    public Part findById(long partId) {
         return partRepository
                 .findById(partId)
                 .orElseThrow(() -> new EntityNotFoundException("part with given Id doesn't exist"));
     }
 
     public void delete(long partId) {
-        com.lewandowski.wycena3000.entity.Part part = this.findById(partId);
+        Part part = this.findById(partId);
         this.partRepository.delete(part);
     }
 
@@ -72,9 +72,9 @@ public class PartService {
         Project project = projectRepository.findById(changeDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project with id '" + changeDto.getProjectId() + "' doesn't exist"));
 
-        Map<com.lewandowski.wycena3000.entity.Part, Integer> parts = project.getParts();
-        com.lewandowski.wycena3000.entity.Part newPart = this.findById(changeDto.getNewPartId());
-        com.lewandowski.wycena3000.entity.Part oldPart = this.findById(changeDto.getOldPartId());
+        Map<Part, Integer> parts = project.getParts();
+        Part newPart = this.findById(changeDto.getNewPartId());
+        Part oldPart = this.findById(changeDto.getOldPartId());
 
         if (parts.containsKey(newPart)) {
             int oldAmount = parts.get(newPart);

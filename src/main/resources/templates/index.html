@@ -57,7 +57,7 @@
                 <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
                    class="btn btn-success mx-1">Dodaj Projekt</a>
                 <form th:action="@{/logout}" method="post">
-                    <button class="btn btn-warning mx-3" type="submit">Wyloguj</button>
+                    <button class="btn btn-warning mx-1" type="submit">Wyloguj</button>
                 </form>
             </div>
             <div sec:authorize="!isAuthenticated()">
