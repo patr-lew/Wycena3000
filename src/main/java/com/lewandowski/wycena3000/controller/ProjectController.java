@@ -1,7 +1,7 @@
 package com.lewandowski.wycena3000.controller;
 
 import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
-import com.lewandowski.wycena3000.dto.BoardByProjectDto;
+import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.security.CurrentUser;
@@ -73,7 +73,7 @@ public class ProjectController {
         }
         model.addAttribute("project", projectById);
 
-        List<BoardByProjectDto> boards = projectService.getBoardsDetailsByProject(projectId);
+        List<BoardsByProjectResponseDto> boards = projectService.getBoardsDetailsByProject(projectId);
         model.addAttribute("boardsInProject", boards);
 
         List<PartType> partTypes = partService.getPartTypesByProject(projectId);
@@ -133,7 +133,8 @@ public class ProjectController {
             return "redirect:/creator/projects/edit/" + partDto.getProjectId() + "?error=true";
         }
 
-        projectService.addPartToProject(partDto);
+        Project updatedProject = projectService.addPartToProject(partDto);
+        projectService.save(updatedProject);
         return "redirect:/creator/projects/edit/" + partDto.getProjectId();
     }
 
@@ -160,7 +161,8 @@ public class ProjectController {
             return "redirect:/creator/projects/edit/" + projectId + "?error=true";
         }
 
-        projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
+        Project project = projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
+        projectService.save(project);
         return "redirect:/creator/projects/edit/" + projectId +
                 "?boardId=" + boardMeasurement.getBoard().getId();
     }

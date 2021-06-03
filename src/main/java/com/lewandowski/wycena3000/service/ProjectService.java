@@ -1,7 +1,7 @@
 package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
-import com.lewandowski.wycena3000.dto.BoardByProjectDto;
+import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
@@ -114,7 +114,7 @@ public class ProjectService {
 
         parts.put(addedPart, newAmount);
 
-        return save(project);
+        return project;
     }
 
     public Project addBoardMeasurementToProject(Long projectId, BoardMeasurement addedBoardMeasurement) {
@@ -146,7 +146,7 @@ public class ProjectService {
         }
         boardMeasurementsInProject.put(addedBoardMeasurement, newAmount);
 
-        return save(project);
+        return project;
     }
 
     public void updateProjectDetailsInProject(long projectId, ProjectDetails projectDetails) {
@@ -164,7 +164,7 @@ public class ProjectService {
         projectById.setProjectDetails(projectDetails);
         projectById.setTotalCost(calculateTotalCost(projectById));
 
-        projectRepository.save(projectById);
+        save(projectById);
     }
 
     public List<String> computeMarginList(List<Project> projects) {
@@ -191,13 +191,13 @@ public class ProjectService {
         projectDetailsRepository.save(projectDetails);
     }
 
-    public List<BoardByProjectDto> getBoardsDetailsByProject(Long projectId) {
-        Map<Long, BoardByProjectDto> boardsDetails = new HashMap<>();
+    public List<BoardsByProjectResponseDto> getBoardsDetailsByProject(Long projectId) {
+        Map<Long, BoardsByProjectResponseDto> boardsDetails = new HashMap<>();
         Project project = findById(projectId);
         Hibernate.initialize(project.getBoardMeasurements());
 
         if (null == project.getBoardMeasurements()) {
-            BoardByProjectDto boardDto = new BoardByProjectDto();
+            BoardsByProjectResponseDto boardDto = new BoardsByProjectResponseDto();
             boardDto.setBoardId(0L);
             boardDto.setName("Brak płyt");
             return List.of(boardDto);
@@ -208,7 +208,7 @@ public class ProjectService {
         // map boardMeasurements to boardsDetails (Entity to Dto)
         for (BoardMeasurement measurement : boardMeasurements.keySet()) {
             Board board = measurement.getBoard();
-            BoardByProjectDto boardDto = new BoardByProjectDto();
+            BoardsByProjectResponseDto boardDto = new BoardsByProjectResponseDto();
 
             long givenBoardId = board.getId();
             if (boardsDetails.containsKey(givenBoardId)) {
@@ -312,20 +312,26 @@ public class ProjectService {
         return totalCost;
     }
 
-    private void updatePrice(Project project, BigDecimal margin) {
-        BigDecimal cost = project.getTotalCost();
-        BigDecimal newPrice = cost.multiply(margin).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-        newPrice = newPrice.add(cost);
-        project.setPrice(newPrice);
-    }
-
     private BigDecimal calculateMargin(Project project) {
+        if (project.getPrice() == null || project.getTotalCost() == null
+                || project.getPrice().compareTo(BigDecimal.ZERO) == 0
+                || project.getTotalCost().compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+
         return project.getPrice()
                 .divide(project.getTotalCost(), 2, RoundingMode.HALF_UP)
                 .subtract(BigDecimal.ONE)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
 
+    }
+
+    private void updatePrice(Project project, BigDecimal margin) {
+        BigDecimal cost = project.getTotalCost();
+        BigDecimal newPrice = cost.multiply(margin).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+        newPrice = newPrice.add(cost);
+        project.setPrice(newPrice);
     }
 
     private BigDecimal getBoardSurfaceArea(Map<BoardMeasurement, Integer> boardMeasurements, BoardMeasurement boardMeasurement) {

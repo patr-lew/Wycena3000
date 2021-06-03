@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class BoardByProjectDto {
+public class BoardsByProjectResponseDto {
     private long boardId;
     private String name;
     private BigDecimal totalArea = BigDecimal.ZERO;
