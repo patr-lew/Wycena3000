@@ -1,6 +1,7 @@
 package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
+import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.PartRepository;
@@ -18,7 +19,6 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -419,4 +419,115 @@ class ProjectServiceTest {
         assertThat(result).contains("25%", "100%");
     }
 
+    // getBoardsDetailsByProject()
+    @Test
+    public void givenNoMeasurements_whenCreatingProjectView_returnEmptyStatus() {
+        // given
+        final Integer OF_ONE = 1;
+        final Long PROJECT_ID = 7L;
+        final Long EXPECTED_BOARD_ID = 0L;
+        final String EXPECTED_NAME = "Brak płyt";
+        Project testProject = new Project();
+
+        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+
+        // when
+        List<BoardsByProjectResponseDto> result = projectService.getBoardsDetailsByProject(PROJECT_ID);
+
+        // then
+        assertThat(result).hasSize(OF_ONE);
+        BoardsByProjectResponseDto responseDto = result.stream().findFirst().get();
+
+        assertThat(responseDto.getBoardId()).isEqualTo(EXPECTED_BOARD_ID);
+        assertThat(responseDto.getName()).isEqualTo(EXPECTED_NAME);
+        assertThat(responseDto.getTotalArea()).isEqualTo(BigDecimal.ZERO);
+        assertThat(responseDto.getTotalCost()).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    public void givenMeasurementsOfSameBoard_whenCreatingProjectView_sumTheirAreas() {
+        // given
+        final Integer OF_ONE = 1;
+        final Integer FIRST_WIDTH = 100;
+        final Integer SECOND_WIDTH = 10;
+        final Integer FIRST_HEIGHT = 10;
+        final Integer SECOND_HEIGHT = 100;
+        final BigDecimal PRICE_PER_M2 = BigDecimal.valueOf(10);
+        final BigDecimal EXPECTED_AREA = BigDecimal.valueOf(0.02);
+        final String BOARD_NAME = "nice board";
+
+        Board board = new Board();
+        board.setId(9L);
+        board.setName(BOARD_NAME);
+        board.setPricePerM2(PRICE_PER_M2);
+
+        BoardMeasurement measurement1 = new BoardMeasurement();
+        measurement1.setWidth(FIRST_WIDTH);
+        measurement1.setHeight(FIRST_HEIGHT);
+        measurement1.setBoard(board);
+
+        BoardMeasurement measurement2 = new BoardMeasurement();
+        measurement2.setWidth(SECOND_WIDTH);
+        measurement2.setHeight(SECOND_HEIGHT);
+        measurement2.setBoard(board);
+
+        Map<BoardMeasurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
+
+        Project testProject = new Project();
+        testProject.setBoardMeasurements(measurements);
+
+        when(projectRepository.findById(any())).thenReturn(Optional.of(testProject));
+
+        // when
+        List<BoardsByProjectResponseDto> result = projectService.getBoardsDetailsByProject(1L);
+
+        // then
+        assertThat(result).hasSize(OF_ONE);
+        BoardsByProjectResponseDto responseDto = result.stream().findFirst().get();
+        assertThat(responseDto.getTotalArea()).isEqualByComparingTo(EXPECTED_AREA);
+    }
+
+    @Test
+    public void givenMeasurementsOfSameBoard_whenCreatingProjectView_sumTheirCost() {
+        // given
+       final Integer OF_ONE = 1;
+        final Integer FIRST_WIDTH = 100;
+        final Integer SECOND_WIDTH = 10;
+        final Integer FIRST_HEIGHT = 10;
+        final Integer SECOND_HEIGHT = 100;
+        final BigDecimal PRICE_PER_M2 = BigDecimal.valueOf(10);
+        final BigDecimal EXPECTED_COST = BigDecimal.valueOf(0.2);
+        final String BOARD_NAME = "nice board";
+
+        Board board = new Board();
+        board.setId(9L);
+        board.setName(BOARD_NAME);
+        board.setPricePerM2(PRICE_PER_M2);
+
+        BoardMeasurement measurement1 = new BoardMeasurement();
+        measurement1.setWidth(FIRST_WIDTH);
+        measurement1.setHeight(FIRST_HEIGHT);
+        measurement1.setBoard(board);
+
+        BoardMeasurement measurement2 = new BoardMeasurement();
+        measurement2.setWidth(SECOND_WIDTH);
+        measurement2.setHeight(SECOND_HEIGHT);
+        measurement2.setBoard(board);
+
+        Map<BoardMeasurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
+
+        Project testProject = new Project();
+        testProject.setBoardMeasurements(measurements);
+
+        when(projectRepository.findById(any())).thenReturn(Optional.of(testProject));
+
+        // when
+        List<BoardsByProjectResponseDto> result = projectService.getBoardsDetailsByProject(1L);
+
+        // then
+        assertThat(result).hasSize(OF_ONE);
+        BoardsByProjectResponseDto responseDto = result.stream().findFirst().get();
+        assertThat(responseDto.getTotalCost()).isEqualByComparingTo(EXPECTED_COST);
+
+    }
 }
