@@ -3,6 +3,7 @@ package com.lewandowski.wycena3000.service;
 import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
 import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.entity.*;
+import com.lewandowski.wycena3000.exception.NegativeAmountException;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.PartRepository;
 import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -247,12 +249,40 @@ class ProjectServiceTest {
 
         // then
         assertThat(savedProject.getParts().size()).isEqualTo(1);
-        Part savedPart = savedProject.getParts()
-                .keySet().stream()
-                .findFirst()
-                .get();
-        assertThat(savedPart.getName()).isEqualTo(PART_NAME);
+        Part savedPart = savedProject.getParts().keySet().stream().findFirst().get();
+
         assertThat(savedProject.getParts().get(savedPart)).isEqualTo(OLD_AMOUNT + NEW_AMOUNT);
+    }
+
+    @Test
+    public void givenExistingPart_whenSubtractingFromProjectTooMany_throwException() {
+        // given
+        final Long PART_ID = 7L;
+        final Long PROJECT_ID = 11L;
+        final Integer OLD_AMOUNT = 5;
+        final Integer NEW_AMOUNT = -20;
+        final String PART_NAME = "Part name";
+
+        Part existingPart = new Part();
+        existingPart.setId(PART_ID);
+        existingPart.setName(PART_NAME);
+
+        Project testProject = new Project();
+        testProject.setId(PROJECT_ID);
+        Map<Part, Integer> parts = new HashMap<>();
+        parts.put(existingPart, OLD_AMOUNT);
+        testProject.setParts(parts);
+
+        AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(PROJECT_ID, PART_ID, NEW_AMOUNT);
+
+        when(partRepository.findById(PART_ID)).thenReturn(Optional.of(existingPart));
+        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+
+        // when + then
+        assertThatThrownBy(
+                () -> projectService.addPartToProject(dto))
+                .isInstanceOf(NegativeAmountException.class);
+
     }
 
     // addBoardMeasurementToProject
@@ -304,6 +334,29 @@ class ProjectServiceTest {
         assertThat(savedProject.getBoardMeasurements().get(existingMeasurement)).isEqualTo(OLD_AMOUNT + NEW_AMOUNT);
     }
 
+    @Test
+    public void givenExistingMeasurement_whenSubtractingFromProjectTooMany_throwException() {
+        // given
+        final Long PROJECT_ID = 17L;
+        final Integer OLD_AMOUNT = 13;
+        final Integer NEW_AMOUNT = -31;
+
+        BoardMeasurement existingMeasurement = new BoardMeasurement();
+        existingMeasurement.setBoard(new Board()); // needed to calculate hashCode
+        existingMeasurement.setAmount(NEW_AMOUNT);
+
+        Project testProject = new Project();
+        Map<BoardMeasurement, Integer> measurements = new HashMap<>();
+        measurements.put(existingMeasurement, OLD_AMOUNT);
+        testProject.setBoardMeasurements(measurements);
+
+        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+
+        // when + then
+        assertThatThrownBy(
+                () -> projectService.addBoardMeasurementToProject(PROJECT_ID, existingMeasurement))
+                .isInstanceOf(NegativeAmountException.class);
+    }
     @Test
     public void givenSameMeasurementOfDifferentBoard_whenAddingToProject_addSeparately() {
         // given

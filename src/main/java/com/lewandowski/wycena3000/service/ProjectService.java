@@ -4,6 +4,7 @@ import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
 import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
+import com.lewandowski.wycena3000.exception.NegativeAmountException;
 import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.PartRepository;
 import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
@@ -112,6 +113,12 @@ public class ProjectService {
             newAmount += existingAmount;
         }
 
+        if (newAmount < 0) {
+            throw new NegativeAmountException
+                    (String.format("The amount of parts cannot be negative. Amount of %s: %d ",
+                            addedPart.getName(), newAmount));
+        }
+
         parts.put(addedPart, newAmount);
 
         return project;
@@ -138,8 +145,16 @@ public class ProjectService {
                 int existingAmount = boardMeasurementsInProject.get(measurement);
                 toBeRemoved = measurement;
                 newAmount += existingAmount;
+
+
             }
         }
+        if (newAmount < 0) {
+            throw new NegativeAmountException
+                    (String.format("The amount of measurements cannot be negative. Amount of measurement of %s: %d ",
+                            addedBoardMeasurement.getBoard().getName(), newAmount));
+        }
+
         if (null != toBeRemoved) {
             boardMeasurementsInProject.remove(toBeRemoved);
             boardMeasurementRepository.delete(toBeRemoved);

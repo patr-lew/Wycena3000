@@ -138,6 +138,19 @@ public class ProjectController {
         return "redirect:/creator/projects/edit/" + partDto.getProjectId();
     }
 
+    @PostMapping("/addBoard")
+    public String addBoardToProject(@RequestParam long projectId, @Valid BoardMeasurement boardMeasurement, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "redirect:/creator/projects/edit/" + projectId + "?error=true";
+        }
+
+        Project project = projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
+        projectService.save(project);
+        return "redirect:/creator/projects/edit/" + projectId +
+                "?boardId=" + boardMeasurement.getBoard().getId();
+    }
+
     @PostMapping("/calculatePrice")
     public String calculatePrice(@Valid NewPriceRequestDto newPriceRequestDto, BindingResult result) {
 
@@ -152,19 +165,6 @@ public class ProjectController {
 
         projectService.setNewPrice(newPriceRequestDto);
         return "redirect:/creator/projects/edit/" + newPriceRequestDto.getProjectId();
-    }
-
-    @PostMapping("/addBoard")
-    public String addBoardToProject(@RequestParam long projectId, @Valid BoardMeasurement boardMeasurement, BindingResult result) {
-
-        if (result.hasErrors() || boardMeasurement.getAmount() < 1) {
-            return "redirect:/creator/projects/edit/" + projectId + "?error=true";
-        }
-
-        Project project = projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
-        projectService.save(project);
-        return "redirect:/creator/projects/edit/" + projectId +
-                "?boardId=" + boardMeasurement.getBoard().getId();
     }
 
     @PostMapping("/addProjectDetails")
