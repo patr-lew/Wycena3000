@@ -176,22 +176,15 @@ public class ProjectService {
         return project;
     }
 
-    public void updateProjectDetailsInProject(long projectId, ProjectDetails projectDetails) {
+    public void updateProjectDetailsInProject(long projectId, ProjectDetails newDetails) {
         Project projectById = findById(projectId);
 
-        // TODO update a ProjectDetails without actually deleting it first
-        if (null != projectById.getProjectDetails()) {
-            ProjectDetails projectDetailsToRemove = projectById.getProjectDetails();
-            projectDetailsRepository.delete(projectDetailsToRemove);
-        }
+        ProjectDetails details = projectById.getProjectDetails();
+        details.setWorkerCost(newDetails.getWorkerCost());
+        details.setMontageCost(newDetails.getMontageCost());
+        details.setOtherCosts(newDetails.getOtherCosts());
 
-        projectDetails.setProject(projectById);
-        projectDetailsRepository.save(projectDetails);
-
-        projectById.setProjectDetails(projectDetails);
-        projectById.setTotalCost(calculateTotalCost(projectById));
-
-        save(projectById);
+        this.save(projectById);
     }
 
     public List<String> computeMarginList(List<Project> projects) {
