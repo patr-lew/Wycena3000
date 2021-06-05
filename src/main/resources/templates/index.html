@@ -1,82 +1,152 @@
 <!DOCTYPE html>
 <html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wycena3000</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-            integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"
-            async></script>
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"
+        async></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
-            integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT" crossorigin="anonymous"
-            async></script>
+        integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT" crossorigin="anonymous"
+        async></script>
 </head>
+
 <body>
 
-<!-- navigation bar on top -->
+    <!-- navigation bar on top -->
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Wycena3000</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/main/resources/templates/index.html"
-                       th:href="@{/}">Strona główna</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
-                       th:href="@{/creator/projects/all}">Projekty</a>
-                </li>
-                <li>
-                    <a class="nav-link" href="/main/resources/templates/board/board_all.html"
-                       th:href="@{/creator/boards/all}">
-                        Płyty
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html"
-                       th:href="@{/creator/parts/all}">
-                        Elementy
-                    </a>
-                </li>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Wycena3000</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/main/resources/templates/index.html"
+                            th:href="@{/}">Strona główna</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
+                            th:href="@{/creator/projects/all}">Projekty</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/main/resources/templates/board/board_all.html"
+                            th:href="@{/creator/boards/all}">
+                            Płyty
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html"
+                            th:href="@{/creator/parts/all}">
+                            Elementy
+                        </a>
+                    </li>
 
-            </ul>
-            <div sec:authorize="isAuthenticated()">
-                <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
-                   class="btn btn-success mx-1">Dodaj Element</a>
-                <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
-                   class="btn btn-success mx-1">Dodaj Płytę</a>
-                <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
-                   class="btn btn-success mx-1">Dodaj Projekt</a>
-                <form th:action="@{/logout}" method="post">
-                    <button class="btn btn-warning mx-1" type="submit">Wyloguj</button>
-                </form>
+                </ul>
+                <div sec:authorize="isAuthenticated()">
+                    <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
+                        class="btn btn-success mx-1">Dodaj Element</a>
+                    <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
+                        class="btn btn-success mx-1">Dodaj Płytę</a>
+                    <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
+                        class="btn btn-success mx-1">Dodaj Projekt</a>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-warning mx-1" type="submit">Wyloguj</button>
+                    </form>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
+                        class="btn btn-secondary mx-1">Rejestracja</a>
+                    <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
+                        class="btn btn-success mx-1">Logowanie</a>
+                </div>
             </div>
-            <div sec:authorize="!isAuthenticated()">
-                <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
-                   class="btn btn-secondary mx-1">Rejestracja</a>
-                <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
-                   class="btn btn-success mx-1">Logowanie</a>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="container-fluid">
+        <div class="column col-8">
+            <div class="row px-5 py-5"></div>
+            <div class="row px-5 py-4">
+                <h3>Witaj w edytorze wycen stolarskich <b>Wycena3000</b></h3>
+                <div class="text-body">
+                    Podstawowym celem tej aplikacji jest uproszczenie procesu tworzenia wyceny dla klienta. Interfejs
+                    użytkownika jest prosty i przypomina wpisywanie danych na kalkulatorze.
+                    <br>W kilka kroków można dokładnie sprawdzić ile projekt będzie kosztować i jaką cenę najlepiej
+                    podać
+                    klientowi.
+                </div>
+            </div>
+            <div class="row px-5 py-4">
+                <h5>Czego potrzeba do rozpoczęcia pracy z aplikacją?</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">✅ Lista materiałów wraz z ich cenami</li>
+                    <li class="list-group-item">✅ Płyty, blaty i fronty użyte w projekcie oraz ich ceny</li>
+                    <li class="list-group-item">✅ 10 minut czasu</li>
+                </ul>
+
+            </div>
+            <div class="row px-5 py-4">
+                <ul>
+                    <li class="list-group-item list-group-item-success">Zanim zanurkujesz w aplikacji i klikniesz "Dodaj
+                        projekt", proponuję najpierw dodać potrzebne elementy i blaty do bazy danych.</li>
+                </ul>
+            </div>
+            <div class="row px-5 py-2">
+                <p><strong>1.</strong> Dodaj element poprzez przycisk <a href="#"
+                        class="btn btn-success mx-1">Dodaj Element</a>.
+                    Wybierz z listy pasujący <b>rodzaj</b>, wybierz
+                    <b>nazwę</b>, która będzie dla Ciebie łatwo rozpoznawalna i dodaj <b>cenę</b>. <br>
+                    Wszystkie te dane będziesz mógł później zmienić w razie potrzeby.
+                </p>
+                <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/add_part.png"
+                    alt="Dodaj element" th:src="@{/images/add_part.png}">
+            </div>
+            <div class="row px-5 py-4">
+                <p><strong>2.</strong> Po dodaniu wszystkich elementów, analogiczne dodaj płyty poprzez przycisk <a href="#"
+                    class="btn btn-success mx-1">Dodaj Płytę</a>.
+                    Jedyną zmianą jest możliwość dodania kodu płyty, ale jest to pole nieobowiązkowe.</p>
+                    <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/add_board.png"
+                    alt="Dodaj płytę" th:src="@{/images/add_board.png}">
+            </div>
+            <div class="row px-5 py-3">
+                <p><strong>3.</strong> Kiedy wszystkie źródła kosztów są wprowadzone do systemu, kliknij <a href="#"
+                    class="btn btn-success mx-1">Dodaj Projekt</a>., wpisz unikalną nazwę projektu oraz, opcjonalnie, komentarz.</p>
+            </div>
+            <div class="row px-5 py-3">
+                <p><strong>4.</strong> Program przekieruje Cię do widoku edycji wyceny.  Tutaj dodaj wszystkie wymiary poszczególnych płyt,
+                    elementy, jak również inne koszty aby wyliczyć całkowity koszt projektu. <strong>Polecam poruszać się pomiędzy
+                    polami formularza za pomocą przycisku </strong> <kbd>Tab</kbd>. Każdy z trzech elementów jest osobnym formularzem, co oznacza że po
+                    uzupełnieniu dowolnego z nich należy potwierdzić wprowadzone dane wciskając <kbd>Enter</kbd>.</p>
+                    <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/edit_project.png"
+                    alt="Edytuj projekt" th:src="@{/images/edit_project.png}">
+            </div>
+            <div class="row px-5 py-3">
+                <p><strong>5.</strong> 
+                    Mamy już dodane wszystkie elementy i płyty. Czas ustalić cenę projektu. Kliknij w pasek <strong>"Ustal cenę"</strong>, a
+                    następnie wybierz jaką chcesz zaproponować cenę lub marżę. Podaj jedną z tych dwóch wartości, program sam
+                    przeliczy drugą na podstawie danych.</p>
+                    <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/edit_price.png"
+                    alt="Edytuj projekt" th:src="@{/images/edit_price.png}">
+            </div>
+            <div class="row px-5 py-3">
+                <p><strong>6.</strong> Aby zakończyć edycję kliknij w Projekty, a tam sprawdź szczegóły projektu. W razie dowolnych zmian masz
+                    zawsze możliwość powrotu do edytora i zmiany danych.</p>
+
             </div>
         </div>
     </div>
-</nav>
-
-<!-- Main content -->
-<div class="container-fluid">
-
-
-
-
-</div>
 
 </body>
+
 </html>
