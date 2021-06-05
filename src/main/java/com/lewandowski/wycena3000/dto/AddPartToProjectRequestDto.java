@@ -21,6 +21,5 @@ public class AddPartToProjectRequestDto {
     private Long partId;
 
     @NotNull
-    @Min(value = 1)
     private Integer amount;
 }

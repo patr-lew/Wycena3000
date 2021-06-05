@@ -111,6 +111,11 @@ public class ProjectService {
         if (parts.containsKey(addedPart)) {
             int existingAmount = parts.get(addedPart);
             newAmount += existingAmount;
+
+            if (newAmount == 0) {
+                parts.remove(addedPart);
+                return project;
+            }
         }
 
         if (newAmount < 0) {
@@ -159,6 +164,13 @@ public class ProjectService {
             boardMeasurementsInProject.remove(toBeRemoved);
             boardMeasurementRepository.delete(toBeRemoved);
         }
+
+        if (newAmount == 0) {
+            boardMeasurementsInProject.remove(addedBoardMeasurement);
+            boardMeasurementRepository.delete(addedBoardMeasurement);
+            return project;
+        }
+
         boardMeasurementsInProject.put(addedBoardMeasurement, newAmount);
 
         return project;

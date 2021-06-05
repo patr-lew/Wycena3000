@@ -129,7 +129,7 @@ public class ProjectController {
     @PostMapping("/addPart")
     public String addPartToProject(@Valid AddPartToProjectRequestDto partDto, BindingResult result) {
 
-        if (result.hasErrors()) {
+        if (result.hasErrors() || partDto.getAmount() == 0) {
             return "redirect:/creator/projects/edit/" + partDto.getProjectId() + "?error=true";
         }
 
@@ -141,7 +141,7 @@ public class ProjectController {
     @PostMapping("/addBoard")
     public String addBoardToProject(@RequestParam long projectId, @Valid BoardMeasurement boardMeasurement, BindingResult result) {
 
-        if (result.hasErrors()) {
+        if (result.hasErrors() || boardMeasurement.getAmount() == 0) {
             return "redirect:/creator/projects/edit/" + projectId + "?error=true";
         }
 
