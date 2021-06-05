@@ -1,10 +1,10 @@
-# Wycena3000 - 'CostEstimation3000'
-simple way of creating price estimation of carpentry projects.
+# Wycena3000 - CostEstimation3000
+#### simple app for creating price estimation of carpentry projects.
 
 ## General info
 There is a lot of very advanced tools for carpenters in the market. Unforntunately, most of them is so advanced that many carpenters either don't have time or the knowledge to use all of the possible features. Many of them ends up estimating project price on paper.
 
-The program aims to be an intermediate step between those advanced tools and a piece of paper. Once project's sketch is given, one can easily and fast add all requirement parts and boards and once this step is finished, there is always possibility to change the type of used materials. This allows to create different price tiers for a potential client.
+The program aims to be an intermediate step between those advanced tools and a piece of paper. Once project's sketch is given, one can easily and fast add all required parts and boards and once this step is finished, there is always possibility to change the type of used materials. This allows to create different price tiers for a potential client.
 
 This is also a graduation project for Java developer course in Coderslab.
 
@@ -42,5 +42,7 @@ To create a cost estimation, I recommend following steps:
 
 ## Security
 __The registration process is not finished yet__. Because of this, you can currently access the application only through temporary user:
-$ username: test
-$ password: test
+```
+username: test
+password: test
+```
