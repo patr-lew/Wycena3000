@@ -4,12 +4,13 @@ import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Board;
 import com.lewandowski.wycena3000.entity.BoardMeasurement;
 import com.lewandowski.wycena3000.entity.Project;
+import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,13 +28,12 @@ class BoardServiceTest {
     private BoardTypeRepository boardTypeRepository;
     @Mock
     private ProjectRepository projectRepository;
+    @Mock
+    private BoardMeasurementRepository boardMeasurementRepository;
 
+    @InjectMocks
     private BoardService boardService;
 
-    @BeforeEach
-    public void setup() {
-        boardService = new BoardService(boardRepository, boardTypeRepository, projectRepository);
-    }
 
     @Test
     public void whenProjectSwitchesBoardToNewBoard_thenBoardIsChanged() {
