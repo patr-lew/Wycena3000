@@ -7,6 +7,7 @@ import com.lewandowski.wycena3000.entity.Project;
 import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,8 +69,8 @@ public class PartController {
     public String edit(@PathVariable long partId, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
         Part part = partService.findById(partId);
         if (part.getUser().getId() != currentUser.getUser().getId()) {
-            return "redirect:/creator/parts/all"; // todo add 403 screen
-        }
+            throw new AccessDeniedException(String.format("User tried to change part that doesn't belong to him. UserId = %d, boardId = %d",
+                    currentUser.getUser().getId(), partId));        }
 
         model.addAttribute("part", part);
 
@@ -83,8 +84,8 @@ public class PartController {
     public String delete(@PathVariable long partId, @AuthenticationPrincipal CurrentUser currentUser) {
         Part part = partService.findById(partId);
         if (part.getUser().getId() != currentUser.getUser().getId()) {
-            return "redirect:/creator/parts/all"; // todo add 403 screen
-        }
+            throw new AccessDeniedException(String.format("User tried to delete part that doesn't belong to him. UserId = %d, boardId = %d",
+                    currentUser.getUser().getId(), partId));          }
         partService.delete(partId);
 
         return "redirect:/creator/parts/all";
@@ -96,8 +97,8 @@ public class PartController {
                              @AuthenticationPrincipal CurrentUser currentUser) {
         Project project = projectService.findById(projectId);
         if(project.getUser().getId() != currentUser.getUser().getId()) {
-            return "redirect:/creator/projects/all"; // todo add 403 screen
-        }
+            throw new AccessDeniedException(String.format("User tried to access change part view that doesn't belong to him. UserId = %d, boardId = %d",
+                    currentUser.getUser().getId(), partId));          }
         List<Part> parts = partService.getPartsByUser(currentUser.getUser());
 
         model.addAttribute("project", project);

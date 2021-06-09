@@ -8,6 +8,7 @@ import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -69,8 +70,9 @@ public class ProjectController {
     public String projectDetails(@PathVariable Long projectId, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
         Project projectById = projectService.findByIdEager(projectId);
         if(projectById.getUser().getId() != currentUser.getUser().getId()) {
-            return "redirect:/creator/projects/all"; // todo add 403 screen
-        }
+            throw new AccessDeniedException(
+                    String.format("User tried to see project details that doesn't belong to him. UserId = %d, boardId = %d",
+                    currentUser.getUser().getId(), projectId));          }
         model.addAttribute("project", projectById);
 
         List<BoardsByProjectResponseDto> boards = projectService.getBoardsDetailsByProject(projectId);
@@ -90,8 +92,9 @@ public class ProjectController {
                               @AuthenticationPrincipal CurrentUser currentUser) {
         Project projectById = projectService.findByIdEager(projectId);
         if(projectById.getUser().getId() != currentUser.getUser().getId()) {
-            return "redirect:/creator/projects/all"; // todo add 403 screen
-        }
+            throw new AccessDeniedException(
+                    String.format("User tried to edit project that doesn't belong to him. UserId = %d, boardId = %d",
+                            currentUser.getUser().getId(), projectId));         }
         String margin = projectService.marginToString(projectById);
 
         List<Part> parts = partService.getPartsByUser(currentUser.getUser());
@@ -119,8 +122,9 @@ public class ProjectController {
                          @AuthenticationPrincipal CurrentUser currentUser) {
         Project projectById = projectService.findById(projectId);
         if(projectById.getUser().getId() != currentUser.getUser().getId()) {
-            return "redirect:/creator/projects/all"; // todo add 403 screen
-        }
+            throw new AccessDeniedException(
+                    String.format("User tried to delete project that doesn't belong to him. UserId = %d, boardId = %d",
+                            currentUser.getUser().getId(), projectId));         }
         projectService.delete(projectId);
 
         return "redirect:/creator/projects/all";
