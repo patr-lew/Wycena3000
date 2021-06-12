@@ -60,7 +60,8 @@ public class BoardService {
 
     public void changeBoardInProject(BoardChangeRequestDto changeDto) {
 
-        Project project = projectRepository.findById(changeDto.getProjectId())
+        Project project = projectRepository
+                .findById(changeDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project with id '" + changeDto.getProjectId() + "' doesn't exist"));
 
         Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
@@ -85,8 +86,9 @@ public class BoardService {
         measurementsToChange.forEach(toChange -> {
             Optional<BoardMeasurement> doubledEntry = existingNewBoardMeasurements
                     .stream()
-                    .filter(existing -> existing.getHeight() == toChange.getHeight()
-                            && existing.getWidth() == toChange.getWidth())
+                    .filter(existing ->
+                            existing.getHeight() == toChange.getHeight() &&
+                            existing.getWidth() == toChange.getWidth())
                     .findAny();
 
             doubledEntry.ifPresentOrElse(

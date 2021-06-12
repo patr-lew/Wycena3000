@@ -77,21 +77,26 @@ public class PartService {
         Part oldPart = this.findById(changeDto.getOldPartId());
 
         if (parts.containsKey(newPart)) {
-            int oldAmount = parts.get(newPart);
-            int newAmount = parts.get(oldPart);
-
-            parts.put(newPart, oldAmount + newAmount);
-            parts.put(oldPart, 0);
+            swapToExistingPart(parts, newPart, oldPart);
         } else {
-            int amount = parts.get(oldPart);
-
-            parts.put(newPart, amount);
-            parts.put(oldPart, 0);
+            swapToNewPart(parts, newPart, oldPart);
         }
 
-        // removing entries with amount of board set to 0
-        parts.entrySet().removeIf(entry -> entry.getValue() == 0);
-
         projectRepository.save(project);
+    }
+
+    private void swapToNewPart(Map<Part, Integer> parts, Part newPart, Part oldPart) {
+        int amount = parts.get(oldPart);
+
+        parts.put(newPart, amount);
+        parts.remove(oldPart);
+    }
+
+    private void swapToExistingPart(Map<Part, Integer> parts, Part newPart, Part oldPart) {
+        int oldAmount = parts.get(newPart);
+        int newAmount = parts.get(oldPart);
+
+        parts.put(newPart, oldAmount + newAmount);
+        parts.remove(oldPart);
     }
 }

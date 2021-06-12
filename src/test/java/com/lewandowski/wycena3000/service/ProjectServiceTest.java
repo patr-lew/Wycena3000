@@ -415,8 +415,6 @@ class ProjectServiceTest {
         testProject.setProjectDetails(new ProjectDetails());
 
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
-        when(projectDetailsRepository.save(any())).thenReturn(newDetails);
-        doNothing().when(projectDetailsRepository).delete(any());
 
         // when
         projectService.updateProjectDetailsInProject(PROJECT_ID, newDetails);
