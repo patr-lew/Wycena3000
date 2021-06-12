@@ -90,7 +90,7 @@
                         </div>
                     </div>
                     <table class="table table-sm table-striped">
-                        <tr th:each="measurement : ${project.boardMeasurements}"
+                        <tr th:each="measurement : ${project.getMeasurements}"
                             th:if="${boardByProjectDto.boardId == measurement.getKey().board.id}">
                             <td style="text-align: center"
                                 th:text="${measurement.getKey().height + ' x ' + measurement.getKey().width}">Wymiary

@@ -2,9 +2,9 @@ package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Board;
-import com.lewandowski.wycena3000.entity.BoardMeasurement;
+import com.lewandowski.wycena3000.entity.Measurement;
 import com.lewandowski.wycena3000.entity.Project;
-import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
+import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
@@ -29,7 +29,7 @@ class BoardServiceTest {
     @Mock
     private ProjectRepository projectRepository;
     @Mock
-    private BoardMeasurementRepository boardMeasurementRepository;
+    private MeasurementRepository measurementRepository;
 
     @InjectMocks
     private BoardService boardService;
@@ -51,12 +51,12 @@ class BoardServiceTest {
         newBoard.setId(NEW_BOARD_ID);
         newBoard.setName("New board");
 
-        BoardMeasurement measurement = new BoardMeasurement();
+        Measurement measurement = new Measurement();
         measurement.setBoard(oldBoard);
 
         Project testProject = new Project();
-        testProject.setBoardMeasurements(new HashMap<>());
-        testProject.getBoardMeasurements().put(measurement, AMOUNT_OF_BOARDS);
+        testProject.setMeasurements(new HashMap<>());
+        testProject.getMeasurements().put(measurement, AMOUNT_OF_BOARDS);
 
         BoardChangeRequestDto dto = new BoardChangeRequestDto(PROJECT_ID, OLD_BOARD_ID, NEW_BOARD_ID);
 
@@ -68,7 +68,7 @@ class BoardServiceTest {
         boardService.changeBoardInProject(dto);
 
         // then
-        BoardMeasurement changedMeasurement = testProject.getBoardMeasurements().keySet()
+        Measurement changedMeasurement = testProject.getMeasurements().keySet()
                 .stream()
                 .findFirst()
                 .get();
@@ -93,16 +93,16 @@ class BoardServiceTest {
         newBoard.setId(NEW_BOARD_ID);
         newBoard.setName("New board");
 
-        BoardMeasurement existingMeasurement = new BoardMeasurement();
+        Measurement existingMeasurement = new Measurement();
         existingMeasurement.setBoard(newBoard);
 
-        BoardMeasurement toBeUpdatedMeasurement = new BoardMeasurement();
+        Measurement toBeUpdatedMeasurement = new Measurement();
         toBeUpdatedMeasurement.setBoard(oldBoard);
 
         Project testProject = new Project();
-        testProject.setBoardMeasurements(new HashMap<>());
-        testProject.getBoardMeasurements().put(existingMeasurement, AMOUNT_OF_NEW_BOARDS);
-        testProject.getBoardMeasurements().put(toBeUpdatedMeasurement, AMOUNT_OF_OLD_BOARDS);
+        testProject.setMeasurements(new HashMap<>());
+        testProject.getMeasurements().put(existingMeasurement, AMOUNT_OF_NEW_BOARDS);
+        testProject.getMeasurements().put(toBeUpdatedMeasurement, AMOUNT_OF_OLD_BOARDS);
 
         BoardChangeRequestDto dto = new BoardChangeRequestDto(PROJECT_ID, OLD_BOARD_ID, NEW_BOARD_ID);
 
@@ -114,17 +114,17 @@ class BoardServiceTest {
         boardService.changeBoardInProject(dto);
 
         // then
-        assertThat(testProject.getBoardMeasurements().size()).isEqualTo(1);
+        assertThat(testProject.getMeasurements().size()).isEqualTo(1);
 
-        BoardMeasurement changedMeasurement
-                = testProject.getBoardMeasurements().keySet()
+        Measurement changedMeasurement
+                = testProject.getMeasurements().keySet()
                 .stream()
                 .findFirst()
                 .get();
         assertThat(changedMeasurement.getBoard()).isEqualTo(newBoard);
 
         Integer calculatedAmount
-                = testProject.getBoardMeasurements().values()
+                = testProject.getMeasurements().values()
                 .stream()
                 .findFirst()
                 .get();

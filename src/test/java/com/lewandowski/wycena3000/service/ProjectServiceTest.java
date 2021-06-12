@@ -4,16 +4,14 @@ import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
 import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.exception.NegativeAmountException;
-import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
+import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.PartRepository;
 import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -22,7 +20,6 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +31,7 @@ class ProjectServiceTest {
     @Mock
     private PartRepository partRepository;
     @Mock
-    private BoardMeasurementRepository boardMeasurementRepository;
+    private MeasurementRepository measurementRepository;
 
     @InjectMocks
     private ProjectService projectService;
@@ -81,7 +78,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void givenBoardMeasurementsCosts_whenSavingProject_updateTotalCost() {
+    public void givenMeasurementsCosts_whenSavingProject_updateTotalCost() {
         // given
         final Integer FIRST_AMOUNT = 10;
         final Integer SECOND_AMOUNT = 100;
@@ -91,22 +88,22 @@ class ProjectServiceTest {
         Board board = new Board();
         board.setPricePerM2(PRICE_PER_M2);
 
-        BoardMeasurement measurement1 = new BoardMeasurement();
+        Measurement measurement1 = new Measurement();
         measurement1.setBoard(board);
         measurement1.setHeight(100);
         measurement1.setWidth(100);
 
-        BoardMeasurement measurement2 = new BoardMeasurement();
+        Measurement measurement2 = new Measurement();
         measurement2.setBoard(board);
         measurement2.setHeight(10);
         measurement2.setWidth(10);
 
-        Map<BoardMeasurement, Integer> testMeasurements = new HashMap<>();
+        Map<Measurement, Integer> testMeasurements = new HashMap<>();
         testMeasurements.put(measurement1, FIRST_AMOUNT);
         testMeasurements.put(measurement2, SECOND_AMOUNT);
 
         Project testProject = new Project();
-        testProject.setBoardMeasurements(testMeasurements);
+        testProject.setMeasurements(testMeasurements);
 
         when(projectRepository.save(any())).thenReturn(testProject);
 
@@ -292,11 +289,11 @@ class ProjectServiceTest {
         final Long PROJECT_ID = 17L;
         final Integer AMOUNT = 13;
 
-        BoardMeasurement addedMeasurement = new BoardMeasurement();
+        Measurement addedMeasurement = new Measurement();
         addedMeasurement.setAmount(AMOUNT);
 
         Project testProject = new Project();
-        testProject.setBoardMeasurements(new HashMap<>());
+        testProject.setMeasurements(new HashMap<>());
 
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
@@ -304,8 +301,8 @@ class ProjectServiceTest {
         Project savedProject = projectService.addBoardMeasurementToProject(PROJECT_ID, addedMeasurement);
 
         // then
-        assertThat(savedProject.getBoardMeasurements().keySet()).containsOnly(addedMeasurement);
-        assertThat(savedProject.getBoardMeasurements().get(addedMeasurement)).isEqualTo(AMOUNT);
+        assertThat(savedProject.getMeasurements().keySet()).containsOnly(addedMeasurement);
+        assertThat(savedProject.getMeasurements().get(addedMeasurement)).isEqualTo(AMOUNT);
     }
 
     @Test
@@ -315,14 +312,14 @@ class ProjectServiceTest {
         final Integer OLD_AMOUNT = 13;
         final Integer NEW_AMOUNT = 31;
 
-        BoardMeasurement existingMeasurement = new BoardMeasurement();
+        Measurement existingMeasurement = new Measurement();
         existingMeasurement.setBoard(new Board()); // needed to calculate hashCode
         existingMeasurement.setAmount(NEW_AMOUNT);
 
         Project testProject = new Project();
-        Map<BoardMeasurement, Integer> measurements = new HashMap<>();
+        Map<Measurement, Integer> measurements = new HashMap<>();
         measurements.put(existingMeasurement, OLD_AMOUNT);
-        testProject.setBoardMeasurements(measurements);
+        testProject.setMeasurements(measurements);
 
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
@@ -330,8 +327,8 @@ class ProjectServiceTest {
         Project savedProject = projectService.addBoardMeasurementToProject(PROJECT_ID, existingMeasurement);
 
         // then
-        assertThat(savedProject.getBoardMeasurements().keySet()).containsOnly(existingMeasurement);
-        assertThat(savedProject.getBoardMeasurements().get(existingMeasurement)).isEqualTo(OLD_AMOUNT + NEW_AMOUNT);
+        assertThat(savedProject.getMeasurements().keySet()).containsOnly(existingMeasurement);
+        assertThat(savedProject.getMeasurements().get(existingMeasurement)).isEqualTo(OLD_AMOUNT + NEW_AMOUNT);
     }
 
     @Test
@@ -341,14 +338,14 @@ class ProjectServiceTest {
         final Integer OLD_AMOUNT = 13;
         final Integer NEW_AMOUNT = -31;
 
-        BoardMeasurement existingMeasurement = new BoardMeasurement();
+        Measurement existingMeasurement = new Measurement();
         existingMeasurement.setBoard(new Board()); // needed to calculate hashCode
         existingMeasurement.setAmount(NEW_AMOUNT);
 
         Project testProject = new Project();
-        Map<BoardMeasurement, Integer> measurements = new HashMap<>();
+        Map<Measurement, Integer> measurements = new HashMap<>();
         measurements.put(existingMeasurement, OLD_AMOUNT);
-        testProject.setBoardMeasurements(measurements);
+        testProject.setMeasurements(measurements);
 
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
@@ -368,23 +365,23 @@ class ProjectServiceTest {
 
         Board existingBoard = new Board();
         existingBoard.setName("existing board");
-        BoardMeasurement existingMeasurement = new BoardMeasurement();
+        Measurement existingMeasurement = new Measurement();
         existingMeasurement.setBoard(existingBoard); // needed to calculate hashCode
         existingMeasurement.setHeight(HEIGHT);
         existingMeasurement.setWidth(WIDTH);
 
         Board newBoard = new Board();
         newBoard.setName("new board");
-        BoardMeasurement newMeasurement = new BoardMeasurement();
+        Measurement newMeasurement = new Measurement();
         newMeasurement.setBoard(newBoard); // different board than above
         newMeasurement.setHeight(HEIGHT); // same as above
         newMeasurement.setWidth(WIDTH); // same as above
         newMeasurement.setAmount(NEW_AMOUNT);
 
         Project testProject = new Project();
-        Map<BoardMeasurement, Integer> measurements = new HashMap<>();
+        Map<Measurement, Integer> measurements = new HashMap<>();
         measurements.put(existingMeasurement, OLD_AMOUNT);
-        testProject.setBoardMeasurements(measurements);
+        testProject.setMeasurements(measurements);
 
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
@@ -392,8 +389,8 @@ class ProjectServiceTest {
         Project savedProject = projectService.addBoardMeasurementToProject(PROJECT_ID, newMeasurement);
 
         // then
-        assertThat(savedProject.getBoardMeasurements().size()).isEqualTo(2);
-        assertThat(savedProject.getBoardMeasurements().get(newMeasurement)).isEqualTo(NEW_AMOUNT);
+        assertThat(savedProject.getMeasurements().size()).isEqualTo(2);
+        assertThat(savedProject.getMeasurements().get(newMeasurement)).isEqualTo(NEW_AMOUNT);
     }
 
     // updateProjectDetailsInProject()
@@ -512,20 +509,20 @@ class ProjectServiceTest {
         board.setName(BOARD_NAME);
         board.setPricePerM2(PRICE_PER_M2);
 
-        BoardMeasurement measurement1 = new BoardMeasurement();
+        Measurement measurement1 = new Measurement();
         measurement1.setWidth(FIRST_WIDTH);
         measurement1.setHeight(FIRST_HEIGHT);
         measurement1.setBoard(board);
 
-        BoardMeasurement measurement2 = new BoardMeasurement();
+        Measurement measurement2 = new Measurement();
         measurement2.setWidth(SECOND_WIDTH);
         measurement2.setHeight(SECOND_HEIGHT);
         measurement2.setBoard(board);
 
-        Map<BoardMeasurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
+        Map<Measurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
 
         Project testProject = new Project();
-        testProject.setBoardMeasurements(measurements);
+        testProject.setMeasurements(measurements);
 
         when(projectRepository.findById(any())).thenReturn(Optional.of(testProject));
 
@@ -555,20 +552,20 @@ class ProjectServiceTest {
         board.setName(BOARD_NAME);
         board.setPricePerM2(PRICE_PER_M2);
 
-        BoardMeasurement measurement1 = new BoardMeasurement();
+        Measurement measurement1 = new Measurement();
         measurement1.setWidth(FIRST_WIDTH);
         measurement1.setHeight(FIRST_HEIGHT);
         measurement1.setBoard(board);
 
-        BoardMeasurement measurement2 = new BoardMeasurement();
+        Measurement measurement2 = new Measurement();
         measurement2.setWidth(SECOND_WIDTH);
         measurement2.setHeight(SECOND_HEIGHT);
         measurement2.setBoard(board);
 
-        Map<BoardMeasurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
+        Map<Measurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
 
         Project testProject = new Project();
-        testProject.setBoardMeasurements(measurements);
+        testProject.setMeasurements(measurements);
 
         when(projectRepository.findById(any())).thenReturn(Optional.of(testProject));
 

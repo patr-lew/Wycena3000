@@ -11,12 +11,12 @@ import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
-@Table(name = "board_measurement")
+@Table(name = "measurement")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardMeasurement {
+public class Measurement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class BoardMeasurement {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BoardMeasurement that = (BoardMeasurement) o;
+        Measurement that = (Measurement) o;
         return id == that.id && height == that.height && width == that.width && Objects.equals(board, that.board);
     }
 

@@ -2,7 +2,7 @@ package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.*;
-import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
+import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final BoardMeasurementRepository boardMeasurementRepository;
+    private final MeasurementRepository measurementRepository;
     private final BoardTypeRepository boardTypeRepository;
     private final ProjectRepository projectRepository;
 
@@ -64,27 +64,27 @@ public class BoardService {
                 .findById(changeDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project with id '" + changeDto.getProjectId() + "' doesn't exist"));
 
-        Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
+        Map<Measurement, Integer> measurements = project.getMeasurements();
         Board newBoard = findById((changeDto.getNewBoardId()));
 
-        Set<BoardMeasurement> measurementsToChange = getMeasurementsByBoard(boardMeasurements, changeDto.getOldBoardId());
-        Set<BoardMeasurement> existingNewBoardMeasurements = getMeasurementsByBoard(boardMeasurements, changeDto.getNewBoardId());
+        Set<Measurement> measurementsToChange = getMeasurementsByBoard(measurements, changeDto.getOldBoardId());
+        Set<Measurement> existingNewMeasurements = getMeasurementsByBoard(measurements, changeDto.getNewBoardId());
 
         swapBoardsInMeasurements(
-                boardMeasurements,
+                measurements,
                 measurementsToChange,
-                existingNewBoardMeasurements,
+                existingNewMeasurements,
                 newBoard);
 
         projectRepository.save(project);
     }
 
-    private void swapBoardsInMeasurements(Map<BoardMeasurement, Integer> boardMeasurements,
-                                          Set<BoardMeasurement> measurementsToChange,
-                                          Set<BoardMeasurement> existingNewBoardMeasurements,
+    private void swapBoardsInMeasurements(Map<Measurement, Integer> measurements,
+                                          Set<Measurement> measurementsToChange,
+                                          Set<Measurement> existingNewMeasurements,
                                           Board newBoard) {
         measurementsToChange.forEach(toChange -> {
-            Optional<BoardMeasurement> doubledEntry = existingNewBoardMeasurements
+            Optional<Measurement> doubledEntry = existingNewMeasurements
                     .stream()
                     .filter(existing ->
                             existing.getHeight() == toChange.getHeight() &&
@@ -93,19 +93,19 @@ public class BoardService {
 
             doubledEntry.ifPresentOrElse(
                     existing -> {
-                        int oldAmount = boardMeasurements.get(toChange);
-                        int newAmount = boardMeasurements.get(existing);
+                        int oldAmount = measurements.get(toChange);
+                        int newAmount = measurements.get(existing);
 
-                        boardMeasurements.put(existing, oldAmount + newAmount);
-                        boardMeasurements.remove(toChange);
-                        boardMeasurementRepository.delete(toChange);
+                        measurements.put(existing, oldAmount + newAmount);
+                        measurements.remove(toChange);
+                        measurementRepository.delete(toChange);
                     },
                     () -> toChange.setBoard(newBoard));
         });
     }
 
-    private Set<BoardMeasurement> getMeasurementsByBoard(Map<BoardMeasurement, Integer> boardMeasurements, Long boardId) {
-        return boardMeasurements.keySet().stream()
+    private Set<Measurement> getMeasurementsByBoard(Map<Measurement, Integer> measurements, Long boardId) {
+        return measurements.keySet().stream()
                 .filter(measurement -> measurement.getBoard().getId() == boardId)
                 .collect(Collectors.toSet());
     }

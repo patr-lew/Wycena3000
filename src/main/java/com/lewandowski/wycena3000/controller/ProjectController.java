@@ -101,7 +101,7 @@ public class ProjectController {
         List<Board> boardsInProject = boardService.findAllByProjectId(projectId);
         List<PartType> partTypesInProject = partService.getPartTypesByProject(projectId);
         List<Board> boardsAll = boardService.findAllByUser(currentUser.getUser());
-        BoardMeasurement boardMeasurement = new BoardMeasurement();
+        Measurement measurement = new Measurement();
 
         model.addAttribute("error", error);
         model.addAttribute("project", projectById);
@@ -110,7 +110,7 @@ public class ProjectController {
         model.addAttribute("boardsInProject", boardsInProject);
         model.addAttribute("partTypes", partTypesInProject);
         model.addAttribute("boards", boardsAll);
-        model.addAttribute("board", boardMeasurement);
+        model.addAttribute("board", measurement);
         model.addAttribute("projectMargin", margin);
 
         return "project/project_edit";
@@ -143,16 +143,16 @@ public class ProjectController {
     }
 
     @PostMapping("/addBoard")
-    public String addBoardToProject(@RequestParam long projectId, @Valid BoardMeasurement boardMeasurement, BindingResult result) {
+    public String addBoardToProject(@RequestParam long projectId, @Valid Measurement measurement, BindingResult result) {
 
-        if (result.hasErrors() || boardMeasurement.getAmount() == 0) {
+        if (result.hasErrors() || measurement.getAmount() == 0) {
             return "redirect:/creator/projects/edit/" + projectId + "?error=true";
         }
 
-        Project project = projectService.addBoardMeasurementToProject(projectId, boardMeasurement);
+        Project project = projectService.addBoardMeasurementToProject(projectId, measurement);
         projectService.save(project);
         return "redirect:/creator/projects/edit/" + projectId +
-                "?boardId=" + boardMeasurement.getBoard().getId();
+                "?boardId=" + measurement.getBoard().getId();
     }
 
     @PostMapping("/calculatePrice")

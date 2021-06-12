@@ -5,7 +5,7 @@ import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
 import com.lewandowski.wycena3000.exception.NegativeAmountException;
-import com.lewandowski.wycena3000.repository.BoardMeasurementRepository;
+import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.PartRepository;
 import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
@@ -28,15 +28,15 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectDetailsRepository projectDetailsRepository;
     private final PartRepository partRepository;
-    private final BoardMeasurementRepository boardMeasurementRepository;
+    private final MeasurementRepository measurementRepository;
     private final BigDecimal MILLIMETER_TO_METER_CONVERSION = BigDecimal.valueOf(1000);
 
 
-    public ProjectService(ProjectRepository projectRepository, ProjectDetailsRepository projectDetailsRepository, PartRepository partRepository, BoardMeasurementRepository boardMeasurementRepository) {
+    public ProjectService(ProjectRepository projectRepository, ProjectDetailsRepository projectDetailsRepository, PartRepository partRepository, MeasurementRepository measurementRepository) {
         this.projectRepository = projectRepository;
         this.projectDetailsRepository = projectDetailsRepository;
         this.partRepository = partRepository;
-        this.boardMeasurementRepository = boardMeasurementRepository;
+        this.measurementRepository = measurementRepository;
     }
 
     public List<Project> findAll() {
@@ -65,8 +65,8 @@ public class ProjectService {
             Hibernate.initialize(project.getProjectDetails());
         }
 
-        if (!Hibernate.isInitialized(project.getBoardMeasurements())) {
-            Hibernate.initialize(project.getBoardMeasurements());
+        if (!Hibernate.isInitialized(project.getMeasurements())) {
+            Hibernate.initialize(project.getMeasurements());
         }
 
         if (!Hibernate.isInitialized(project.getParts())) {
@@ -80,17 +80,17 @@ public class ProjectService {
         Project projectToDelete = this.findById(projectId);
 
         // delete all relations to boards and parts
-        projectToDelete.getBoardMeasurements().clear();
+        projectToDelete.getMeasurements().clear();
         projectToDelete.getParts().clear();
         projectRepository.save(projectToDelete);
 
         projectDetailsRepository.delete(projectToDelete.getProjectDetails());
         projectRepository.delete(projectToDelete);
 
-        // delete all orphaned BoardMeasurements
-        Iterator<BoardMeasurement> orphansIterator = boardMeasurementRepository.findAllOrphans().iterator();
+        // delete all orphaned measurements
+        Iterator<Measurement> orphansIterator = measurementRepository.findAllOrphans().iterator();
         while (orphansIterator.hasNext()) {
-            boardMeasurementRepository.delete(orphansIterator.next());
+            measurementRepository.delete(orphansIterator.next());
         }
 
     }
@@ -129,25 +129,25 @@ public class ProjectService {
         return project;
     }
 
-    public Project addBoardMeasurementToProject(Long projectId, BoardMeasurement addedBoardMeasurement) {
+    public Project addBoardMeasurementToProject(Long projectId, Measurement addedMeasurement) {
         Project project = findById(projectId);
 
-        List<BoardMeasurement> boardMeasurementsInDb = boardMeasurementRepository.findAll();
+        List<Measurement> measurementsInDb = measurementRepository.findAll();
 
-        if (!boardMeasurementsInDb.contains(addedBoardMeasurement)) {
-            boardMeasurementRepository.save(addedBoardMeasurement);
+        if (!measurementsInDb.contains(addedMeasurement)) {
+            measurementRepository.save(addedMeasurement);
         }
 
-        Map<BoardMeasurement, Integer> boardMeasurementsInProject = project.getBoardMeasurements();
-        int newAmount = addedBoardMeasurement.getAmount();
-        BoardMeasurement toBeRemoved = null;
+        Map<Measurement, Integer> measurementsInProject = project.getMeasurements();
+        int newAmount = addedMeasurement.getAmount();
+        Measurement toBeRemoved = null;
 
-        for (BoardMeasurement measurement : boardMeasurementsInProject.keySet()) {
-            if (measurement.getBoard().equals(addedBoardMeasurement.getBoard()) &&
-                    measurement.getHeight() == addedBoardMeasurement.getHeight() &&
-                    measurement.getWidth() == addedBoardMeasurement.getWidth()) {
+        for (Measurement measurement : measurementsInProject.keySet()) {
+            if (measurement.getBoard().equals(addedMeasurement.getBoard()) &&
+                    measurement.getHeight() == addedMeasurement.getHeight() &&
+                    measurement.getWidth() == addedMeasurement.getWidth()) {
 
-                int existingAmount = boardMeasurementsInProject.get(measurement);
+                int existingAmount = measurementsInProject.get(measurement);
                 toBeRemoved = measurement;
                 newAmount += existingAmount;
 
@@ -157,21 +157,21 @@ public class ProjectService {
         if (newAmount < 0) {
             throw new NegativeAmountException
                     (String.format("The amount of measurements cannot be negative. Amount of measurement of %s: %d ",
-                            addedBoardMeasurement.getBoard().getName(), newAmount));
+                            addedMeasurement.getBoard().getName(), newAmount));
         }
 
         if (null != toBeRemoved) {
-            boardMeasurementsInProject.remove(toBeRemoved);
-            boardMeasurementRepository.delete(toBeRemoved);
+            measurementsInProject.remove(toBeRemoved);
+            measurementRepository.delete(toBeRemoved);
         }
 
         if (newAmount == 0) {
-            boardMeasurementsInProject.remove(addedBoardMeasurement);
-            boardMeasurementRepository.delete(addedBoardMeasurement);
+            measurementsInProject.remove(addedMeasurement);
+            measurementRepository.delete(addedMeasurement);
             return project;
         }
 
-        boardMeasurementsInProject.put(addedBoardMeasurement, newAmount);
+        measurementsInProject.put(addedMeasurement, newAmount);
 
         return project;
     }
@@ -214,19 +214,19 @@ public class ProjectService {
     public List<BoardsByProjectResponseDto> getBoardsDetailsByProject(Long projectId) {
         Map<Long, BoardsByProjectResponseDto> boardsDetails = new HashMap<>();
         Project project = findById(projectId);
-        Hibernate.initialize(project.getBoardMeasurements());
+        Hibernate.initialize(project.getMeasurements());
 
-        if (null == project.getBoardMeasurements()) {
+        if (null == project.getMeasurements()) {
             BoardsByProjectResponseDto boardDto = new BoardsByProjectResponseDto();
             boardDto.setBoardId(0L);
             boardDto.setName("Brak płyt");
             return List.of(boardDto);
         }
 
-        Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
+        Map<Measurement, Integer> measurements = project.getMeasurements();
 
         // map boardMeasurements to boardsDetails (Entity to Dto)
-        for (BoardMeasurement measurement : boardMeasurements.keySet()) {
+        for (Measurement measurement : measurements.keySet()) {
             Board board = measurement.getBoard();
             BoardsByProjectResponseDto boardDto = new BoardsByProjectResponseDto();
 
@@ -238,7 +238,7 @@ public class ProjectService {
                 boardDto.setName(board.getName());
             }
 
-            BigDecimal totalArea = getBoardSurfaceArea(boardMeasurements, measurement);
+            BigDecimal totalArea = getBoardSurfaceArea(measurements, measurement);
             totalArea = totalArea.add(boardDto.getTotalArea());
             boardDto.setTotalArea(totalArea);
 
@@ -293,20 +293,20 @@ public class ProjectService {
         }
 
         // add costs from boards
-        Hibernate.initialize(project.getBoardMeasurements());
-        if (null != project.getBoardMeasurements()) {
-            Map<BoardMeasurement, Integer> boardMeasurements = project.getBoardMeasurements();
+        Hibernate.initialize(project.getMeasurements());
+        if (null != project.getMeasurements()) {
+            Map<Measurement, Integer> measurements = project.getMeasurements();
             Map<Board, BigDecimal> boardArea = new HashMap<>();
 
 
-            for (BoardMeasurement boardMeasurement : boardMeasurements.keySet()) {
-                BigDecimal boardSurfaceArea = getBoardSurfaceArea(boardMeasurements, boardMeasurement);
+            for (Measurement measurement : measurements.keySet()) {
+                BigDecimal boardSurfaceArea = getBoardSurfaceArea(measurements, measurement);
 
-                if (boardArea.containsKey(boardMeasurement.getBoard())) {
-                    boardSurfaceArea = boardSurfaceArea.add(boardArea.get(boardMeasurement.getBoard()));
+                if (boardArea.containsKey(measurement.getBoard())) {
+                    boardSurfaceArea = boardSurfaceArea.add(boardArea.get(measurement.getBoard()));
                 }
 
-                boardArea.put(boardMeasurement.getBoard(), boardSurfaceArea);
+                boardArea.put(measurement.getBoard(), boardSurfaceArea);
             }
 
 
@@ -354,14 +354,14 @@ public class ProjectService {
         project.setPrice(newPrice);
     }
 
-    private BigDecimal getBoardSurfaceArea(Map<BoardMeasurement, Integer> boardMeasurements, BoardMeasurement boardMeasurement) {
-        BigDecimal width = BigDecimal.valueOf(boardMeasurement.getWidth())
+    private BigDecimal getBoardSurfaceArea(Map<Measurement, Integer> measurements, Measurement measurement) {
+        BigDecimal width = BigDecimal.valueOf(measurement.getWidth())
                 .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
-        BigDecimal height = BigDecimal.valueOf(boardMeasurement.getHeight())
+        BigDecimal height = BigDecimal.valueOf(measurement.getHeight())
                 .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
 
         BigDecimal boardSurfaceArea =
-                width.multiply(height).multiply(BigDecimal.valueOf(boardMeasurements.get(boardMeasurement)));
+                width.multiply(height).multiply(BigDecimal.valueOf(measurements.get(measurement)));
         return boardSurfaceArea;
     }
 }

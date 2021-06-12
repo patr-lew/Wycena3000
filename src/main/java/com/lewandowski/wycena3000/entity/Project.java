@@ -50,11 +50,11 @@ public class Project {
     private BigDecimal margin;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "project_board",
+    @CollectionTable(name = "project_measurement",
             joinColumns = @JoinColumn(name = "project_id"))
-    @MapKeyJoinColumn(name = "board_id")
+    @MapKeyJoinColumn(name = "measurement_id")
     @Column(name = "amount")
-    private Map<BoardMeasurement, Integer> boardMeasurements;
+    private Map<Measurement, Integer> measurements;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "project_part",
