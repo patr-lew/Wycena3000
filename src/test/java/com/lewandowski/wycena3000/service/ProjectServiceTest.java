@@ -260,15 +260,18 @@ class ProjectServiceTest {
         final Integer NEW_AMOUNT = -20;
         final String PART_NAME = "Part name";
 
-        Part existingPart = new Part();
-        existingPart.setId(PART_ID);
-        existingPart.setName(PART_NAME);
+        Part existingPart = Part.builder()
+                .id(PART_ID)
+                .name(PART_NAME)
+                .build();
 
-        Project testProject = new Project();
-        testProject.setId(PROJECT_ID);
         Map<Part, Integer> parts = new HashMap<>();
         parts.put(existingPart, OLD_AMOUNT);
-        testProject.setParts(parts);
+
+        Project testProject = Project.builder()
+                .id(PROJECT_ID)
+                .parts(parts)
+                .build();
 
         AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(PROJECT_ID, PART_ID, NEW_AMOUNT);
 
@@ -289,11 +292,13 @@ class ProjectServiceTest {
         final Long PROJECT_ID = 17L;
         final Integer AMOUNT = 13;
 
-        Measurement addedMeasurement = new Measurement();
-        addedMeasurement.setAmount(AMOUNT);
+        Measurement addedMeasurement = Measurement.builder()
+                .amount(AMOUNT)
+                .build();
 
-        Project testProject = new Project();
-        testProject.setMeasurements(new HashMap<>());
+        Project testProject = Project.builder()
+                .measurements(new HashMap<>())
+                .build();
 
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
@@ -338,9 +343,11 @@ class ProjectServiceTest {
         final Integer OLD_AMOUNT = 13;
         final Integer NEW_AMOUNT = -31;
 
-        Measurement existingMeasurement = new Measurement();
-        existingMeasurement.setBoard(new Board()); // needed to calculate hashCode
-        existingMeasurement.setAmount(NEW_AMOUNT);
+        Measurement existingMeasurement = Measurement.builder()
+                .board(new Board()) // needed to calculate hashCode
+                .amount(NEW_AMOUNT)
+                .build();
+                new Measurement();
 
         Project testProject = new Project();
         Map<Measurement, Integer> measurements = new HashMap<>();
@@ -403,10 +410,12 @@ class ProjectServiceTest {
         final BigDecimal TOTAL_COST = BigDecimal.valueOf(39);
         final Long PROJECT_ID = 43L;
 
-        ProjectDetails newDetails = new ProjectDetails();
-        newDetails.setWorkerCost(WORKER_COST);
-        newDetails.setMontageCost(MONTAGE_COST);
-        newDetails.setOtherCosts(OTHER_COSTS);
+
+        ProjectDetails newDetails = ProjectDetails.builder()
+                .workerCost(WORKER_COST)
+                .montageCost(MONTAGE_COST)
+                .otherCosts(OTHER_COSTS)
+                .build();
 
         Project testProject = new Project();
         testProject.setProjectDetails(new ProjectDetails());
