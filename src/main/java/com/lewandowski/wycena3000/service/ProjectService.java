@@ -47,7 +47,7 @@ public class ProjectService {
         return projectRepository.findAllByUserIdOrderByCreatedAsc(user.getId());
     }
 
-    public Project save(Project project) {
+    public Project saveAndUpdate(Project project) {
         project.setTotalCost(calculateTotalCost(project));
         project.setMargin(calculateMargin(project));
         return projectRepository.save(project);
@@ -79,20 +79,10 @@ public class ProjectService {
     public void delete(Long projectId) {
         Project projectToDelete = this.findById(projectId);
 
-        // delete all relations to boards and parts
-        projectToDelete.getMeasurements().clear();
-        projectToDelete.getParts().clear();
-        projectRepository.save(projectToDelete);
-
-        projectDetailsRepository.delete(projectToDelete.getProjectDetails());
+        deleteProjectRelations(projectToDelete);
         projectRepository.delete(projectToDelete);
 
-        // delete all orphaned measurements
-        Iterator<Measurement> orphansIterator = measurementRepository.findAllOrphans().iterator();
-        while (orphansIterator.hasNext()) {
-            measurementRepository.delete(orphansIterator.next());
-        }
-
+        deleteOrphanedMeasurements();
     }
 
     /**
@@ -129,52 +119,26 @@ public class ProjectService {
         return project;
     }
 
-    public Project addBoardMeasurementToProject(Long projectId, Measurement addedMeasurement) {
+    public Project addMeasurementToProject(Long projectId, Measurement addedMeasurement) {
         Project project = findById(projectId);
 
+        Project updatedProject = project.addMeasurement(addedMeasurement);
+
+        if (updatedProject.getMeasurements().containsKey(addedMeasurement)) {
+            saveMeasurement(addedMeasurement);
+        }
+
+        return updatedProject;
+    }
+
+    private void saveMeasurement(Measurement addedMeasurement) {
         List<Measurement> measurementsInDb = measurementRepository.findAll();
 
         if (!measurementsInDb.contains(addedMeasurement)) {
             measurementRepository.save(addedMeasurement);
         }
-
-        Map<Measurement, Integer> measurementsInProject = project.getMeasurements();
-        int newAmount = addedMeasurement.getAmount();
-        Measurement toBeRemoved = null;
-
-        for (Measurement measurement : measurementsInProject.keySet()) {
-            if (measurement.getBoard().equals(addedMeasurement.getBoard()) &&
-                    measurement.getHeight() == addedMeasurement.getHeight() &&
-                    measurement.getWidth() == addedMeasurement.getWidth()) {
-
-                int existingAmount = measurementsInProject.get(measurement);
-                toBeRemoved = measurement;
-                newAmount += existingAmount;
-
-
-            }
-        }
-        if (newAmount < 0) {
-            throw new NegativeAmountException
-                    (String.format("The amount of measurements cannot be negative. Amount of measurement of %s: %d ",
-                            addedMeasurement.getBoard().getName(), newAmount));
-        }
-
-        if (null != toBeRemoved) {
-            measurementsInProject.remove(toBeRemoved);
-            measurementRepository.delete(toBeRemoved);
-        }
-
-        if (newAmount == 0) {
-            measurementsInProject.remove(addedMeasurement);
-            measurementRepository.delete(addedMeasurement);
-            return project;
-        }
-
-        measurementsInProject.put(addedMeasurement, newAmount);
-
-        return project;
     }
+
 
     public void updateProjectDetailsInProject(long projectId, ProjectDetails newDetails) {
         Project projectById = findById(projectId);
@@ -184,7 +148,7 @@ public class ProjectService {
         details.setMontageCost(newDetails.getMontageCost());
         details.setOtherCosts(newDetails.getOtherCosts());
 
-        this.save(projectById);
+        this.saveAndUpdate(projectById);
     }
 
     public List<String> computeMarginList(List<Project> projects) {
@@ -225,8 +189,9 @@ public class ProjectService {
 
         Map<Measurement, Integer> measurements = project.getMeasurements();
 
-        // map boardMeasurements to boardsDetails (Entity to Dto)
-        for (Measurement measurement : measurements.keySet()) {
+        // map measurements to boardsDetails (Entity to Dto)
+        for (Map.Entry<Measurement, Integer> measurementEntry : measurements.entrySet()) {
+            Measurement measurement = measurementEntry.getKey();
             Board board = measurement.getBoard();
             BoardsByProjectResponseDto boardDto = new BoardsByProjectResponseDto();
 
@@ -238,7 +203,7 @@ public class ProjectService {
                 boardDto.setName(board.getName());
             }
 
-            BigDecimal totalArea = getBoardSurfaceArea(measurements, measurement);
+            BigDecimal totalArea = getBoardSurfaceArea(measurementEntry);
             totalArea = totalArea.add(boardDto.getTotalArea());
             boardDto.setTotalArea(totalArea);
 
@@ -257,14 +222,11 @@ public class ProjectService {
         return new ArrayList<>(boardsDetails.values());
     }
 
-    /**
-     * Set new price based on data from the form. If both new price and new margin
-     * are given, calculate based on new price. Otherwise calculate based on one given
-     * parameter
-     */
+
     public void setNewPrice(NewPriceRequestDto newPriceRequestDto) {
         Project project = findById(newPriceRequestDto.getProjectId());
 
+        // If both new price and new margin are given, ignores margin and calculates based on new price
         if (null != newPriceRequestDto.getPrice()) {
             BigDecimal price = newPriceRequestDto.getPrice();
             project.setPrice(price);
@@ -276,6 +238,20 @@ public class ProjectService {
         }
 
         projectRepository.save(project);
+    }
+
+    private void deleteProjectRelations(Project projectToDelete) {
+        projectToDelete.getMeasurements().clear();
+        projectToDelete.getParts().clear();
+        projectRepository.save(projectToDelete);
+        projectDetailsRepository.delete(projectToDelete.getProjectDetails());
+    }
+
+    private void deleteOrphanedMeasurements() {
+        Iterator<Measurement> orphansIterator = measurementRepository.findAllOrphans().iterator();
+        while (orphansIterator.hasNext()) {
+            measurementRepository.delete(orphansIterator.next());
+        }
     }
 
     private BigDecimal calculateTotalCost(Project project) {
@@ -296,22 +272,24 @@ public class ProjectService {
         Hibernate.initialize(project.getMeasurements());
         if (null != project.getMeasurements()) {
             Map<Measurement, Integer> measurements = project.getMeasurements();
-            Map<Board, BigDecimal> boardArea = new HashMap<>();
+            Map<Board, BigDecimal> boardAreas = new HashMap<>();
 
 
-            for (Measurement measurement : measurements.keySet()) {
-                BigDecimal boardSurfaceArea = getBoardSurfaceArea(measurements, measurement);
+            for (Map.Entry<Measurement, Integer> measurementEntry : measurements.entrySet()) {
+                BigDecimal boardSurfaceArea = getBoardSurfaceArea(measurementEntry);
 
-                if (boardArea.containsKey(measurement.getBoard())) {
-                    boardSurfaceArea = boardSurfaceArea.add(boardArea.get(measurement.getBoard()));
+                Measurement measurement = measurementEntry.getKey();
+
+                if (boardAreas.containsKey(measurement.getBoard())) {
+                    boardSurfaceArea = boardSurfaceArea.add(boardAreas.get(measurement.getBoard()));
                 }
 
-                boardArea.put(measurement.getBoard(), boardSurfaceArea);
+                boardAreas.put(measurement.getBoard(), boardSurfaceArea);
             }
 
 
-            for (Board board : boardArea.keySet()) {
-                BigDecimal amountOfBoards = boardArea.get(board);
+            for (Board board : boardAreas.keySet()) {
+                BigDecimal amountOfBoards = boardAreas.get(board);
                 BigDecimal boardCost = board.getPricePerM2().multiply(amountOfBoards);
                 totalCost = totalCost.add(boardCost);
             }
@@ -354,15 +332,15 @@ public class ProjectService {
         project.setPrice(newPrice);
     }
 
-    private BigDecimal getBoardSurfaceArea(Map<Measurement, Integer> measurements, Measurement measurement) {
+    private BigDecimal getBoardSurfaceArea(Map.Entry<Measurement, Integer> measurementEntry) {
+        Measurement measurement = measurementEntry.getKey();
         BigDecimal width = BigDecimal.valueOf(measurement.getWidth())
                 .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
         BigDecimal height = BigDecimal.valueOf(measurement.getHeight())
                 .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
+        BigDecimal amount = BigDecimal.valueOf(measurementEntry.getValue());
 
-        BigDecimal boardSurfaceArea =
-                width.multiply(height).multiply(BigDecimal.valueOf(measurements.get(measurement)));
-        return boardSurfaceArea;
+        return width.multiply(height).multiply(amount);
     }
 }
 
