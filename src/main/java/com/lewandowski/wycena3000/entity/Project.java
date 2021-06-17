@@ -83,18 +83,17 @@ public class Project {
 
         deleteDoubledMeasurement(doubledMeasurement);
 
-        if (newAmount == 0) {
+        if (newAmount > 0) {
+            measurements.put(addedMeasurement, newAmount);
             return this;
         }
 
-        measurements.put(addedMeasurement, newAmount);
         return this;
     }
 
     private void deleteDoubledMeasurement(Optional<Measurement> doubledMeasurement) {
-        if (doubledMeasurement.isPresent()) {
-            measurements.remove(doubledMeasurement.get());
-        }
+        doubledMeasurement
+                .ifPresent(measurement -> measurements.remove(measurement));
     }
 
     private int updateMeasurementsAmount(Optional<Measurement> optionalDoubledMeasurement, Measurement addedMeasurement) {
@@ -105,16 +104,29 @@ public class Project {
             newAmount += measurements.get(doubleMeasurement);
         }
 
-        validateAmount(newAmount, addedMeasurement);
+        amountIsValid(addedMeasurement, newAmount);
         return newAmount;
     }
 
-    private void validateAmount(int newAmount, Measurement addedMeasurement) {
+    private void amountIsValid(Measurement addedMeasurement, int newAmount) {
         if (newAmount < 0) {
             throw new NegativeAmountException
                     (String.format("The amount of measurements cannot be negative. Amount of measurement of %s: %d ",
                             addedMeasurement.getBoard().getName(), newAmount));
         }
+    }
+
+    private boolean amountIsValid(Part addedPart, int newAmount) {
+        if (newAmount < 0) {
+            throw new NegativeAmountException
+                    (String.format("The amount of parts cannot be negative. Amount of %s: %d",
+                            addedPart.getName(), newAmount));
+        }
+
+        if (newAmount == 0) {
+            return false;
+        }
+        return true;
     }
 
     private Optional<Measurement> checkForDuplicatedMeasurements(Measurement addedMeasurement) {
@@ -141,5 +153,36 @@ public class Project {
     @Override
     public int hashCode() {
         return Objects.hash(name, user);
+    }
+
+    public Project addPart(Part addedPart, int newAmount) {
+        int oldAmount =  handleDuplicatesAndReturnItsAmount(addedPart);
+        newAmount += oldAmount;
+
+        if(amountIsValid(addedPart, newAmount)) {
+            parts.put(addedPart, newAmount);
+        }
+
+        return this;
+    }
+
+    private int handleDuplicatesAndReturnItsAmount(Part existingPart) {
+        if (isDuplicated(existingPart)) {
+            int oldAmount = parts.get(existingPart);
+            deleteDoubledParts(existingPart);
+            return oldAmount;
+        }
+        return 0;
+    }
+
+    private void deleteDoubledParts(Part existingPart) {
+        parts.remove(existingPart);
+    }
+
+    private boolean isDuplicated(Part addedPart) {
+        if (parts.containsKey(addedPart)) {
+            return true;
+        }
+        return false;
     }
 }

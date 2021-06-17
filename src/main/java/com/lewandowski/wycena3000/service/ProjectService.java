@@ -85,10 +85,6 @@ public class ProjectService {
         deleteOrphanedMeasurements();
     }
 
-    /**
-     * updates the number of parts objects in relation to the project
-     * by updating the value in parts hashMap
-     */
     public Project addPartToProject(AddPartToProjectRequestDto partDto) {
         Project project = findById(partDto.getProjectId());
         int newAmount = partDto.getAmount();
@@ -96,27 +92,8 @@ public class ProjectService {
         Part addedPart = partRepository
                 .findById(partDto.getPartId())
                 .orElseThrow(() -> new EntityNotFoundException("part with ID '" + partDto.getPartId() + "' not found."));
-        Map<Part, Integer> parts = project.getParts();
 
-        if (parts.containsKey(addedPart)) {
-            int existingAmount = parts.get(addedPart);
-            newAmount += existingAmount;
-
-            if (newAmount == 0) {
-                parts.remove(addedPart);
-                return project;
-            }
-        }
-
-        if (newAmount < 0) {
-            throw new NegativeAmountException
-                    (String.format("The amount of parts cannot be negative. Amount of %s: %d ",
-                            addedPart.getName(), newAmount));
-        }
-
-        parts.put(addedPart, newAmount);
-
-        return project;
+        return project.addPart(addedPart,newAmount);
     }
 
     public Project addMeasurementToProject(Long projectId, Measurement addedMeasurement) {
