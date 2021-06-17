@@ -1,5 +1,6 @@
 package com.lewandowski.wycena3000.aop;
 
+import com.lewandowski.wycena3000.exception.NegativeAmountException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,5 +32,11 @@ public class ExceptionController {
     public ModelAndView handleError403(HttpServletRequest request, Exception e) {
         log.error( "Request: {} raised {}", request.getRequestURL(), e);
         return new ModelAndView("error/403");
+    }
+
+    @ExceptionHandler(NegativeAmountException.class)
+    public ModelAndView handleNegativeAmountException(HttpServletRequest request, Exception e) {
+        log.error( "Request: {} raised {}", request.getRequestURL(), e);
+        return new ModelAndView("error/nae");
     }
 }
