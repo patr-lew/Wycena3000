@@ -138,7 +138,7 @@ public class ProjectController {
         }
 
         Project updatedProject = projectService.addPartToProject(partDto);
-        projectService.save(updatedProject);
+        projectService.saveAndUpdate(updatedProject);
         return "redirect:/creator/projects/edit/" + partDto.getProjectId();
     }
 
@@ -149,8 +149,8 @@ public class ProjectController {
             return "redirect:/creator/projects/edit/" + projectId + "?error=true";
         }
 
-        Project project = projectService.addBoardMeasurementToProject(projectId, measurement);
-        projectService.save(project);
+        Project project = projectService.addMeasurementToProject(projectId, measurement);
+        projectService.saveAndUpdate(project);
         return "redirect:/creator/projects/edit/" + projectId +
                 "?boardId=" + measurement.getBoard().getId();
     }
