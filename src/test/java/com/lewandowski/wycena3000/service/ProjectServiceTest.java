@@ -46,7 +46,7 @@ class ProjectServiceTest {
         when(projectRepository.save(any())).thenReturn(testProject);
 
         // when
-        Project savedProject = projectService.save(testProject);
+        Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
         assertThat(savedProject.getTotalCost()).isEqualTo(ZERO_COST);
@@ -71,7 +71,7 @@ class ProjectServiceTest {
         when(projectRepository.save(any())).thenReturn(testProject);
 
         // when
-        Project savedProject = projectService.save(testProject);
+        Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
         assertThat(savedProject.getTotalCost()).isEqualTo(TOTAL_COST);
@@ -108,7 +108,7 @@ class ProjectServiceTest {
         when(projectRepository.save(any())).thenReturn(testProject);
 
         // when
-        Project savedProject = projectService.save(testProject);
+        Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
         assertThat(savedProject.getTotalCost()).isEqualByComparingTo(TOTAL_COST);
@@ -139,7 +139,7 @@ class ProjectServiceTest {
         when(projectRepository.save(any())).thenReturn(testProject);
 
         // when
-        Project savedProject = projectService.save(testProject);
+        Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
         assertThat(savedProject.getTotalCost()).isEqualByComparingTo(TOTAL_COST);
@@ -162,7 +162,7 @@ class ProjectServiceTest {
         when(projectRepository.save(any())).thenReturn(testProject);
 
         // when
-        Project savedProject = projectService.save(testProject);
+        Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
         assertThat(savedProject.getMargin()).isEqualByComparingTo(MARGIN);
@@ -177,7 +177,7 @@ class ProjectServiceTest {
         when(projectRepository.save(any())).thenReturn(testProject);
 
         // when
-        Project savedProject = projectService.save(testProject);
+        Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
         assertThat(savedProject.getMargin()).isEqualByComparingTo(MARGIN);
@@ -298,7 +298,7 @@ class ProjectServiceTest {
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
         // when
-        Project savedProject = projectService.addBoardMeasurementToProject(PROJECT_ID, addedMeasurement);
+        Project savedProject = projectService.addMeasurementToProject(PROJECT_ID, addedMeasurement);
 
         // then
         assertThat(savedProject.getMeasurements().keySet()).containsOnly(addedMeasurement);
@@ -324,7 +324,7 @@ class ProjectServiceTest {
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
         // when
-        Project savedProject = projectService.addBoardMeasurementToProject(PROJECT_ID, existingMeasurement);
+        Project savedProject = projectService.addMeasurementToProject(PROJECT_ID, existingMeasurement);
 
         // then
         assertThat(savedProject.getMeasurements().keySet()).containsOnly(existingMeasurement);
@@ -351,7 +351,7 @@ class ProjectServiceTest {
 
         // when + then
         assertThatThrownBy(
-                () -> projectService.addBoardMeasurementToProject(PROJECT_ID, existingMeasurement))
+                () -> projectService.addMeasurementToProject(PROJECT_ID, existingMeasurement))
                 .isInstanceOf(NegativeAmountException.class);
     }
     @Test
@@ -386,7 +386,7 @@ class ProjectServiceTest {
         when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
 
         // when
-        Project savedProject = projectService.addBoardMeasurementToProject(PROJECT_ID, newMeasurement);
+        Project savedProject = projectService.addMeasurementToProject(PROJECT_ID, newMeasurement);
 
         // then
         assertThat(savedProject.getMeasurements().size()).isEqualTo(2);
