@@ -1,21 +1,19 @@
 package com.lewandowski.wycena3000.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Builder
 @Entity
 @Table(name = "measurement")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Measurement {
 
     @Id
@@ -52,3 +50,4 @@ public class Measurement {
     }
 
 }
+

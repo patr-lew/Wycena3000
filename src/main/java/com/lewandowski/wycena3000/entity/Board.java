@@ -1,8 +1,6 @@
 package com.lewandowski.wycena3000.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -11,12 +9,13 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-
+@Builder
 @Entity
 @Table(name = "board")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Board {
 
     @Id

@@ -1,9 +1,7 @@
 package com.lewandowski.wycena3000.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.lewandowski.wycena3000.exception.NegativeAmountException;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -11,13 +9,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
+@Builder
 @Entity
 @Table(name = "project")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Project {
 
     @Id
@@ -74,6 +74,59 @@ public class Project {
     @PreUpdate
     public void updated() {
         this.modified = LocalDateTime.now();
+    }
+
+    public Project addMeasurement(Measurement addedMeasurement) {
+        Optional<Measurement> doubledMeasurement = checkForDuplicatedMeasurements(addedMeasurement);
+
+        int newAmount = updateMeasurementsAmount(doubledMeasurement, addedMeasurement);
+
+        deleteDoubledMeasurement(doubledMeasurement);
+
+        if (newAmount == 0) {
+            return this;
+        }
+
+        measurements.put(addedMeasurement, newAmount);
+        return this;
+    }
+
+    private void deleteDoubledMeasurement(Optional<Measurement> doubledMeasurement) {
+        if (doubledMeasurement.isPresent()) {
+            measurements.remove(doubledMeasurement.get());
+        }
+    }
+
+    private int updateMeasurementsAmount(Optional<Measurement> optionalDoubledMeasurement, Measurement addedMeasurement) {
+        int newAmount = addedMeasurement.getAmount();
+
+        if (optionalDoubledMeasurement.isPresent()) {
+            Measurement doubleMeasurement = optionalDoubledMeasurement.get();
+            newAmount += measurements.get(doubleMeasurement);
+        }
+
+        validateAmount(newAmount, addedMeasurement);
+        return newAmount;
+    }
+
+    private void validateAmount(int newAmount, Measurement addedMeasurement) {
+        if (newAmount < 0) {
+            throw new NegativeAmountException
+                    (String.format("The amount of measurements cannot be negative. Amount of measurement of %s: %d ",
+                            addedMeasurement.getBoard().getName(), newAmount));
+        }
+    }
+
+    private Optional<Measurement> checkForDuplicatedMeasurements(Measurement addedMeasurement) {
+        for (Measurement measurement : measurements.keySet()) {
+            if (measurement.getBoard().equals(addedMeasurement.getBoard()) &&
+                    measurement.getHeight() == addedMeasurement.getHeight() &&
+                    measurement.getWidth() == addedMeasurement.getWidth()) {
+
+                return Optional.of(measurement);
+            }
+        }
+        return Optional.empty();
     }
 
 
