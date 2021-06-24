@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "part_type")
+@Table
 @Getter
 @Setter
 @AllArgsConstructor

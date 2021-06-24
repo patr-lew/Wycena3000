@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Builder
 @Entity
-@Table(name = "measurement")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor

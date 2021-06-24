@@ -12,6 +12,4 @@ public class BoardsByProjectResponseDto {
     private String name;
     private BigDecimal totalArea = BigDecimal.ZERO;
     private BigDecimal totalCost = BigDecimal.ZERO;
-
-
 }

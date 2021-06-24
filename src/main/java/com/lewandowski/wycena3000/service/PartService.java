@@ -1,7 +1,10 @@
 package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.PartChangeRequestDto;
-import com.lewandowski.wycena3000.entity.*;
+import com.lewandowski.wycena3000.entity.Part;
+import com.lewandowski.wycena3000.entity.PartType;
+import com.lewandowski.wycena3000.entity.Project;
+import com.lewandowski.wycena3000.entity.User;
 import com.lewandowski.wycena3000.repository.PartRepository;
 import com.lewandowski.wycena3000.repository.PartTypeRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
@@ -27,10 +30,6 @@ public class PartService {
         this.projectRepository = projectRepository;
     }
 
-    public List<Part> findAll() {
-        return partRepository.findAll();
-    }
-
     public Part save(Part part) {
         return this.partRepository.save(part);
     }
@@ -38,7 +37,6 @@ public class PartService {
     public List<PartType> getPartTypes() {
         return partTypeRepository.findAll();
     }
-
 
     public List<Part> getParts() {
         return partRepository.findAll();
@@ -68,7 +66,6 @@ public class PartService {
     }
 
     public void changePartInProject(PartChangeRequestDto changeDto) {
-
         Project project = projectRepository.findById(changeDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project with id '" + changeDto.getProjectId() + "' doesn't exist"));
 

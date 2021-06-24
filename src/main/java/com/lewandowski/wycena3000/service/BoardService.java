@@ -2,15 +2,18 @@ package com.lewandowski.wycena3000.service;
 
 import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.*;
-import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
+import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,11 +23,6 @@ public class BoardService {
     private final MeasurementRepository measurementRepository;
     private final BoardTypeRepository boardTypeRepository;
     private final ProjectRepository projectRepository;
-
-
-    public List<Board> findAll() {
-        return boardRepository.findAll();
-    }
 
     public List<Board> findAllByUser(User user) {
         return boardRepository.findAllByUserIdOrderByIdAsc(user.getId());
@@ -37,7 +35,6 @@ public class BoardService {
     public List<BoardType> getBoardTypes() {
         return boardTypeRepository.findAll();
     }
-
 
     public Board findById(long boardId) {
         return boardRepository
@@ -88,7 +85,7 @@ public class BoardService {
                     .stream()
                     .filter(existing ->
                             existing.getHeight() == toChange.getHeight() &&
-                            existing.getWidth() == toChange.getWidth())
+                                    existing.getWidth() == toChange.getWidth())
                     .findAny();
 
             doubledEntry.ifPresentOrElse(

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Builder
 @Entity
-@Table(name = "part")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor

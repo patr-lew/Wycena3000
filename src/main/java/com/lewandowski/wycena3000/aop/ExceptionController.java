@@ -1,7 +1,6 @@
 package com.lewandowski.wycena3000.aop;
 
 import com.lewandowski.wycena3000.exception.NegativeAmountException;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,29 +13,29 @@ import javax.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class ExceptionController {
-    private static final Logger log = LoggerFactory.getLogger(ExceptionController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler(Exception.class)
     public ModelAndView handleError(HttpServletRequest request, Exception e)   {
-        log.error( "Request: {} raised {}", request.getRequestURL(), e);
+        LOGGER.error( "Request: {} raised {}", request.getRequestURL(), e);
         return new ModelAndView("error/error");
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView handleError404(HttpServletRequest request, Exception e)   {
-        log.error( "Request: {} raised {}", request.getRequestURL(), e);
+        LOGGER.error( "Request: {} raised {}", request.getRequestURL(), e);
         return new ModelAndView("error/404");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ModelAndView handleError403(HttpServletRequest request, Exception e) {
-        log.error( "Request: {} raised {}", request.getRequestURL(), e);
+        LOGGER.error( "Request: {} raised {}", request.getRequestURL(), e);
         return new ModelAndView("error/403");
     }
 
     @ExceptionHandler(NegativeAmountException.class)
     public ModelAndView handleNegativeAmountException(HttpServletRequest request, Exception e) {
-        log.error( "Request: {} raised {}", request.getRequestURL(), e);
+        LOGGER.error( "Request: {} raised {}", request.getRequestURL(), e);
         return new ModelAndView("error/nae");
     }
 }

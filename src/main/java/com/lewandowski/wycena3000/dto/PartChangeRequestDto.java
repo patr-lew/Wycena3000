@@ -13,6 +13,4 @@ public class PartChangeRequestDto {
     private Long projectId;
     private Long oldPartId;
     private Long newPartId;
-
-
 }

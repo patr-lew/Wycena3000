@@ -4,9 +4,9 @@ import com.lewandowski.wycena3000.dto.BoardChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Board;
 import com.lewandowski.wycena3000.entity.Measurement;
 import com.lewandowski.wycena3000.entity.Project;
-import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.BoardRepository;
 import com.lewandowski.wycena3000.repository.BoardTypeRepository;
+import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,17 +38,17 @@ class BoardServiceTest {
     @Test
     public void whenProjectSwitchesBoardToNewBoard_thenBoardIsChanged() {
         // given
-        final Long PROJECT_ID = 1L;
-        final Long OLD_BOARD_ID = 5L;
-        final Long NEW_BOARD_ID = 10L;
-        final Integer AMOUNT_OF_BOARDS = 15;
+        final Long projectId = 1L;
+        final Long oldBoardId = 5L;
+        final Long newBoardId = 10L;
+        final Integer amountOfBoards = 15;
 
         Board oldBoard = new Board();
-        oldBoard.setId(OLD_BOARD_ID);
+        oldBoard.setId(oldBoardId);
         oldBoard.setName("Old board"); // hash doesn't include Id
 
         Board newBoard = new Board();
-        newBoard.setId(NEW_BOARD_ID);
+        newBoard.setId(newBoardId);
         newBoard.setName("New board");
 
         Measurement measurement = new Measurement();
@@ -56,15 +56,14 @@ class BoardServiceTest {
 
         Project testProject = new Project();
         testProject.setMeasurements(new HashMap<>());
-        testProject.getMeasurements().put(measurement, AMOUNT_OF_BOARDS);
+        testProject.getMeasurements().put(measurement, amountOfBoards);
 
-        BoardChangeRequestDto dto = new BoardChangeRequestDto(PROJECT_ID, OLD_BOARD_ID, NEW_BOARD_ID);
+        BoardChangeRequestDto dto = new BoardChangeRequestDto(projectId, oldBoardId, newBoardId);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
+        when(boardRepository.findById(newBoardId)).thenReturn(Optional.of(newBoard));
 
         // when
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
-        when(boardRepository.findById(NEW_BOARD_ID)).thenReturn(Optional.of(newBoard));
-
-
         boardService.changeBoardInProject(dto);
 
         // then
@@ -79,18 +78,18 @@ class BoardServiceTest {
     @Test
     public void whenProjectSwitchesBoardToExistingBoard_thenBoardIsUpdated() {
         // given
-        final Long PROJECT_ID = 1L;
-        final Long OLD_BOARD_ID = 5L;
-        final Long NEW_BOARD_ID = 10L;
-        final Integer AMOUNT_OF_OLD_BOARDS = 15;
-        final Integer AMOUNT_OF_NEW_BOARDS = 25;
+        final Long projectId = 1L;
+        final Long oldBoardId = 5L;
+        final Long newBoardId = 10L;
+        final Integer amountOfOldBoards = 15;
+        final Integer amountOfNewBoards = 25;
 
         Board oldBoard = new Board();
-        oldBoard.setId(OLD_BOARD_ID);
+        oldBoard.setId(oldBoardId);
         oldBoard.setName("Old board"); // hash doesn't include Id
 
         Board newBoard = new Board();
-        newBoard.setId(NEW_BOARD_ID);
+        newBoard.setId(newBoardId);
         newBoard.setName("New board");
 
         Measurement existingMeasurement = new Measurement();
@@ -101,16 +100,15 @@ class BoardServiceTest {
 
         Project testProject = new Project();
         testProject.setMeasurements(new HashMap<>());
-        testProject.getMeasurements().put(existingMeasurement, AMOUNT_OF_NEW_BOARDS);
-        testProject.getMeasurements().put(toBeUpdatedMeasurement, AMOUNT_OF_OLD_BOARDS);
+        testProject.getMeasurements().put(existingMeasurement, amountOfNewBoards);
+        testProject.getMeasurements().put(toBeUpdatedMeasurement, amountOfOldBoards);
 
-        BoardChangeRequestDto dto = new BoardChangeRequestDto(PROJECT_ID, OLD_BOARD_ID, NEW_BOARD_ID);
+        BoardChangeRequestDto dto = new BoardChangeRequestDto(projectId, oldBoardId, newBoardId);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
+        when(boardRepository.findById(newBoardId)).thenReturn(Optional.of(newBoard));
 
         // when
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
-        when(boardRepository.findById(NEW_BOARD_ID)).thenReturn(Optional.of(newBoard));
-
-
         boardService.changeBoardInProject(dto);
 
         // then
@@ -128,11 +126,9 @@ class BoardServiceTest {
                 .stream()
                 .findFirst()
                 .get();
-        assertThat(calculatedAmount).isEqualTo(AMOUNT_OF_NEW_BOARDS + AMOUNT_OF_OLD_BOARDS);
+        assertThat(calculatedAmount).isEqualTo(amountOfNewBoards + amountOfOldBoards);
 
     }
-
-
 
 
 }

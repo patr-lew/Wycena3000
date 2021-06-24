@@ -15,7 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,7 +44,7 @@ class ProjectServiceTest {
     @Test
     public void givenNoCosts_whenSavingProject_updateTotalCostToZero() {
         // given
-        final BigDecimal ZERO_COST = BigDecimal.ZERO;
+        final BigDecimal zero_cost = BigDecimal.ZERO;
         Project testProject = new Project();
         when(projectRepository.save(any())).thenReturn(testProject);
 
@@ -49,24 +52,24 @@ class ProjectServiceTest {
         Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
-        assertThat(savedProject.getTotalCost()).isEqualTo(ZERO_COST);
+        assertThat(savedProject.getTotalCost()).isEqualTo(zero_cost);
     }
 
     @Test
     public void givenProjectDetailCosts_whenSavingProject_updateTotalCost() {
         // given
-        final BigDecimal WORKERS_COST = BigDecimal.valueOf(1);
-        final BigDecimal MONTAGE_COST = BigDecimal.valueOf(2);
-        final BigDecimal OTHER_COST = BigDecimal.valueOf(4);
-        final BigDecimal TOTAL_COST = BigDecimal.valueOf(7);
+        final BigDecimal workersCost = BigDecimal.valueOf(1);
+        final BigDecimal montageCost = BigDecimal.valueOf(2);
+        final BigDecimal otherCost = BigDecimal.valueOf(4);
+        final BigDecimal totalCost = BigDecimal.valueOf(7);
 
         ProjectDetails projectDetails = new ProjectDetails();
         Project testProject = new Project();
         testProject.setProjectDetails(projectDetails);
 
-        projectDetails.setWorkerCost(WORKERS_COST);
-        projectDetails.setMontageCost(MONTAGE_COST);
-        projectDetails.setOtherCosts(OTHER_COST);
+        projectDetails.setWorkerCost(workersCost);
+        projectDetails.setMontageCost(montageCost);
+        projectDetails.setOtherCosts(otherCost);
 
         when(projectRepository.save(any())).thenReturn(testProject);
 
@@ -74,19 +77,19 @@ class ProjectServiceTest {
         Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
-        assertThat(savedProject.getTotalCost()).isEqualTo(TOTAL_COST);
+        assertThat(savedProject.getTotalCost()).isEqualTo(totalCost);
     }
 
     @Test
     public void givenMeasurementsCosts_whenSavingProject_updateTotalCost() {
         // given
-        final Integer FIRST_AMOUNT = 10;
-        final Integer SECOND_AMOUNT = 100;
-        final BigDecimal PRICE_PER_M2 = BigDecimal.TEN;
-        final BigDecimal TOTAL_COST = BigDecimal.valueOf(1.1);
+        final Integer firstAmount = 10;
+        final Integer secondAmount = 100;
+        final BigDecimal pricePerM2 = BigDecimal.TEN;
+        final BigDecimal totalCost = BigDecimal.valueOf(1.1);
 
         Board board = new Board();
-        board.setPricePerM2(PRICE_PER_M2);
+        board.setPricePerM2(pricePerM2);
 
         Measurement measurement1 = new Measurement();
         measurement1.setBoard(board);
@@ -99,8 +102,8 @@ class ProjectServiceTest {
         measurement2.setWidth(10);
 
         Map<Measurement, Integer> testMeasurements = new HashMap<>();
-        testMeasurements.put(measurement1, FIRST_AMOUNT);
-        testMeasurements.put(measurement2, SECOND_AMOUNT);
+        testMeasurements.put(measurement1, firstAmount);
+        testMeasurements.put(measurement2, secondAmount);
 
         Project testProject = new Project();
         testProject.setMeasurements(testMeasurements);
@@ -111,27 +114,27 @@ class ProjectServiceTest {
         Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
-        assertThat(savedProject.getTotalCost()).isEqualByComparingTo(TOTAL_COST);
+        assertThat(savedProject.getTotalCost()).isEqualByComparingTo(totalCost);
 
     }
 
     @Test
     public void givenPartCosts_whenSavingProject_updateTotalCost() {
         // given
-        final Integer FIRST_AMOUNT = 10;
-        final Integer SECOND_AMOUNT = 100;
-        final BigDecimal FIRST_PRICE = BigDecimal.valueOf(100);
-        final BigDecimal SECOND_PRICE = BigDecimal.valueOf(10);
-        final BigDecimal TOTAL_COST = BigDecimal.valueOf(2000);
+        final Integer firstAmount = 10;
+        final Integer secondAmount = 100;
+        final BigDecimal firstPrice = BigDecimal.valueOf(100);
+        final BigDecimal secondPrice = BigDecimal.valueOf(10);
+        final BigDecimal totalCost = BigDecimal.valueOf(2000);
 
         Part part1 = new Part();
-        part1.setPrice(FIRST_PRICE);
+        part1.setPrice(firstPrice);
         Part part2 = new Part();
-        part2.setPrice(SECOND_PRICE);
+        part2.setPrice(secondPrice);
 
         Map<Part, Integer> testParts = new HashMap<>();
-        testParts.put(part1, FIRST_AMOUNT);
-        testParts.put(part2, SECOND_AMOUNT);
+        testParts.put(part1, firstAmount);
+        testParts.put(part2, secondAmount);
 
         Project testProject = new Project();
         testProject.setParts(testParts);
@@ -142,22 +145,22 @@ class ProjectServiceTest {
         Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
-        assertThat(savedProject.getTotalCost()).isEqualByComparingTo(TOTAL_COST);
+        assertThat(savedProject.getTotalCost()).isEqualByComparingTo(totalCost);
     }
 
     // save() -> calculateMargin()
     @Test
     public void givenUpdatedPrice_whenSavingProject_updateCalculatedProjectMargin() {
         // given
-        final BigDecimal TOTAL_COST = BigDecimal.valueOf(100);
-        final BigDecimal PROJECT_PRICE = BigDecimal.valueOf(200);
-        final BigDecimal MARGIN = BigDecimal.valueOf(100);
+        final BigDecimal totalCost = BigDecimal.valueOf(100);
+        final BigDecimal projectPrice = BigDecimal.valueOf(200);
+        final BigDecimal margin = BigDecimal.valueOf(100);
 
         ProjectDetails sourceOfCosts = new ProjectDetails();
-        sourceOfCosts.setOtherCosts(TOTAL_COST);
+        sourceOfCosts.setOtherCosts(totalCost);
         Project testProject = new Project();
         testProject.setProjectDetails(sourceOfCosts);
-        testProject.setPrice(PROJECT_PRICE);
+        testProject.setPrice(projectPrice);
 
         when(projectRepository.save(any())).thenReturn(testProject);
 
@@ -165,13 +168,13 @@ class ProjectServiceTest {
         Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
-        assertThat(savedProject.getMargin()).isEqualByComparingTo(MARGIN);
+        assertThat(savedProject.getMargin()).isEqualByComparingTo(margin);
     }
 
     @Test
     public void givenEmptyProject_whenSavingProject_setMarginToZero() {
         // given
-        final BigDecimal MARGIN = BigDecimal.ZERO;
+        final BigDecimal margin = BigDecimal.ZERO;
         Project testProject = new Project();
 
         when(projectRepository.save(any())).thenReturn(testProject);
@@ -180,27 +183,27 @@ class ProjectServiceTest {
         Project savedProject = projectService.saveAndUpdate(testProject);
 
         // then
-        assertThat(savedProject.getMargin()).isEqualByComparingTo(MARGIN);
+        assertThat(savedProject.getMargin()).isEqualByComparingTo(margin);
     }
 
     // addPartToProject
     @Test
     public void givenNewPart_whenAddingToProject_addPart() {
         // given
-        final Long PROJECT_ID = 7L;
-        final Long PART_ID = 11L;
-        final Integer AMOUNT = 23;
-        final String PART_NAME = "Part name";
+        final Long projectId = 7L;
+        final Long partId = 11L;
+        final Integer amount = 23;
+        final String partName = "Part name";
 
         Part newPart = new Part();
-        newPart.setId(PART_ID);
-        newPart.setName(PART_NAME);
+        newPart.setId(partId);
+        newPart.setName(partName);
 
         Project testProject = new Project();
-        testProject.setId(PROJECT_ID);
+        testProject.setId(projectId);
         testProject.setParts(new HashMap<>());
 
-        AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(PROJECT_ID, PART_ID, AMOUNT);
+        AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(projectId, partId, amount);
 
         when(partRepository.findById(any())).thenReturn(Optional.of(newPart));
         when(projectRepository.findById(any())).thenReturn(Optional.of(testProject));
@@ -213,33 +216,33 @@ class ProjectServiceTest {
                 .keySet().stream()
                 .findFirst()
                 .get();
-        assertThat(savedPart.getName()).isEqualTo(PART_NAME);
-        assertThat(savedProject.getParts().get(savedPart)).isEqualTo(AMOUNT);
+        assertThat(savedPart.getName()).isEqualTo(partName);
+        assertThat(savedProject.getParts().get(savedPart)).isEqualTo(amount);
     }
 
     @Test
     public void givenExistingPart_whenAddingToProject_updatePartsAmount() {
         // given
-        final Long PART_ID = 7L;
-        final Long PROJECT_ID = 11L;
-        final Integer OLD_AMOUNT = 5;
-        final Integer NEW_AMOUNT = 20;
-        final String PART_NAME = "Part name";
+        final Long partId = 7L;
+        final Long projectId = 11L;
+        final Integer oldAmount = 5;
+        final Integer newAmount = 20;
+        final String partName = "Part name";
 
         Part existingPart = new Part();
-        existingPart.setId(PART_ID);
-        existingPart.setName(PART_NAME);
+        existingPart.setId(partId);
+        existingPart.setName(partName);
 
         Project testProject = new Project();
-        testProject.setId(PROJECT_ID);
+        testProject.setId(projectId);
         Map<Part, Integer> parts = new HashMap<>();
-        parts.put(existingPart, OLD_AMOUNT);
+        parts.put(existingPart, oldAmount);
         testProject.setParts(parts);
 
-        AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(PROJECT_ID, PART_ID, NEW_AMOUNT);
+        AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(projectId, partId, newAmount);
 
-        when(partRepository.findById(PART_ID)).thenReturn(Optional.of(existingPart));
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(partRepository.findById(partId)).thenReturn(Optional.of(existingPart));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when
         Project savedProject = projectService.addPartToProject(dto);
@@ -248,35 +251,35 @@ class ProjectServiceTest {
         assertThat(savedProject.getParts().size()).isEqualTo(1);
         Part savedPart = savedProject.getParts().keySet().stream().findFirst().get();
 
-        assertThat(savedProject.getParts().get(savedPart)).isEqualTo(OLD_AMOUNT + NEW_AMOUNT);
+        assertThat(savedProject.getParts().get(savedPart)).isEqualTo(oldAmount + newAmount);
     }
 
     @Test
     public void givenExistingPart_whenSubtractingFromProjectTooMany_throwException() {
         // given
-        final Long PART_ID = 7L;
-        final Long PROJECT_ID = 11L;
-        final Integer OLD_AMOUNT = 5;
-        final Integer NEW_AMOUNT = -20;
-        final String PART_NAME = "Part name";
+        final Long partId = 7L;
+        final Long projectId = 11L;
+        final Integer oldAmount = 5;
+        final Integer newAmount = -20;
+        final String partName = "Part name";
 
         Part existingPart = Part.builder()
-                .id(PART_ID)
-                .name(PART_NAME)
+                .id(partId)
+                .name(partName)
                 .build();
 
         Map<Part, Integer> parts = new HashMap<>();
-        parts.put(existingPart, OLD_AMOUNT);
+        parts.put(existingPart, oldAmount);
 
         Project testProject = Project.builder()
-                .id(PROJECT_ID)
+                .id(projectId)
                 .parts(parts)
                 .build();
 
-        AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(PROJECT_ID, PART_ID, NEW_AMOUNT);
+        AddPartToProjectRequestDto dto = new AddPartToProjectRequestDto(projectId, partId, newAmount);
 
-        when(partRepository.findById(PART_ID)).thenReturn(Optional.of(existingPart));
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(partRepository.findById(partId)).thenReturn(Optional.of(existingPart));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when + then
         assertThatThrownBy(
@@ -289,145 +292,147 @@ class ProjectServiceTest {
     @Test
     public void givenNewMeasurement_whenAddingToProject_AddMeasurement() {
         // given
-        final Long PROJECT_ID = 17L;
-        final Integer AMOUNT = 13;
+        final Long projectId = 17L;
+        final Integer amount = 13;
 
         Measurement addedMeasurement = Measurement.builder()
-                .amount(AMOUNT)
+                .amount(amount)
                 .build();
 
         Project testProject = Project.builder()
                 .measurements(new HashMap<>())
                 .build();
 
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when
-        Project savedProject = projectService.addMeasurementToProject(PROJECT_ID, addedMeasurement);
+        Project savedProject = projectService.addMeasurementToProject(projectId, addedMeasurement);
 
         // then
         assertThat(savedProject.getMeasurements().keySet()).containsOnly(addedMeasurement);
-        assertThat(savedProject.getMeasurements().get(addedMeasurement)).isEqualTo(AMOUNT);
+        assertThat(savedProject.getMeasurements().get(addedMeasurement)).isEqualTo(amount);
     }
 
     @Test
     public void givenExistingMeasurement_whenAddingToProject_updateMeasurementsAmount() {
         // given
-        final Long PROJECT_ID = 17L;
-        final Integer OLD_AMOUNT = 13;
-        final Integer NEW_AMOUNT = 31;
+        final Long projectId = 17L;
+        final Integer oldAmount = 13;
+        final Integer newAmount = 31;
 
         Measurement existingMeasurement = new Measurement();
         existingMeasurement.setBoard(new Board()); // needed to calculate hashCode
-        existingMeasurement.setAmount(NEW_AMOUNT);
+        existingMeasurement.setAmount(newAmount);
 
         Project testProject = new Project();
         Map<Measurement, Integer> measurements = new HashMap<>();
-        measurements.put(existingMeasurement, OLD_AMOUNT);
+        measurements.put(existingMeasurement, oldAmount);
         testProject.setMeasurements(measurements);
 
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when
-        Project savedProject = projectService.addMeasurementToProject(PROJECT_ID, existingMeasurement);
+        Project savedProject = projectService.addMeasurementToProject(projectId, existingMeasurement);
 
         // then
         assertThat(savedProject.getMeasurements().keySet()).containsOnly(existingMeasurement);
-        assertThat(savedProject.getMeasurements().get(existingMeasurement)).isEqualTo(OLD_AMOUNT + NEW_AMOUNT);
+        assertThat(savedProject.getMeasurements().get(existingMeasurement)).isEqualTo(oldAmount + newAmount);
     }
 
     @Test
     public void givenExistingMeasurement_whenSubtractingFromProjectTooMany_throwException() {
         // given
-        final Long PROJECT_ID = 17L;
-        final Integer OLD_AMOUNT = 13;
-        final Integer NEW_AMOUNT = -31;
+        final Long projectId = 17L;
+        final Integer oldAmount = 13;
+        final Integer newAmount = -31;
 
         Measurement existingMeasurement = Measurement.builder()
                 .board(new Board()) // needed to calculate hashCode
-                .amount(NEW_AMOUNT)
+                .amount(newAmount)
                 .build();
-                new Measurement();
+        new Measurement();
 
         Project testProject = new Project();
         Map<Measurement, Integer> measurements = new HashMap<>();
-        measurements.put(existingMeasurement, OLD_AMOUNT);
+        measurements.put(existingMeasurement, oldAmount);
         testProject.setMeasurements(measurements);
 
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when + then
         assertThatThrownBy(
-                () -> projectService.addMeasurementToProject(PROJECT_ID, existingMeasurement))
+                () -> projectService.addMeasurementToProject(projectId, existingMeasurement))
                 .isInstanceOf(NegativeAmountException.class);
     }
+
     @Test
     public void givenSameMeasurementOfDifferentBoard_whenAddingToProject_addSeparately() {
         // given
-        final Long PROJECT_ID = 17L;
-        final Integer WIDTH = 720;
-        final Integer HEIGHT = 360;
-        final Integer OLD_AMOUNT = 13;
-        final Integer NEW_AMOUNT = 31;
+        final Long projectId = 17L;
+        final Integer width = 720;
+        final Integer height = 360;
+        final Integer oldAmount = 13;
+        final Integer newAmount = 31;
 
         Board existingBoard = new Board();
         existingBoard.setName("existing board");
-        Measurement existingMeasurement = new Measurement();
-        existingMeasurement.setBoard(existingBoard); // needed to calculate hashCode
-        existingMeasurement.setHeight(HEIGHT);
-        existingMeasurement.setWidth(WIDTH);
+        Measurement existingMeasurement = Measurement.builder()
+                .board(existingBoard)
+                .height(height)
+                .width(width)
+                .build();
 
         Board newBoard = new Board();
         newBoard.setName("new board");
-        Measurement newMeasurement = new Measurement();
-        newMeasurement.setBoard(newBoard); // different board than above
-        newMeasurement.setHeight(HEIGHT); // same as above
-        newMeasurement.setWidth(WIDTH); // same as above
-        newMeasurement.setAmount(NEW_AMOUNT);
+        Measurement newMeasurement = Measurement.builder()
+                .board(newBoard) // different board than existingMeasurement
+                .height(height) // same as existingMeasurement
+                .width(width) // same as existingMeasurement
+                .amount(newAmount)
+                .build();
 
         Project testProject = new Project();
         Map<Measurement, Integer> measurements = new HashMap<>();
-        measurements.put(existingMeasurement, OLD_AMOUNT);
+        measurements.put(existingMeasurement, oldAmount);
         testProject.setMeasurements(measurements);
 
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when
-        Project savedProject = projectService.addMeasurementToProject(PROJECT_ID, newMeasurement);
+        Project savedProject = projectService.addMeasurementToProject(projectId, newMeasurement);
 
         // then
         assertThat(savedProject.getMeasurements().size()).isEqualTo(2);
-        assertThat(savedProject.getMeasurements().get(newMeasurement)).isEqualTo(NEW_AMOUNT);
+        assertThat(savedProject.getMeasurements().get(newMeasurement)).isEqualTo(newAmount);
     }
 
-    // updateProjectDetailsInProject()
     @Test
     public void givenUpdatedDetails_whenSaving_changeToNewDetails() {
         // given
-        final BigDecimal WORKER_COST = BigDecimal.valueOf(7);
-        final BigDecimal MONTAGE_COST = BigDecimal.valueOf(13);
-        final BigDecimal OTHER_COSTS = BigDecimal.valueOf(19);
-        final BigDecimal TOTAL_COST = BigDecimal.valueOf(39);
-        final Long PROJECT_ID = 43L;
+        final BigDecimal workerCost = BigDecimal.valueOf(7);
+        final BigDecimal montageCost = BigDecimal.valueOf(13);
+        final BigDecimal otherCosts = BigDecimal.valueOf(19);
+        final BigDecimal totalCost = BigDecimal.valueOf(39);
+        final Long projectId = 43L;
 
 
         ProjectDetails newDetails = ProjectDetails.builder()
-                .workerCost(WORKER_COST)
-                .montageCost(MONTAGE_COST)
-                .otherCosts(OTHER_COSTS)
+                .workerCost(workerCost)
+                .montageCost(montageCost)
+                .otherCosts(otherCosts)
                 .build();
 
         Project testProject = new Project();
         testProject.setProjectDetails(new ProjectDetails());
 
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when
-        projectService.updateProjectDetailsInProject(PROJECT_ID, newDetails);
+        projectService.updateProjectDetailsInProject(projectId, newDetails);
 
         // then
-        assertThat(testProject.getProjectDetails().getWorkerCost()).isEqualTo(WORKER_COST);
-        assertThat(testProject.getTotalCost()).isEqualByComparingTo(TOTAL_COST);
+        assertThat(testProject.getProjectDetails().getWorkerCost()).isEqualTo(workerCost);
+        assertThat(testProject.getTotalCost()).isEqualByComparingTo(totalCost);
     }
 
     // compute margin in List (no data && with data)
@@ -450,22 +455,24 @@ class ProjectServiceTest {
     @Test
     public void givenListOfProjects_whenPreparingMarginForView_returnMarginInString() {
         // given
-        final BigDecimal FIRST_COST = BigDecimal.valueOf(100);
-        final BigDecimal PRICE_AT_MARGIN_25 = BigDecimal.valueOf(125);
-        final BigDecimal MARGIN_OF_25 = BigDecimal.valueOf(25);
-        final BigDecimal SECOND_COST = BigDecimal.valueOf(100);
-        final BigDecimal PRICE_AT_MARGIN_100 = BigDecimal.valueOf(200);
-        final BigDecimal MARGIN_OF_100 = BigDecimal.valueOf(100);
+        final BigDecimal firstCost = BigDecimal.valueOf(100);
+        final BigDecimal priceAtMargin25 = BigDecimal.valueOf(125);
+        final BigDecimal marginOf25 = BigDecimal.valueOf(25);
+        final BigDecimal secondCost = BigDecimal.valueOf(100);
+        final BigDecimal priceAtMargin100 = BigDecimal.valueOf(200);
+        final BigDecimal marginOf100 = BigDecimal.valueOf(100);
 
-        Project project1 = new Project();
-        project1.setTotalCost(FIRST_COST);
-        project1.setPrice(PRICE_AT_MARGIN_25);
-        project1.setMargin(MARGIN_OF_25);
+        Project project1 = Project.builder()
+                .totalCost(firstCost)
+                .price(priceAtMargin25)
+                .margin(marginOf25)
+                .build();
 
-        Project project2 = new Project();
-        project2.setTotalCost(SECOND_COST);
-        project2.setPrice(PRICE_AT_MARGIN_100);
-        project2.setMargin(MARGIN_OF_100);
+        Project project2 = Project.builder()
+                .totalCost(secondCost)
+                .price(priceAtMargin100)
+                .margin(marginOf100)
+                .build();
 
         List<Project> testProjects = List.of(project1, project2);
 
@@ -480,23 +487,23 @@ class ProjectServiceTest {
     @Test
     public void givenNoMeasurements_whenCreatingProjectView_returnEmptyStatus() {
         // given
-        final Integer OF_ONE = 1;
-        final Long PROJECT_ID = 7L;
-        final Long EXPECTED_BOARD_ID = 0L;
-        final String EXPECTED_NAME = "Brak płyt";
+        final Integer ofOne = 1;
+        final Long projectId = 7L;
+        final Long expectedBoardId = 0L;
+        final String expectedName = "Brak płyt";
         Project testProject = new Project();
 
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
 
         // when
-        List<BoardsByProjectResponseDto> result = projectService.getBoardsDetailsByProject(PROJECT_ID);
+        List<BoardsByProjectResponseDto> result = projectService.getBoardsDetailsByProject(projectId);
 
         // then
-        assertThat(result).hasSize(OF_ONE);
+        assertThat(result).hasSize(ofOne);
         BoardsByProjectResponseDto responseDto = result.stream().findFirst().get();
 
-        assertThat(responseDto.getBoardId()).isEqualTo(EXPECTED_BOARD_ID);
-        assertThat(responseDto.getName()).isEqualTo(EXPECTED_NAME);
+        assertThat(responseDto.getBoardId()).isEqualTo(expectedBoardId);
+        assertThat(responseDto.getName()).isEqualTo(expectedName);
         assertThat(responseDto.getTotalArea()).isEqualTo(BigDecimal.ZERO);
         assertThat(responseDto.getTotalCost()).isEqualTo(BigDecimal.ZERO);
     }
@@ -504,29 +511,32 @@ class ProjectServiceTest {
     @Test
     public void givenMeasurementsOfSameBoard_whenCreatingProjectView_sumTheirAreas() {
         // given
-        final Integer OF_ONE = 1;
-        final Integer FIRST_WIDTH = 100;
-        final Integer SECOND_WIDTH = 10;
-        final Integer FIRST_HEIGHT = 10;
-        final Integer SECOND_HEIGHT = 100;
-        final BigDecimal PRICE_PER_M2 = BigDecimal.valueOf(10);
-        final BigDecimal EXPECTED_AREA = BigDecimal.valueOf(0.02);
-        final String BOARD_NAME = "nice board";
+        final Integer ofOne = 1;
+        final Integer firstWidth = 100;
+        final Integer secondWidth = 10;
+        final Integer firstHeight = 10;
+        final Integer secondHeight = 100;
+        final BigDecimal pricePerM2 = BigDecimal.valueOf(10);
+        final BigDecimal expectedArea = BigDecimal.valueOf(0.02);
+        final String boardName = "nice board";
 
-        Board board = new Board();
-        board.setId(9L);
-        board.setName(BOARD_NAME);
-        board.setPricePerM2(PRICE_PER_M2);
+        Board board = Board.builder()
+                .id(9L)
+                .name(boardName)
+                .pricePerM2(pricePerM2)
+                .build();
 
-        Measurement measurement1 = new Measurement();
-        measurement1.setWidth(FIRST_WIDTH);
-        measurement1.setHeight(FIRST_HEIGHT);
-        measurement1.setBoard(board);
+        Measurement measurement1 = Measurement.builder()
+                .width(firstWidth)
+                .height(firstHeight)
+                .board(board)
+                .build();
 
-        Measurement measurement2 = new Measurement();
-        measurement2.setWidth(SECOND_WIDTH);
-        measurement2.setHeight(SECOND_HEIGHT);
-        measurement2.setBoard(board);
+        Measurement measurement2 = Measurement.builder()
+                .width(secondWidth)
+                .height(secondHeight)
+                .board(board)
+                .build();
 
         Map<Measurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
 
@@ -539,37 +549,40 @@ class ProjectServiceTest {
         List<BoardsByProjectResponseDto> result = projectService.getBoardsDetailsByProject(1L);
 
         // then
-        assertThat(result).hasSize(OF_ONE);
+        assertThat(result).hasSize(ofOne);
         BoardsByProjectResponseDto responseDto = result.stream().findFirst().get();
-        assertThat(responseDto.getTotalArea()).isEqualByComparingTo(EXPECTED_AREA);
+        assertThat(responseDto.getTotalArea()).isEqualByComparingTo(expectedArea);
     }
 
     @Test
     public void givenMeasurementsOfSameBoard_whenCreatingProjectView_sumTheirCost() {
         // given
-       final Integer OF_ONE = 1;
-        final Integer FIRST_WIDTH = 100;
-        final Integer SECOND_WIDTH = 10;
-        final Integer FIRST_HEIGHT = 10;
-        final Integer SECOND_HEIGHT = 100;
-        final BigDecimal PRICE_PER_M2 = BigDecimal.valueOf(10);
-        final BigDecimal EXPECTED_COST = BigDecimal.valueOf(0.2);
-        final String BOARD_NAME = "nice board";
+        final Integer ofOne = 1;
+        final Integer firstWidth = 100;
+        final Integer secondWidth = 10;
+        final Integer firstHeight = 10;
+        final Integer secondHeight = 100;
+        final BigDecimal pricePerM2 = BigDecimal.valueOf(10);
+        final BigDecimal expectedCost = BigDecimal.valueOf(0.2);
+        final String boardName = "nice board";
 
-        Board board = new Board();
-        board.setId(9L);
-        board.setName(BOARD_NAME);
-        board.setPricePerM2(PRICE_PER_M2);
+        Board board = Board.builder()
+                .id(9L)
+                .name(boardName)
+                .pricePerM2(pricePerM2)
+                .build();
 
-        Measurement measurement1 = new Measurement();
-        measurement1.setWidth(FIRST_WIDTH);
-        measurement1.setHeight(FIRST_HEIGHT);
-        measurement1.setBoard(board);
+        Measurement measurement1 = Measurement.builder()
+                .width(firstWidth)
+                .height(firstHeight)
+                .board(board)
+                .build();
 
-        Measurement measurement2 = new Measurement();
-        measurement2.setWidth(SECOND_WIDTH);
-        measurement2.setHeight(SECOND_HEIGHT);
-        measurement2.setBoard(board);
+        Measurement measurement2 = Measurement.builder()
+                .width(secondWidth)
+                .height(secondHeight)
+                .board(board)
+                .build();
 
         Map<Measurement, Integer> measurements = Map.of(measurement1, 7, measurement2, 13);
 
@@ -582,9 +595,9 @@ class ProjectServiceTest {
         List<BoardsByProjectResponseDto> result = projectService.getBoardsDetailsByProject(1L);
 
         // then
-        assertThat(result).hasSize(OF_ONE);
+        assertThat(result).hasSize(ofOne);
         BoardsByProjectResponseDto responseDto = result.stream().findFirst().get();
-        assertThat(responseDto.getTotalCost()).isEqualByComparingTo(EXPECTED_COST);
+        assertThat(responseDto.getTotalCost()).isEqualByComparingTo(expectedCost);
 
     }
 }

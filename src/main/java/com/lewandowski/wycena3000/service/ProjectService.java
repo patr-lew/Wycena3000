@@ -4,12 +4,10 @@ import com.lewandowski.wycena3000.dto.AddPartToProjectRequestDto;
 import com.lewandowski.wycena3000.dto.BoardsByProjectResponseDto;
 import com.lewandowski.wycena3000.dto.NewPriceRequestDto;
 import com.lewandowski.wycena3000.entity.*;
-import com.lewandowski.wycena3000.exception.NegativeAmountException;
 import com.lewandowski.wycena3000.repository.MeasurementRepository;
 import com.lewandowski.wycena3000.repository.PartRepository;
 import com.lewandowski.wycena3000.repository.ProjectDetailsRepository;
 import com.lewandowski.wycena3000.repository.ProjectRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +18,6 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @Transactional
 public class ProjectService {
@@ -31,16 +28,11 @@ public class ProjectService {
     private final MeasurementRepository measurementRepository;
     private final BigDecimal MILLIMETER_TO_METER_CONVERSION = BigDecimal.valueOf(1000);
 
-
     public ProjectService(ProjectRepository projectRepository, ProjectDetailsRepository projectDetailsRepository, PartRepository partRepository, MeasurementRepository measurementRepository) {
         this.projectRepository = projectRepository;
         this.projectDetailsRepository = projectDetailsRepository;
         this.partRepository = partRepository;
         this.measurementRepository = measurementRepository;
-    }
-
-    public List<Project> findAll() {
-        return projectRepository.findAllByOrderByCreatedAsc();
     }
 
     public List<Project> findAllByUserId(User user) {
@@ -81,7 +73,6 @@ public class ProjectService {
 
         deleteProjectRelations(projectToDelete);
         projectRepository.delete(projectToDelete);
-
         deleteOrphanedMeasurements();
     }
 
@@ -93,7 +84,7 @@ public class ProjectService {
                 .findById(partDto.getPartId())
                 .orElseThrow(() -> new EntityNotFoundException("part with ID '" + partDto.getPartId() + "' not found."));
 
-        return project.addPart(addedPart,newAmount);
+        return project.addPart(addedPart, newAmount);
     }
 
     public Project addMeasurementToProject(Long projectId, Measurement addedMeasurement) {
@@ -107,15 +98,6 @@ public class ProjectService {
 
         return updatedProject;
     }
-
-    private void saveMeasurement(Measurement addedMeasurement) {
-        List<Measurement> measurementsInDb = measurementRepository.findAll();
-
-        if (!measurementsInDb.contains(addedMeasurement)) {
-            measurementRepository.save(addedMeasurement);
-        }
-    }
-
 
     public void updateProjectDetailsInProject(long projectId, ProjectDetails newDetails) {
         Project projectById = findById(projectId);
@@ -132,7 +114,6 @@ public class ProjectService {
         return projects.stream()
                 .map(this::marginToString)
                 .collect(Collectors.toList());
-
     }
 
     public String marginToString(Project project) {
@@ -217,6 +198,14 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    private void saveMeasurement(Measurement addedMeasurement) {
+        List<Measurement> measurementsInDb = measurementRepository.findAll();
+
+        if (!measurementsInDb.contains(addedMeasurement)) {
+            measurementRepository.save(addedMeasurement);
+        }
+    }
+
     private void deleteProjectRelations(Project projectToDelete) {
         projectToDelete.getMeasurements().clear();
         projectToDelete.getParts().clear();
@@ -232,20 +221,31 @@ public class ProjectService {
     }
 
     private BigDecimal calculateTotalCost(Project project) {
-        BigDecimal totalCost = BigDecimal.ZERO;
 
+        BigDecimal detailsCost = addCostFromProjectDetails(project);
+        BigDecimal measurementsCost = addCostFromMeasurements(project);
+        BigDecimal partsCost = addCostFromParts(project);
 
-        // add costs from ProjectDetails
-        if (null != project.getProjectDetails()) {
-            ProjectDetails projectDetails = project.getProjectDetails();
+        return detailsCost.add(partsCost).add(measurementsCost);
+    }
 
-            totalCost = totalCost.add(projectDetails.getMontageCost())
-                    .add(projectDetails.getWorkerCost())
-                    .add(projectDetails.getOtherCosts());
+    private BigDecimal addCostFromParts(Project project) {
+        BigDecimal cost = BigDecimal.ZERO;
+        Hibernate.initialize(project.getParts());
+        if (null != project.getParts()) {
+            Map<Part, Integer> parts = project.getParts();
 
+            for (Part part : parts.keySet()) {
+                BigDecimal amountOfParts = BigDecimal.valueOf(parts.get(part));
+                BigDecimal partCost = part.getPrice().multiply(amountOfParts);
+                cost = cost.add(partCost);
+            }
         }
+        return cost;
+    }
 
-        // add costs from boards
+    private BigDecimal addCostFromMeasurements(Project project) {
+        BigDecimal cost = BigDecimal.ZERO;
         Hibernate.initialize(project.getMeasurements());
         if (null != project.getMeasurements()) {
             Map<Measurement, Integer> measurements = project.getMeasurements();
@@ -268,23 +268,22 @@ public class ProjectService {
             for (Board board : boardAreas.keySet()) {
                 BigDecimal amountOfBoards = boardAreas.get(board);
                 BigDecimal boardCost = board.getPricePerM2().multiply(amountOfBoards);
-                totalCost = totalCost.add(boardCost);
+                cost = cost.add(boardCost);
             }
         }
+        return cost;
+    }
 
-        // add costs from parts
-        Hibernate.initialize(project.getParts());
-        if (null != project.getParts()) {
-            Map<Part, Integer> parts = project.getParts();
+    private BigDecimal addCostFromProjectDetails(Project project) {
+        BigDecimal cost = BigDecimal.ZERO;
+        if (null != project.getProjectDetails()) {
+            ProjectDetails projectDetails = project.getProjectDetails();
 
-            for (Part part : parts.keySet()) {
-                BigDecimal amountOfParts = BigDecimal.valueOf(parts.get(part));
-                BigDecimal partCost = part.getPrice().multiply(amountOfParts);
-                totalCost = totalCost.add(partCost);
-            }
+            cost = cost.add(projectDetails.getMontageCost())
+                    .add(projectDetails.getWorkerCost())
+                    .add(projectDetails.getOtherCosts());
         }
-
-        return totalCost;
+        return cost;
     }
 
     private BigDecimal calculateMargin(Project project) {
@@ -311,11 +310,14 @@ public class ProjectService {
 
     private BigDecimal getBoardSurfaceArea(Map.Entry<Measurement, Integer> measurementEntry) {
         Measurement measurement = measurementEntry.getKey();
-        BigDecimal width = BigDecimal.valueOf(measurement.getWidth())
+        BigDecimal width = BigDecimal
+                .valueOf(measurement.getWidth())
                 .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
-        BigDecimal height = BigDecimal.valueOf(measurement.getHeight())
+        BigDecimal height = BigDecimal
+                .valueOf(measurement.getHeight())
                 .divide(MILLIMETER_TO_METER_CONVERSION, 4, RoundingMode.HALF_UP);
-        BigDecimal amount = BigDecimal.valueOf(measurementEntry.getValue());
+        BigDecimal amount = BigDecimal
+                .valueOf(measurementEntry.getValue());
 
         return width.multiply(height).multiply(amount);
     }

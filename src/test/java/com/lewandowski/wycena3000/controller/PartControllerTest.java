@@ -7,29 +7,19 @@ import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
 import com.lewandowski.wycena3000.service.UserService;
-import org.checkerframework.common.value.qual.StaticallyExecutable;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.MediaType;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
@@ -40,9 +30,8 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -94,10 +83,10 @@ class PartControllerTest {
     @Test
     public void shouldReturnVIewWithAllParts() throws Exception {
         // given
-        final String PART_NAME = "part name";
+        final String partName = "part name";
         Set<Long> testSet = Set.of(3L);
         Part part = new Part();
-        part.setName(PART_NAME);
+        part.setName(partName);
 
         when(partService.getPartsByUser(any())).thenReturn(List.of(part));
         when(partService.getEnabledDeleteSet()).thenReturn(testSet);
@@ -150,25 +139,25 @@ class PartControllerTest {
     @Test
     public void givenRightUser_shouldReturnEditPartView() throws Exception {
         // given
-        final Long PART_ID = 1L;
+        final Long partId = 1L;
 
         User user = new User();
         user.setId(USER_ID);
 
         Part testPart = new Part();
-        testPart.setId(PART_ID);
+        testPart.setId(partId);
         testPart.setUser(user);
 
         PartType testType = new PartType();
         List<PartType> partTypes = List.of(testType);
 
-        when(partService.findById(PART_ID)).thenReturn(testPart);
+        when(partService.findById(partId)).thenReturn(testPart);
         when(partService.getPartTypes()).thenReturn(partTypes);
 
 
         // when + then
         this.mvc
-                .perform(get("/creator/parts/edit/" + PART_ID))
+                .perform(get("/creator/parts/edit/" + partId))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("part", is(testPart)));
 
@@ -177,47 +166,46 @@ class PartControllerTest {
     @Test
     public void givenRightUser_shouldDeletePart() throws Exception {
         // given
-        final Long PART_ID = 13L;
+        final Long partId = 13L;
 
         User user = new User();
         user.setId(USER_ID);
 
         Part testPart = new Part();
-        testPart.setId(PART_ID);
+        testPart.setId(partId);
         testPart.setUser(user);
 
-        when(partService.findById(PART_ID)).thenReturn(testPart);
+        when(partService.findById(partId)).thenReturn(testPart);
 
         // when + then
         this.mvc
-                .perform(get("/creator/parts/delete/" + PART_ID))
+                .perform(get("/creator/parts/delete/" + partId))
                 .andExpect(status().is(302));
     }
 
     @Test
     public void givenWrongUser_shouldGive403() throws Exception {
         // given
-        final Long PART_ID = 13L;
+        final Long partId = 13L;
 
         User user = new User();
         user.setId(WRONG_USER_ID);
 
         Part testPart = new Part();
-        testPart.setId(PART_ID);
+        testPart.setId(partId);
         testPart.setUser(user);
 
-        when(partService.findById(PART_ID)).thenReturn(testPart);
+        when(partService.findById(partId)).thenReturn(testPart);
 
         // when + then
 //        this.mvc
-//                .perform(get("/creator/parts/delete/" + PART_ID))
+//                .perform(get("/creator/parts/delete/" + partId))
 //                .andExpect(status().is(403));
     }
 
     // shouldReturnChangePartForm()
 
     // shouldRedirectToProjectDetails
-
 
 
 }

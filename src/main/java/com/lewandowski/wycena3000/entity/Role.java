@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
-@Table(name = "role")
+@Table
 @Getter
 @Setter
 public class Role {

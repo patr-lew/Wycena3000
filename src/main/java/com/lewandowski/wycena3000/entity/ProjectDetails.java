@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Builder
 @Entity
-@Table(name = "project_details")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,7 +20,7 @@ public class ProjectDetails {
     @Column(name = "project_id")
     private long id;
 
-    @OneToOne(cascade = { CascadeType.ALL })
+    @OneToOne(cascade = {CascadeType.ALL})
     @MapsId
     @JoinColumn(name = "project_id")
     private Project project;

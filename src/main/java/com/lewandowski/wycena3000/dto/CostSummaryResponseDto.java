@@ -11,12 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class CostSummaryResponseDto {
-
     private Project Project;
-
     private List<Board> boardsOfProject;
-
     private List<Part> partsOfProject;
-
-
 }

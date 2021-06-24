@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Builder
 @Entity
-@Table(name = "project")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor
@@ -65,7 +65,6 @@ public class Project {
 
     private String comment;
 
-
     @PrePersist
     public void created() {
         this.created = LocalDateTime.now();
@@ -80,12 +79,34 @@ public class Project {
         Optional<Measurement> doubledMeasurement = checkForDuplicatedMeasurements(addedMeasurement);
 
         int newAmount = updateMeasurementsAmount(doubledMeasurement, addedMeasurement);
-
         deleteDoubledMeasurement(doubledMeasurement);
 
         if (newAmount > 0) {
             measurements.put(addedMeasurement, newAmount);
             return this;
+        }
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return Objects.equals(name, project.name) && Objects.equals(user, project.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, user);
+    }
+
+    public Project addPart(Part addedPart, int newAmount) {
+        int oldAmount = handleDuplicatesAndReturnItsAmount(addedPart);
+        newAmount += oldAmount;
+
+        if (amountIsValid(addedPart, newAmount)) {
+            parts.put(addedPart, newAmount);
         }
 
         return this;
@@ -122,11 +143,7 @@ public class Project {
                     (String.format("The amount of parts cannot be negative. Amount of %s: %d",
                             addedPart.getName(), newAmount));
         }
-
-        if (newAmount == 0) {
-            return false;
-        }
-        return true;
+        return newAmount != 0;
     }
 
     private Optional<Measurement> checkForDuplicatedMeasurements(Measurement addedMeasurement) {
@@ -139,31 +156,6 @@ public class Project {
             }
         }
         return Optional.empty();
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Project project = (Project) o;
-        return Objects.equals(name, project.name) && Objects.equals(user, project.user);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, user);
-    }
-
-    public Project addPart(Part addedPart, int newAmount) {
-        int oldAmount =  handleDuplicatesAndReturnItsAmount(addedPart);
-        newAmount += oldAmount;
-
-        if(amountIsValid(addedPart, newAmount)) {
-            parts.put(addedPart, newAmount);
-        }
-
-        return this;
     }
 
     private int handleDuplicatesAndReturnItsAmount(Part existingPart) {
@@ -180,9 +172,6 @@ public class Project {
     }
 
     private boolean isDuplicated(Part addedPart) {
-        if (parts.containsKey(addedPart)) {
-            return true;
-        }
-        return false;
+        return parts.containsKey(addedPart);
     }
 }

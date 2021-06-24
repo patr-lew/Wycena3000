@@ -1,8 +1,8 @@
 package com.lewandowski.wycena3000.controller;
 
+import com.lewandowski.wycena3000.dto.PartChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Part;
 import com.lewandowski.wycena3000.entity.PartType;
-import com.lewandowski.wycena3000.dto.PartChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Project;
 import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.PartService;
@@ -70,8 +70,8 @@ public class PartController {
         Part part = partService.findById(partId);
         if (part.getUser().getId() != currentUser.getUser().getId()) {
             throw new AccessDeniedException(String.format("User tried to change part that doesn't belong to him. UserId = %d, boardId = %d",
-                    currentUser.getUser().getId(), partId));        }
-
+                    currentUser.getUser().getId(), partId));
+        }
         model.addAttribute("part", part);
 
         List<PartType> partTypes = partService.getPartTypes();
@@ -85,9 +85,9 @@ public class PartController {
         Part part = partService.findById(partId);
         if (part.getUser().getId() != currentUser.getUser().getId()) {
             throw new AccessDeniedException(String.format("User tried to delete part that doesn't belong to him. UserId = %d, boardId = %d",
-                    currentUser.getUser().getId(), partId));          }
+                    currentUser.getUser().getId(), partId));
+        }
         partService.delete(partId);
-
         return "redirect:/creator/parts/all";
     }
 
@@ -96,9 +96,10 @@ public class PartController {
                              @RequestParam Long projectId, Model model,
                              @AuthenticationPrincipal CurrentUser currentUser) {
         Project project = projectService.findById(projectId);
-        if(project.getUser().getId() != currentUser.getUser().getId()) {
+        if (project.getUser().getId() != currentUser.getUser().getId()) {
             throw new AccessDeniedException(String.format("User tried to access change part view that doesn't belong to him. UserId = %d, boardId = %d",
-                    currentUser.getUser().getId(), partId));          }
+                    currentUser.getUser().getId(), partId));
+        }
         List<Part> parts = partService.getPartsByUser(currentUser.getUser());
 
         model.addAttribute("project", project);
@@ -112,7 +113,6 @@ public class PartController {
         partService.changePartInProject(dto);
 
         return "redirect:/creator/projects/details/" + dto.getProjectId();
-
     }
 
 

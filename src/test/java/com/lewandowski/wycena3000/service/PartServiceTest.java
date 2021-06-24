@@ -40,75 +40,74 @@ class PartServiceTest {
     @Test
     public void whenProjectSwitchesPartToNewPart_thenPartIsChanged() {
         // given
-        final Long PROJECT_ID = 1L;
-        final Long OLD_PART_ID = 5L;
-        final Long NEW_PART_ID = 10L;
-        final Integer AMOUNT_OF_PARTS = 15;
+        final Long projectId = 1L;
+        final Long oldPartId = 5L;
+        final Long newPartId = 10L;
+        final Integer amountOfParts = 15;
 
 
         Part oldPart = new Part();
-        oldPart.setId(OLD_PART_ID);
+        oldPart.setId(oldPartId);
         oldPart.setName("Old part"); // hash doesn't include ID
 
         Part newPart = new Part();
-        newPart.setId(NEW_PART_ID);
+        newPart.setId(newPartId);
         newPart.setName("New part");
 
         Project testProject = new Project();
         testProject.setParts(new HashMap<>());
-        testProject.getParts().put(oldPart, AMOUNT_OF_PARTS);
+        testProject.getParts().put(oldPart, amountOfParts);
 
-        PartChangeRequestDto dto = new PartChangeRequestDto(PROJECT_ID, OLD_PART_ID, NEW_PART_ID);
+        PartChangeRequestDto dto = new PartChangeRequestDto(projectId, oldPartId, newPartId);
 
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
+        when(partRepository.findById(oldPartId)).thenReturn(Optional.of(oldPart));
+        when(partRepository.findById(newPartId)).thenReturn(Optional.of(newPart));
 
         // when
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
-        when(partRepository.findById(OLD_PART_ID)).thenReturn(Optional.of(oldPart));
-        when(partRepository.findById(NEW_PART_ID)).thenReturn(Optional.of(newPart));
-
         partService.changePartInProject(dto);
 
         // then
         assertThat(testProject.getParts().keySet()).containsOnly(newPart);
-        assertThat(testProject.getParts().get(newPart)).isEqualTo(AMOUNT_OF_PARTS);
+        assertThat(testProject.getParts().get(newPart)).isEqualTo(amountOfParts);
     }
 
     @Test
     public void whenProjectSwitchesPartToExistingPart_thenPartIsUpdated() {
         // given
-        final Long PROJECT_ID = 1L;
-        final Long OLD_PART_ID = 5L;
-        final Long NEW_PART_ID = 10L;
-        final Integer AMOUNT_OF_OLD_PARTS = 15;
-        final Integer AMOUNT_OF_NEW_PARTS = 25;
-        final Integer AMOUNT_OF_ALL_PARTS = AMOUNT_OF_OLD_PARTS + AMOUNT_OF_NEW_PARTS;
+        final Long projectId = 1L;
+        final Long oldPartId = 5L;
+        final Long newPartId = 10L;
+        final Integer amountOfOldParts = 15;
+        final Integer amountOfNewParts = 25;
+        final Integer amountOfAllParts = amountOfOldParts + amountOfNewParts;
 
 
         Part oldPart = new Part();
-        oldPart.setId(OLD_PART_ID);
+        oldPart.setId(oldPartId);
         oldPart.setName("Old part"); // hash doesn't include ID
 
         Part newPart = new Part();
-        newPart.setId(NEW_PART_ID);
+        newPart.setId(newPartId);
         newPart.setName("New part");
 
         Project testProject = new Project();
         testProject.setParts(new HashMap<>());
-        testProject.getParts().put(oldPart, AMOUNT_OF_OLD_PARTS);
-        testProject.getParts().put(newPart, AMOUNT_OF_NEW_PARTS);
+        testProject.getParts().put(oldPart, amountOfOldParts);
+        testProject.getParts().put(newPart, amountOfNewParts);
 
-        when(projectRepository.findById(PROJECT_ID)).thenReturn(Optional.of(testProject));
-        when(partRepository.findById(OLD_PART_ID)).thenReturn(Optional.of(oldPart));
-        when(partRepository.findById(NEW_PART_ID)).thenReturn(Optional.of(newPart));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
+        when(partRepository.findById(oldPartId)).thenReturn(Optional.of(oldPart));
+        when(partRepository.findById(newPartId)).thenReturn(Optional.of(newPart));
 
-        PartChangeRequestDto dto = new PartChangeRequestDto(PROJECT_ID, OLD_PART_ID, NEW_PART_ID);
+        PartChangeRequestDto dto = new PartChangeRequestDto(projectId, oldPartId, newPartId);
 
         // when
         partService.changePartInProject(dto);
 
         // then
         assertThat(testProject.getParts().keySet()).containsOnly(newPart);
-        assertThat(testProject.getParts().get(newPart)).isEqualTo(AMOUNT_OF_ALL_PARTS);
+        assertThat(testProject.getParts().get(newPart)).isEqualTo(amountOfAllParts);
     }
 
 }

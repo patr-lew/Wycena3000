@@ -7,8 +7,6 @@ import com.lewandowski.wycena3000.entity.Project;
 import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.BoardService;
 import com.lewandowski.wycena3000.service.ProjectService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -23,7 +21,6 @@ import java.util.Set;
 @Controller
 @RequestMapping("/creator/boards")
 public class BoardController {
-    private static final Logger log = LoggerFactory.getLogger(BoardController.class);
 
     private final BoardService boardService;
     private final ProjectService projectService;
@@ -73,7 +70,8 @@ public class BoardController {
     @GetMapping("/edit/{boardId}")
     public String edit(@PathVariable long boardId, Model model, @AuthenticationPrincipal CurrentUser currentUser) {
         Board board = boardService.findById(boardId);
-        if (board.getUser().getId() != currentUser.getUser().getId()) { ;
+        if (board.getUser().getId() != currentUser.getUser().getId()) {
+            ;
             throw new AccessDeniedException(String.format("User tried to change board that doesn't belong to him. UserId = %d, boardId = %d",
                     currentUser.getUser().getId(), boardId));
         }
@@ -91,7 +89,8 @@ public class BoardController {
         Board board = boardService.findById(boardId);
         if (board.getUser().getId() != currentUser.getUser().getId()) {
             throw new AccessDeniedException(String.format("User tried to delete board that doesn't belong to him. UserId = %d, boardId = %d",
-                    currentUser.getUser().getId(), boardId));        }
+                    currentUser.getUser().getId(), boardId));
+        }
         boardService.delete(boardId);
 
         return "redirect:/creator/boards/all";
@@ -105,7 +104,8 @@ public class BoardController {
         Project project = projectService.findById(projectId);
         if (project.getUser().getId() != currentUser.getUser().getId()) {
             throw new AccessDeniedException(String.format("User tried to access change board view that doesn't belong to him. UserId = %d, boardId = %d",
-                    currentUser.getUser().getId(), boardId));        }
+                    currentUser.getUser().getId(), boardId));
+        }
         List<Board> boards = boardService.findAllByUser(currentUser.getUser());
 
         model.addAttribute("project", project);
@@ -117,7 +117,6 @@ public class BoardController {
     @PostMapping("/change")
     public String changeBoard(@ModelAttribute BoardChangeRequestDto dto) {
         boardService.changeBoardInProject(dto);
-
         return "redirect:/creator/projects/details/" + dto.getProjectId();
     }
 

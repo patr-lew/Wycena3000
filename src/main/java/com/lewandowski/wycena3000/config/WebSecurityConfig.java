@@ -3,6 +3,7 @@ package com.lewandowski.wycena3000.config;
 import com.lewandowski.wycena3000.security.SpringDataUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -17,9 +18,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/creator/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/").permitAll()
-                .and().formLogin().loginPage("/user/login").permitAll()
-                .and().logout().logoutSuccessUrl("/")
-                .permitAll();
+                .and()
+                    .formLogin()
+                    .loginPage("/user/login")
+                    .permitAll()
+                .and()
+                    .logout()
+                    .logoutSuccessUrl("/")
+                    .permitAll()
+                .and().httpBasic();
+//                .and()
+//                    .exceptionHandling()
+//                    .accessDeniedPage("error/403");
+
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .userDetailsService(customUserDetailsService())
+                .passwordEncoder(passwordEncoder());
     }
 
     @Bean
