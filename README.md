@@ -29,6 +29,18 @@ The latest stable version of the app is pushed on Heroku server and is accessibl
 
 Please do give a moment for the app to start up, __Heroku builds the app every time it's being accessed__ and deconstructs it after half hour of idle.
 
+## Build
+Building requires Java Runtime Environment (at least version 11) and Maven installed. Once you downloaded the source code, go to the directory containing it (in the example it's "/home/username/Downloads/wycena3000") and use Maven to compile the code.
+```
+$ cd ~/Downloads/wycena3000
+$ mvn package
+```
+
+The command will create a 'target' folder containing compiled and ready-to-use application. To start it, type:
+```
+java -jar target/wycena3000-0.0.1-SNAPSHOT.jar com.lewandowski.wycena3000.Wycena3000Application
+```
+
 ## How to use it
 To create a cost estimation, I recommend following steps:
 1. Add required boards by using 'Dodaj płytę' button (polish for 'add board')
