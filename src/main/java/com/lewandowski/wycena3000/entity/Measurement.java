@@ -49,5 +49,11 @@ public class Measurement {
         return Objects.hash(id, board, height, width);
     }
 
+    public boolean equalsWithoutId(Measurement measurement) {
+        return measurement.getBoard().equals(this.getBoard()) &&
+                measurement.getHeight() == this.getHeight() &&
+                measurement.getWidth() == this.getWidth();
+    }
+
 }
 

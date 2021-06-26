@@ -146,10 +146,7 @@ public class Project {
 
     private Optional<Measurement> checkForDuplicatedMeasurements(Measurement addedMeasurement) {
         for (Measurement measurement : measurements.keySet()) {
-            if (measurement.getBoard().equals(addedMeasurement.getBoard()) &&
-                    measurement.getHeight() == addedMeasurement.getHeight() &&
-                    measurement.getWidth() == addedMeasurement.getWidth()) {
-
+            if (measurement.equalsWithoutId(addedMeasurement)) {
                 return Optional.of(measurement);
             }
         }
