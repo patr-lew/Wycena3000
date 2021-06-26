@@ -110,9 +110,13 @@ public class Project {
         return this;
     }
 
-    private void deleteDoubledMeasurement(Optional<Measurement> doubledMeasurement) {
-        doubledMeasurement
-                .ifPresent(measurement -> measurements.remove(measurement));
+    private Optional<Measurement> checkForDuplicatedMeasurements(Measurement addedMeasurement) {
+        for (Measurement measurement : measurements.keySet()) {
+            if (measurement.equalsWithoutId(addedMeasurement)) {
+                return Optional.of(measurement);
+            }
+        }
+        return Optional.empty();
     }
 
     private int updateMeasurementsAmount(Optional<Measurement> optionalDoubledMeasurement, Measurement addedMeasurement) {
@@ -127,30 +131,17 @@ public class Project {
         return newAmount;
     }
 
+    private void deleteDoubledMeasurement(Optional<Measurement> doubledMeasurement) {
+        doubledMeasurement
+                .ifPresent(measurement -> measurements.remove(measurement));
+    }
+
     private void amountIsValid(Measurement addedMeasurement, int newAmount) {
         if (newAmount < 0) {
             throw new NegativeAmountException
                     (String.format("The amount of measurements cannot be negative. Amount of measurement of %s: %d ",
                             addedMeasurement.getBoard().getName(), newAmount));
         }
-    }
-
-    private boolean amountIsValid(Part addedPart, int newAmount) {
-        if (newAmount < 0) {
-            throw new NegativeAmountException
-                    (String.format("The amount of parts cannot be negative. Amount of %s: %d",
-                            addedPart.getName(), newAmount));
-        }
-        return newAmount != 0;
-    }
-
-    private Optional<Measurement> checkForDuplicatedMeasurements(Measurement addedMeasurement) {
-        for (Measurement measurement : measurements.keySet()) {
-            if (measurement.equalsWithoutId(addedMeasurement)) {
-                return Optional.of(measurement);
-            }
-        }
-        return Optional.empty();
     }
 
     private int handleDuplicatesAndReturnItsAmount(Part existingPart) {
@@ -160,6 +151,15 @@ public class Project {
             return oldAmount;
         }
         return 0;
+    }
+
+    private boolean amountIsValid(Part addedPart, int newAmount) {
+        if (newAmount < 0) {
+            throw new NegativeAmountException
+                    (String.format("The amount of parts cannot be negative. Amount of %s: %d",
+                            addedPart.getName(), newAmount));
+        }
+        return newAmount != 0;
     }
 
     private void deleteDoubledParts(Part existingPart) {
