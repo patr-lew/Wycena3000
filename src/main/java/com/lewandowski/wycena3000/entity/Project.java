@@ -75,19 +75,6 @@ public class Project {
         this.modified = LocalDateTime.now();
     }
 
-    public Project addMeasurement(Measurement addedMeasurement) {
-        Optional<Measurement> doubledMeasurement = checkForDuplicatedMeasurements(addedMeasurement);
-
-        int newAmount = updateMeasurementsAmount(doubledMeasurement, addedMeasurement);
-        deleteDoubledMeasurement(doubledMeasurement);
-
-        if (newAmount > 0) {
-            measurements.put(addedMeasurement, newAmount);
-            return this;
-        }
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -101,6 +88,18 @@ public class Project {
         return Objects.hash(name, user);
     }
 
+    public Project addMeasurement(Measurement addedMeasurement) {
+        Optional<Measurement> doubledMeasurement = checkForDuplicatedMeasurements(addedMeasurement);
+
+        int newAmount = updateMeasurementsAmount(doubledMeasurement, addedMeasurement);
+        deleteDoubledMeasurement(doubledMeasurement);
+
+        if (newAmount > 0) {
+            measurements.put(addedMeasurement, newAmount);
+        }
+        return this;
+    }
+
     public Project addPart(Part addedPart, int newAmount) {
         int oldAmount = handleDuplicatesAndReturnItsAmount(addedPart);
         newAmount += oldAmount;
@@ -108,7 +107,6 @@ public class Project {
         if (amountIsValid(addedPart, newAmount)) {
             parts.put(addedPart, newAmount);
         }
-
         return this;
     }
 
