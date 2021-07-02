@@ -1,30 +1,22 @@
 package com.lewandowski.wycena3000.controller;
 
+import com.lewandowski.wycena3000.Wycena3000Application;
+import com.lewandowski.wycena3000.config.WebSecurityConfig;
 import com.lewandowski.wycena3000.entity.Part;
 import com.lewandowski.wycena3000.entity.PartType;
 import com.lewandowski.wycena3000.entity.User;
-import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
 import com.lewandowski.wycena3000.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.MethodParameter;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +28,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(classes = {WebSecurityConfig.class, Wycena3000Application.class})
+@WebMvcTest(controllers = PartController.class)
 class PartControllerTest {
 
     private final Long USER_ID = 1L;
@@ -52,33 +45,24 @@ class PartControllerTest {
     private BindingResult bindingResult;
 
     @Autowired
-    @InjectMocks
-    private PartController partController;
+    private MockMvc mockMvc;
 
-    private MockMvc mvc;
-    private HandlerMethodArgumentResolver putAuthenticationPrincipal = new HandlerMethodArgumentResolver() {
-        @Override
-        public boolean supportsParameter(MethodParameter parameter) {
-            return parameter.getParameterType().isAssignableFrom(CurrentUser.class);
-        }
+//    private HandlerMethodArgumentResolver putAuthenticationPrincipal = new HandlerMethodArgumentResolver() {
+//        @Override
+//        public boolean supportsParameter(MethodParameter parameter) {
+//            return parameter.getParameterType().isAssignableFrom(CurrentUser.class);
+//        }
+//
+//        @Override
+//        public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+//                                      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+//            Set<GrantedAuthority> authorities = new HashSet<>();
+//            User testUser = new User();
+//            testUser.setId(USER_ID);
+//            return new CurrentUser("carpenter", "pass", authorities, testUser);
+//        }
+//    };
 
-        @Override
-        public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-            Set<GrantedAuthority> authorities = new HashSet<>();
-            User testUser = new User();
-            testUser.setId(USER_ID);
-            return new CurrentUser("carpenter", "pass", authorities, testUser);
-        }
-    };
-
-    @BeforeEach
-    public void setup() {
-        mvc = MockMvcBuilders
-                .standaloneSetup(partController)
-                .setCustomArgumentResolvers(putAuthenticationPrincipal)
-                .build();
-    }
 
     @Test
     public void shouldReturnVIewWithAllParts() throws Exception {
@@ -92,7 +76,7 @@ class PartControllerTest {
         when(partService.getEnabledDeleteSet()).thenReturn(testSet);
 
         // when + then
-        this.mvc
+        mockMvc
                 .perform(get("/creator/parts/all"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("part/part_all"))
@@ -109,7 +93,7 @@ class PartControllerTest {
         when(partService.getPartTypes()).thenReturn(partTypes);
 
         // when + then
-        this.mvc
+        mockMvc
                 .perform(get("/creator/parts/add"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("part/part_add"))
@@ -123,7 +107,7 @@ class PartControllerTest {
         when(bindingResult.hasErrors()).thenReturn(true);
 
         // when + then
-        this.mvc
+        mockMvc
                 .perform(post("/creator/parts/add"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("part/part_add"));
@@ -131,7 +115,7 @@ class PartControllerTest {
 
     @Test
     public void whenAddingPart_addPart_redirectToAllParts() throws Exception {
-        this.mvc
+        mockMvc
                 .perform(post("/creator/parts/add"))
                 .andExpect(status().isOk());
     }
@@ -156,7 +140,7 @@ class PartControllerTest {
 
 
         // when + then
-        this.mvc
+        mockMvc
                 .perform(get("/creator/parts/edit/" + partId))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("part", is(testPart)));
@@ -178,29 +162,30 @@ class PartControllerTest {
         when(partService.findById(partId)).thenReturn(testPart);
 
         // when + then
-        this.mvc
+        mockMvc
                 .perform(get("/creator/parts/delete/" + partId))
                 .andExpect(status().is(302));
     }
 
     @Test
-    public void givenWrongUser_shouldGive403() throws Exception {
+    public void givenWrongUser_shouldRespond403() throws Exception {
         // given
         final Long partId = 13L;
 
         User user = new User();
         user.setId(WRONG_USER_ID);
 
-        Part testPart = new Part();
-        testPart.setId(partId);
-        testPart.setUser(user);
+        Part testPart = Part.builder()
+                .id(partId)
+                .user(user)
+                .build();
 
         when(partService.findById(partId)).thenReturn(testPart);
 
         // when + then
-//        this.mvc
-//                .perform(get("/creator/parts/delete/" + partId))
-//                .andExpect(status().is(403));
+        mockMvc
+                .perform(get("/creator/parts/delete/" + partId))
+                .andExpect(status().is(403));
     }
 
     // shouldReturnChangePartForm()
