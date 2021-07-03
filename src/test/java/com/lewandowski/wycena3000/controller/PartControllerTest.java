@@ -1,34 +1,40 @@
 package com.lewandowski.wycena3000.controller;
 
-import com.lewandowski.wycena3000.Wycena3000Application;
-import com.lewandowski.wycena3000.config.WebSecurityConfig;
+import com.lewandowski.wycena3000.aop.ErrorController;
 import com.lewandowski.wycena3000.entity.Part;
 import com.lewandowski.wycena3000.entity.PartType;
 import com.lewandowski.wycena3000.entity.User;
+import com.lewandowski.wycena3000.security.CurrentUser;
 import com.lewandowski.wycena3000.service.PartService;
 import com.lewandowski.wycena3000.service.ProjectService;
 import com.lewandowski.wycena3000.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.core.MethodParameter;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.validation.BindingResult;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ContextConfiguration(classes = {WebSecurityConfig.class, Wycena3000Application.class})
 @WebMvcTest(controllers = PartController.class)
 class PartControllerTest {
 
@@ -41,27 +47,34 @@ class PartControllerTest {
     private ProjectService projectService;
     @MockBean
     private UserService userService;
-    @Mock
-    private BindingResult bindingResult;
 
-    @Autowired
+
     private MockMvc mockMvc;
 
-//    private HandlerMethodArgumentResolver putAuthenticationPrincipal = new HandlerMethodArgumentResolver() {
-//        @Override
-//        public boolean supportsParameter(MethodParameter parameter) {
-//            return parameter.getParameterType().isAssignableFrom(CurrentUser.class);
-//        }
-//
-//        @Override
-//        public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-//                                      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-//            Set<GrantedAuthority> authorities = new HashSet<>();
-//            User testUser = new User();
-//            testUser.setId(USER_ID);
-//            return new CurrentUser("carpenter", "pass", authorities, testUser);
-//        }
-//    };
+    private final HandlerMethodArgumentResolver putAuthenticationPrincipal = new HandlerMethodArgumentResolver() {
+        @Override
+        public boolean supportsParameter(MethodParameter parameter) {
+            return parameter.getParameterType().isAssignableFrom(CurrentUser.class);
+        }
+
+        @Override
+        public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+            Set<GrantedAuthority> authorities = new HashSet<>();
+            User testUser = new User();
+            testUser.setId(USER_ID);
+            return new CurrentUser("carpenter", "pass", authorities, testUser);
+        }
+    };
+
+    @BeforeEach
+    public void setup() {
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(new PartController(partService, projectService))
+                .setControllerAdvice(new ErrorController())
+                .setCustomArgumentResolvers(putAuthenticationPrincipal)
+                .build();
+    }
 
 
     @Test
@@ -103,8 +116,6 @@ class PartControllerTest {
 
     @Test
     public void whenAddingPart_givenErrors_returnToForm() throws Exception {
-        // given
-        when(bindingResult.hasErrors()).thenReturn(true);
 
         // when + then
         mockMvc
@@ -143,7 +154,7 @@ class PartControllerTest {
         mockMvc
                 .perform(get("/creator/parts/edit/" + partId))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("part", is(testPart)));
+                .andExpect(model().attribute("part", testPart));
 
     }
 

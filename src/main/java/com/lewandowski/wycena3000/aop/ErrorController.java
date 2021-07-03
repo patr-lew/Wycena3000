@@ -26,6 +26,14 @@ public class ErrorController {
         return new ModelAndView("error/nae");
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ModelAndView handle403(HttpServletRequest request, Exception e) {
+        LOGGER.error( "Request: {} raised {}", request.getRequestURL(), e);
+        ModelAndView mav = new ModelAndView("error/403");
+        mav.setStatus(HttpStatus.FORBIDDEN);
+        return mav;
+    }
+
     @GetMapping("/error")
     public String handleError(HttpServletRequest request) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
