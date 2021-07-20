@@ -38,7 +38,7 @@ $ mvn package
 
 The command will create a 'target' folder containing compiled and ready-to-use application. To start it, type:
 ```
-java -jar target/wycena3000-0.0.1-SNAPSHOT.jar com.lewandowski.wycena3000.Wycena3000Application
+java -cp target/wycena3000-0.0.1-SNAPSHOT.jar com.lewandowski.wycena3000.Wycena3000Application
 ```
 
 ## How to use it
