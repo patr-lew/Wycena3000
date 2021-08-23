@@ -22,7 +22,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Wycena3000</a>
+        <a class="navbar-brand" href="#" th:text="#{page.service-name}">Wycena3000</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -32,34 +32,34 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="/main/resources/templates/index.html"
-                       th:href="@{/}">Strona główna</a>
+                       th:href="@{/}" th:text="#{index.body.main-page}">Strona główna</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/main/resources/templates/project/projects_all.html"
-                       th:href="@{/creator/projects/all}">Projekty</a>
+                       th:href="@{/creator/projects/all}" th:text="#{index.body.projects}">Projekty</a>
                 </li>
                 <li>
                     <a class="nav-link" href="/main/resources/templates/board/board_all.html"
-                       th:href="@{/creator/boards/all}">
+                       th:href="@{/creator/boards/all}" th:text="#{index.body.boards}">
                         Płyty
                     </a>
                 </li>
                 <li>
                     <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html"
-                       th:href="@{/creator/parts/all}">
+                       th:href="@{/creator/parts/all}" th:text="#{index.body.parts}">
                         Elementy
                     </a>
                 </li>
 
             </ul>
             <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
-               class="btn btn-success mx-1">Dodaj Element</a>
+               class="btn btn-success mx-1" th:text="#{index.body.parts.add}">Dodaj Element</a>
             <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
-               class="btn btn-success mx-1">Dodaj Płytę</a>
+               class="btn btn-success mx-1" th:text="#{index.body.boards.add}">Dodaj Płytę</a>
             <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
-               class="btn btn-success mx-1">Dodaj Projekt</a>
+               class="btn btn-success mx-1" th:text="#{index.body.projects.add}">Dodaj Projekt</a>
             <form th:action="@{/logout}" method="post">
-                <button class="btn btn-warning mx-3" type="submit">Wyloguj</button>
+                <button class="btn btn-warning mx-1" type="submit" th:text="#{index.body.logout}">Wyloguj</button>
             </form>
         </div>
     </div>
@@ -74,13 +74,13 @@
                 <div class="card py-3">
                     <div class="p-2">
                         <a href="/main/resources/templates/project/projects_add.html"
-                           th:href="@{/creator/projects/add}" class="btn btn-success mb-3">Dodaj Projekt</a>
+                           th:href="@{/creator/projects/add}" class="btn btn-success mb-3" th:text="#{index.body.projects.add}">Dodaj Projekt</a>
                     </div>
 
                     <!-- List of all projects -->
 
                     <div class="table-responsive">
-                        <h2 class="p-3">Moje wyceny</h2>
+                        <h2 class="p-3" th:text="#{projects.my-projects}">Moje wyceny</h2>
 
                         <ul class="list-group" th:each="project, itemStat : ${projects}">
                             <li th:text="${project.name}" class="h5 list-group-item active">Nazwa projektu</li>
@@ -88,11 +88,11 @@
                                 <table class="table table-sm table-hover table-striped">
                                     <thead>
                                     <tr>
-                                        <th scope="col">Data utworzenia</th>
-                                        <th scope="col">Koszt</th>
-                                        <th scope="col">Marża</th>
-                                        <th scope="col">Cena</th>
-                                        <th scope="col">Akcje</th>
+                                        <th scope="col" th:text="#{projects.creation-date}">Data utworzenia</th>
+                                        <th scope="col" th:text="#{projects.cost}">Koszt</th>
+                                        <th scope="col" th:text="#{projects.margin}">Marża</th>
+                                        <th scope="col" th:text="#{projects.price}">Cena</th>
+                                        <th scope="col" th:text="#{projects.actions}">Akcje</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -104,13 +104,16 @@
                                         <td>
                                             <a href="/main/resources/templates/project/project_details.html"
                                                th:href="@{/creator/projects/details/__${project.id}__}"
+                                               th:text="#{page.button.details}"
                                                class="btn btn-outline-success">Szczegóły</a>
                                             <a href="/main/resources/templates/project/project_edit.html"
                                                th:href="@{/creator/projects/edit/__${project.id}__}"
+                                               th:text="#{page.button.edit}"
                                                class="btn btn-outline-primary">Edytuj</a>
                                             <a onclick="return confirm('Czy na pewno chcesz usunąć ten projekt? Tej akcji nie można cofnąć');"
                                                href="/main/resources/templates/project/project_edit.html"
                                                th:href="@{/creator/projects/delete/__${project.id}__}"
+                                               th:text="#{page.button.delete}"
                                                class="btn btn-outline-danger">Usuń</a>
                                         </td>
                                     </tr>
@@ -125,8 +128,9 @@
             </div>
             <div class="col-md-4 text-lg-center">
                 <div class="card card-body">
-                    <h3>Statystyki</h3>
-                    <br><br><br><br>puste chwilowo
+                    <h3 th:text="#{projects.statistics}">Statystyki</h3>
+                    <br><br><br><br>
+                    <span th:text="#{projects.statistics.body}">chwilowo puste</span>
                 </div>
             </div>
         </div>

@@ -64,7 +64,7 @@
                     </form>
                 </div>
                 <div sec:authorize="!isAuthenticated()">
-                    <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
+                    <a href="/main/resources/templates/board/board_add.html" th:href="@{#}"
                         class="btn btn-secondary mx-1" th:text="#{index.body.register}">Rejestracja</a>
                     <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
                         class="btn btn-success mx-1" th:text="#{index.body.login}">Logowanie</a>
