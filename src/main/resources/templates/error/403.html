@@ -22,7 +22,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Wycena3000</a>
+        <a class="navbar-brand" href="#" th:text="#{page.service-name}">Wycena3000</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -32,21 +32,21 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/main/resources/templates/index.html"
-                       th:href="@{/}">Strona główna</a>
+                       th:href="@{/}" th:text="#{index.body.main-page}">Strona główna</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
-                       th:href="@{/creator/projects/all}">Projekty</a>
+                       th:href="@{/creator/projects/all}" th:text="#{index.body.projects}">Projekty</a>
                 </li>
                 <li>
                     <a class="nav-link" href="/main/resources/templates/board/board_all.html"
-                       th:href="@{/creator/boards/all}">
+                       th:href="@{/creator/boards/all}" th:text="#{index.body.boards}">
                         Płyty
                     </a>
                 </li>
                 <li>
                     <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html"
-                       th:href="@{/creator/parts/all}">
+                       th:href="@{/creator/parts/all}" th:text="#{index.body.parts}">
                         Elementy
                     </a>
                 </li>
@@ -54,20 +54,20 @@
             </ul>
             <div sec:authorize="isAuthenticated()">
                 <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
-                   class="btn btn-success mx-1">Dodaj Element</a>
+                   class="btn btn-success mx-1" th:text="#{index.body.parts.add}">Dodaj Element</a>
                 <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
-                   class="btn btn-success mx-1">Dodaj Płytę</a>
+                   class="btn btn-success mx-1" th:text="#{index.body.boards.add}">Dodaj Płytę</a>
                 <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
-                   class="btn btn-success mx-1">Dodaj Projekt</a>
+                   class="btn btn-success mx-1" th:text="#{index.body.projects.add}">Dodaj Projekt</a>
                 <form th:action="@{/logout}" method="post">
-                    <button class="btn btn-warning mx-1" type="submit">Wyloguj</button>
+                    <button class="btn btn-warning mx-1" type="submit" th:text="#{index.body.logout}">Wyloguj</button>
                 </form>
             </div>
             <div sec:authorize="!isAuthenticated()">
-                <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
-                   class="btn btn-secondary mx-1">Rejestracja</a>
+                <a href="/main/resources/templates/board/board_add.html" th:href="@{#}"
+                   class="btn btn-secondary mx-1" th:text="#{index.body.register}">Rejestracja</a>
                 <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
-                   class="btn btn-success mx-1">Logowanie</a>
+                   class="btn btn-success mx-1" th:text="#{index.body.login}">Logowanie</a>
             </div>
         </div>
     </div>
@@ -79,7 +79,7 @@
         <div class="row px-5 py-5"></div>
         <div class="row px-5 py-4">
             <h2>403</h2>
-            <h3>Nie masz dostępu do tej strony</h3>
+            <h3 th:text="#{page.error.code403}">Nie masz dostępu do tej strony</h3>
         </div>
     </div>
 </div>
