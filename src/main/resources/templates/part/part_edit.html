@@ -41,13 +41,13 @@
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html" th:href="@{/creator/parts/all}">
+                    <a class="nav-link" href="/main/resources/templates/part/part_all.html" th:href="@{/creator/parts/all}">
                         Elementy
                     </a>
                 </li>
 
             </ul>
-            <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
+            <a href="/main/resources/templates/part/part_add.html" th:href="@{/creator/parts/add}"
                class="btn btn-success mx-1">Dodaj Element</a>
             <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
                class="btn btn-success mx-1">Dodaj Płytę</a>
@@ -69,7 +69,7 @@
 
     <div class="row p-sm-3">
         <div class="col">
-            <form action="#" th:action="@{/creator/parts/add}" th:object="${partRepository}" method="post">
+            <form action="#" th:action="@{/creator/parts/add}" th:object="${part}" method="post">
                 <input type="hidden" th:field="*{id}">
 
 
@@ -81,7 +81,7 @@
                             <select class="form-select"
                                     aria-label="Wybierz rodzaj elementu"
                                     id="partType"
-                                    th:field="*{getPartType}">
+                                    th:field="*{partType}">
                                 <option value="0" disabled selected>Wybierz rodzaj elementu</option>
                                 <option th:each="type : ${partTypes}" th:value="${type.id}" th:text="${type.name}"></option>
 
