@@ -20,41 +20,44 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Wycena3000</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#" th:text="#{page.service-name}">Wycena3000</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="/main/resources/templates/index.html"
-                       th:href="@{/}">Strona główna</a>
+                       th:href="@{/}" th:text="#{index.body.main-page}">Strona główna</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
-                       th:href="@{/creator/projects/all}">Projekty</a>
+                       th:href="@{/creator/projects/all}" th:text="#{index.body.projects}">Projekty</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/board/board_all.html" th:href="@{/creator/boards/all}">
+                    <a class="nav-link active" href="/main/resources/templates/board/board_all.html"
+                       th:href="@{/creator/boards/all}" th:text="#{index.body.boards}">
                         Płyty
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html" th:href="@{/creator/parts/all}">
+                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html"
+                       th:href="@{/creator/parts/all}" th:text="#{index.body.parts}">
                         Elementy
                     </a>
                 </li>
 
             </ul>
             <a href="/main/resources/templates/partRepository/part_add.html" th:href="@{/creator/parts/add}"
-               class="btn btn-success mx-1">Dodaj Element</a>
+               class="btn btn-success mx-1" th:text="#{index.body.parts.add}">Dodaj Element</a>
             <a href="/main/resources/templates/board/board_add.html" th:href="@{/creator/boards/add}"
-               class="btn btn-success mx-1">Dodaj Płytę</a>
+               class="btn btn-success mx-1" th:text="#{index.body.boards.add}">Dodaj Płytę</a>
             <a href="/main/resources/templates/project/edit_project.html" th:href="@{/creator/projects/add}"
-               class="btn btn-success mx-1">Dodaj Projekt</a>
+               class="btn btn-success mx-1" th:text="#{index.body.projects.add}">Dodaj Projekt</a>
             <form th:action="@{/logout}" method="post">
-                <button class="btn btn-warning mx-3" type="submit">Wyloguj</button>
+                <button class="btn btn-warning mx-1" type="submit" th:text="#{index.body.logout}">Wyloguj</button>
             </form>
         </div>
     </div>
@@ -64,7 +67,7 @@
 
 <div class="container">
     <div class="row p-md-3">
-        <h3>Dodaj nową płytę</h3>
+        <h3 th:text="#{board.edit.add-new}">Dodaj nową płytę</h3>
     </div>
 
     <div class="row p-sm-3">
@@ -78,15 +81,19 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select class="form-select"
-                                    aria-label="Default select example"
                                     id="boardType"
                                     th:field="*{boardType}">
-                                <option value="0" disabled selected>Wybierz rodzaj płyty</option>
-                                <option th:each="type : ${boardTypes}" th:value="${type.id}" th:text="${type.name}"></option>
-                              </select>
-                              <label for="boardType">Rodzaj płyty</label>
+                                <option value="0" disabled selected th:text="#{board.edit.choose-type}">Wybierz rodzaj
+                                    płyty
+                                </option>
+                                <option th:each="type : ${boardTypes}" th:value="${type.id}"
+                                        th:text="${type.name}"></option>
+                            </select>
+                            <label for="boardType" th:text="#{projects.edit.board.type}">Rodzaj płyty</label>
                         </div>
-                        <p class="alert-danger" th:if="${#fields.hasErrors('boardType')}">Wybierz rodzaj płyty</p>
+                        <p class="alert-danger"
+                           th:if="${#fields.hasErrors('boardType')}"
+                           th:text="#{board.edit.choose-type}">Wybierz rodzaj płyty</p>
                     </div>
                 </div>
 
@@ -99,20 +106,21 @@
                                    th:field="*{name}"
                                    class="form-control" id="boardName"
                                    aria-describedby="nameHelp"
-                                   placeholder="Nazwa płyty">
-                            <label for="boardName">Nazwa płyty</label>
+                                   th:placeholder="#{board.name}">
+                            <label for="boardName" th:text="#{board.name}">Nazwa płyty</label>
                         </div>
-                        <p class="alert-danger" th:if="${#fields.hasErrors('name')}">Płyta musi mieć nazwę</p>
+                        <p class="alert-danger"
+                           th:if="${#fields.hasErrors('name')}"
+                           th:text="#{board.name.error}">Płyta musi mieć nazwę</p>
 
                     </div>
                     <div class="col-auto">
-                      <span id="nameHelp" class="form-text">
+                      <span id="nameHelp" class="form-text" th:text="#{board.name.info}">
                         Po czym rozpoznasz płytę: producent, rodzaj i kolor płyty <br>
                         Np. "KRONOPOL unikolor biały",<br> "KRONOPOL, MDF, buk jasny"
                       </span>
                     </div>
                 </div>
-
 
 
                 <!-- Board code -->
@@ -124,8 +132,8 @@
                                    th:field="*{code}"
                                    class="form-control" id="boardCode"
                                    aria-describedby="nameHelp"
-                                   placeholder="Kod płyty">
-                            <label for="boardCode">Kod płyty</label>
+                                   th:placeholder="#{board.code}">
+                            <label for="boardCode" th:text="#{board.code}">Kod płyty</label>
                         </div>
                     </div>
                 </div>
@@ -139,14 +147,16 @@
                                    th:field="*{pricePerM2}"
                                    class="form-control" id="boardPrice"
                                    aria-describedby="nameHelp"
-                                   placeholder="Cena za m2">
-                            <label for="boardPrice">Cena za m<sup>2</sup></label>
-                            <span class="input-group-text" id="basic-addon1">zł/m<sup>2</sup></span>
+                                   th:placeholder="#{board.price-per-m2} + '2'">
+                            <label for="boardPrice"><span th:text="#{board.price-per-m2}">Cena za m</span><sup>2</sup></label>
+                            <span class="input-group-text" id="basic-addon1"><span th:text="#{page.currency}"></span>/m<sup>2</sup></span>
                         </div>
-                        <p class="alert-danger" th:if="${#fields.hasErrors('pricePerM2')}">Musisz podać cenę, która jest liczbą dodatnią</p>
+                        <p class="alert-danger" th:if="${#fields.hasErrors('pricePerM2')}"
+                        th:text="#{board.price.error}">Musisz podać cenę, która jest
+                            liczbą dodatnią</p>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary my-2 mx-3">Dodaj</button>
+                <button type="submit" class="btn btn-primary my-2 mx-3" th:text="#{page.button.add}">Dodaj</button>
             </form>
         </div>
     </div>

@@ -64,7 +64,7 @@
                     </form>
                 </div>
                 <div sec:authorize="!isAuthenticated()">
-                    <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
+                    <a href="/main/resources/templates/board/board_add.html" th:href="@{#}"
                         class="btn btn-secondary mx-1" th:text="#{index.body.register}">Rejestracja</a>
                     <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
                         class="btn btn-success mx-1" th:text="#{index.body.login}">Logowanie</a>
@@ -78,70 +78,79 @@
         <div class="column col-8">
             <div class="row px-5 py-5"></div>
             <div class="row px-5 py-4">
-                <h3><span th:text="#{index.tutorial.welcome}">Witaj w edytorze wycen stolarskich </span><b th:text="#{page.service-name}">Wycena3000</b></h3>
+                <h3>
+                    <span th:text="#{index.tutorial.welcome}">Witaj w edytorze wycen stolarskich </span>
+                    <b th:text="#{page.service-name}">Wycena3000</b>
+                </h3>
                 <div class="text-body">
-                    Podstawowym celem tej aplikacji jest uproszczenie procesu tworzenia wyceny dla klienta. Interfejs
-                    użytkownika jest prosty i przypomina wpisywanie danych na kalkulatorze.
-                    <br>W kilka kroków można dokładnie sprawdzić ile projekt będzie kosztować i jaką cenę najlepiej
-                    podać
-                    klientowi.
+                    <span th:text="#{index.tutorial.step-1-1}">Podstawowym celem tej aplikacji jest uproszczenie procesu tworzenia wyceny dla klienta. Interfejs
+                        użytkownika jest prosty i przypomina wpisywanie danych na kalkulatorze.</span>
+                    <br>
+                    <span th:text="#{index.tutorial.step-1-2}">W kilka kroków można dokładnie sprawdzić ile projekt będzie kosztować i jaką cenę najlepiej
+                        podać klientowi.</span>
                 </div>
             </div>
             <div class="row px-5 py-4">
-                <h5>Czego potrzeba do rozpoczęcia pracy z aplikacją?</h5>
+                <h5 th:text="#{index.tutorial.step-1.list.header}">Czego potrzeba do rozpoczęcia pracy z aplikacją?</h5>
                 <ul class="list-group">
-                    <li class="list-group-item">✅ Lista materiałów wraz z ich cenami</li>
-                    <li class="list-group-item">✅ Płyty, blaty i fronty użyte w projekcie oraz ich ceny</li>
-                    <li class="list-group-item">✅ 10 minut czasu</li>
+                    <li class="list-group-item">✅ <span th:text="#{index.tutorial.step-1.list-1}">Lista materiałów wraz z ich cenami</span></li>
+                    <li class="list-group-item">✅ <span th:text="#{index.tutorial.step-1.list-2}">Płyty, blaty i fronty użyte w projekcie oraz ich ceny</span></li>
+                    <li class="list-group-item">✅ <span th:text="#{index.tutorial.step-1.list-3}">10 minut czasu</span></li>
                 </ul>
 
             </div>
             <div class="row px-5 py-4">
                 <ul>
-                    <li class="list-group-item list-group-item-success">Zanim zanurkujesz w aplikacji i klikniesz "Dodaj
+                    <li class="list-group-item list-group-item-success" th:text="#{index.tutorial.step-2}">Zanim zanurkujesz w aplikacji i klikniesz "Dodaj
                         projekt", proponuję najpierw dodać potrzebne elementy i blaty do bazy danych.</li>
                 </ul>
             </div>
             <div class="row px-5 py-2">
-                <p><strong>1.</strong> Dodaj element poprzez przycisk <a href="#"
-                        class="btn btn-success mx-1">Dodaj Element</a>.
-                    Wybierz z listy pasujący <b>rodzaj</b>, wybierz
-                    <b>nazwę</b>, która będzie dla Ciebie łatwo rozpoznawalna i dodaj <b>cenę</b>. <br>
-                    Wszystkie te dane będziesz mógł później zmienić w razie potrzeby.
+                <p><strong>1.</strong> <span th:text="#{index.tutorial.step-3.add-part}">Dodaj element poprzez przycisk </span><a href="#"
+                        class="btn btn-success mx-1" th:text="#{page.button.part.add}">Dodaj Element</a>.
+                    <span th:text="#{index.tutorial.step-3.choose_from_list}">Wybierz z listy pasujący </span>
+                    <b th:text="#{index.tutorial.step-3.type}">rodzaj</b>,
+                    <span th:text="#{index.tutorial.step-3.choose}">wybierz</span>
+                    <b th:text="#{index.tutorial.step-3.name}">nazwę</b>,
+                    <span th:text="#{index.tutorial.step-3.that-is-easy-to-rem}">która będzie dla Ciebie łatwo rozpoznawalna i dodaj </span>
+                    <b th:text="#{index.tutorial.step-3.price}">cenę</b>. <br>
+                    <span th:text="#{index.tutorial.step-3.you-can-change-it-all}">Wszystkie te dane będziesz mógł później zmienić w razie potrzeby.</span>
                 </p>
                 <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/add_part.png"
                     alt="Dodaj element" th:src="@{/images/add_part.png}">
             </div>
             <div class="row px-5 py-4">
-                <p><strong>2.</strong> Po dodaniu wszystkich elementów, analogiczne dodaj płyty poprzez przycisk <a href="#"
-                    class="btn btn-success mx-1">Dodaj Płytę</a>.
-                    Jedyną zmianą jest możliwość dodania kodu płyty, ale jest to pole nieobowiązkowe.</p>
+                <p><strong>2.</strong> <span th:text="#{index.tutorial.step-4.part-1}">Po dodaniu wszystkich elementów, analogiczne dodaj płyty poprzez przycisk</span> <a href="#"
+                    class="btn btn-success mx-1" th:text="#{page.button.board.add}">Dodaj Płytę</a>.
+                    <span th:text="#{index.tutorial.step-4.part-2}">Jedyną zmianą jest możliwość dodania kodu płyty, ale jest to pole nieobowiązkowe.</span></p>
                     <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/add_board.png"
                     alt="Dodaj płytę" th:src="@{/images/add_board.png}">
             </div>
             <div class="row px-5 py-3">
-                <p><strong>3.</strong> Kiedy wszystkie źródła kosztów są wprowadzone do systemu, kliknij <a href="#"
-                    class="btn btn-success mx-1">Dodaj Projekt</a>., wpisz unikalną nazwę projektu oraz, opcjonalnie, komentarz.</p>
+                <p><strong>3.</strong><span th:text="#{index.tutorial.step-5.part-1}">Kiedy wszystkie źródła kosztów są wprowadzone do systemu, kliknij </span><a href="#"
+                    class="btn btn-success mx-1" th:text="#{index.body.projects.add}">Dodaj Projekt</a>
+                    <span th:text="#{index.tutorial.step-4.part-3}">, wpisz unikalną nazwę projektu oraz, opcjonalnie, komentarz.</span></p>
             </div>
             <div class="row px-5 py-3">
-                <p><strong>4.</strong> Program przekieruje Cię do widoku edycji wyceny.  Tutaj dodaj wszystkie wymiary poszczególnych płyt,
-                    elementy, jak również inne koszty aby wyliczyć całkowity koszt projektu. <strong>Polecam poruszać się pomiędzy
-                    polami formularza za pomocą przycisku </strong> <kbd>Tab</kbd>. Każdy z trzech elementów jest osobnym formularzem, co oznacza że po
-                    uzupełnieniu dowolnego z nich należy potwierdzić wprowadzone dane wciskając <kbd>Enter</kbd>.</p>
+                <p><strong>4.</strong> <span th:text="#{index.tutorial.step-6.part-1}">Program przekieruje Cię do widoku edycji wyceny. Tutaj dodaj wszystkie wymiary poszczególnych płyt,
+                    elementy, jak również inne koszty aby wyliczyć całkowity koszt projektu.</span><strong th:text="#{index.tutorial.step-6.part-2}">Polecam poruszać się pomiędzy
+                    polami formularza za pomocą przycisku </strong> <kbd>Tab</kbd>. <span th:text="#{index.tutorial.step-6.part-3}">Każdy z trzech elementów jest osobnym formularzem, co oznacza że po
+                    uzupełnieniu dowolnego z nich należy potwierdzić wprowadzone dane wciskając</span> <kbd>Enter</kbd>.</p>
                     <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/edit_project.png"
                     alt="Edytuj projekt" th:src="@{/images/edit_project.png}">
             </div>
             <div class="row px-5 py-3">
                 <p><strong>5.</strong> 
-                    Mamy już dodane wszystkie elementy i płyty. Czas ustalić cenę projektu. Kliknij w pasek <strong>"Ustal cenę"</strong>, a
+                    <span th:text="#{index.tutorial.step-7.part-1}">Mamy już dodane wszystkie elementy i płyty. Czas ustalić cenę projektu. Kliknij w pasek </span>
+                    <strong th:text="#{index.tutorial.step-7.set-price}">"Ustal cenę"</strong><span th:text="#{index.tutorial.step-7.part-2}">, a
                     następnie wybierz jaką chcesz zaproponować cenę lub marżę. Podaj jedną z tych dwóch wartości, program sam
-                    przeliczy drugą na podstawie danych.</p>
+                    przeliczy drugą na podstawie danych.</span></p>
                     <img class="img-fluid border border-2 border-dark" src="/main/resources/static/images/edit_price.png"
                     alt="Edytuj projekt" th:src="@{/images/edit_price.png}">
             </div>
             <div class="row px-5 py-3">
-                <p><strong>6.</strong> Aby zakończyć edycję kliknij w Projekty, a tam sprawdź szczegóły projektu. W razie dowolnych zmian masz
-                    zawsze możliwość powrotu do edytora i zmiany danych.</p>
+                <p><strong>6.</strong> <span th:text="#{index.tutorial.step-8}">Aby zakończyć edycję kliknij w Projekty, a tam sprawdź szczegóły projektu. W razie dowolnych zmian masz
+                    zawsze możliwość powrotu do edytora i zmiany danych.</span></p>
 
             </div>
         </div>

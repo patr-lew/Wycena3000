@@ -1,6 +1,7 @@
 package com.lewandowski.wycena3000.controller;
 
 import com.lewandowski.wycena3000.aop.ErrorController;
+import com.lewandowski.wycena3000.dto.PartChangeRequestDto;
 import com.lewandowski.wycena3000.entity.Part;
 import com.lewandowski.wycena3000.entity.PartType;
 import com.lewandowski.wycena3000.entity.Project;
@@ -22,14 +23,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.testSecurityContext;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -50,6 +51,7 @@ class PartControllerTest {
     private final Long USER_ID = 1L;
     private final Long WRONG_PART_ID = 7L;
     private final Long PART_ID = 3L;
+    private final Long PROJECT_ID = 18L;
 
     private final User MOCK_USER = User.builder()
             .id(USER_ID)
@@ -60,10 +62,12 @@ class PartControllerTest {
             .user(new User())
             .build();
 
-    private final Part testPart = Part.builder()
+    private final Part VALID_PART = Part.builder()
             .name("part name")
             .id(PART_ID)
             .user(MOCK_USER)
+            .partType(new PartType())
+            .price(BigDecimal.ONE)
             .build();
 
     private final HandlerMethodArgumentResolver putAuthenticationPrincipal = new HandlerMethodArgumentResolver() {
@@ -94,12 +98,11 @@ class PartControllerTest {
 
 
     @Test
-    public void shouldReturnVIewWithAllParts() throws Exception {
+    public void whenViewingAllParts_shouldReturnVIewWithAllParts() throws Exception {
         // given
         Set<Long> testSet = Set.of(3L);
 
-
-        when(partService.getPartsByUser(any())).thenReturn(List.of(testPart));
+        when(partService.getPartsByUser(any())).thenReturn(List.of(VALID_PART));
         when(partService.getEnabledDeleteSet()).thenReturn(testSet);
 
         // when + then
@@ -107,12 +110,12 @@ class PartControllerTest {
                 .perform(get("/creator/parts/all"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("part/part_all"))
-                .andExpect(model().attribute("parts", contains(testPart)))
+                .andExpect(model().attribute("parts", contains(VALID_PART)))
                 .andExpect(model().attribute("enabledDelete", contains(3L)));
     }
 
     @Test
-    public void shouldReturnViewToAddParts() throws Exception {
+    public void whenViewingAddPart_shouldReturnViewToAddParts() throws Exception {
         // given
         PartType testType = new PartType();
         List<PartType> partTypes = List.of(testType);
@@ -129,19 +132,13 @@ class PartControllerTest {
     }
 
     @Test
-    public void whenAddingPart_givenErrors_returnToForm() throws Exception {
+    public void whenAddingPart_givenInvalidPart_returnToForm() throws Exception {
         mockMvc
-                .perform(post("/creator/parts/add"))
+                .perform(post("/creator/parts/add").requestAttr("part", WRONG_PART))
                 .andExpect(status().isOk())
                 .andExpect(view().name("part/part_add"));
     }
 
-    @Test
-    public void whenAddingPart_addPart_redirectToAllParts() throws Exception {
-        mockMvc
-                .perform(post("/creator/parts/add"))
-                .andExpect(status().isOk());
-    }
 
     @Test
     public void givenRightUser_shouldReturnEditPartView() throws Exception {
@@ -149,32 +146,32 @@ class PartControllerTest {
         PartType testType = new PartType();
         List<PartType> partTypes = List.of(testType);
 
-        when(partService.findById(PART_ID)).thenReturn(testPart);
+        when(partService.findById(PART_ID)).thenReturn(VALID_PART);
         when(partService.getPartTypes()).thenReturn(partTypes);
-
 
         // when + then
         mockMvc
                 .perform(get("/creator/parts/edit/" + PART_ID))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("part", testPart));
+                .andExpect(model().attribute("part", VALID_PART));
 
     }
 
     @Test
     public void givenRightUser_shouldDeletePart() throws Exception {
         // given
-        when(partService.findById(PART_ID)).thenReturn(testPart);
+        when(partService.findById(PART_ID)).thenReturn(VALID_PART);
+        doNothing().when(partService).delete(anyLong());
 
         // when + then
         mockMvc
                 .perform(get("/creator/parts/delete/" + PART_ID))
                 .andExpect(redirectedUrl("/creator/parts/all"));
+        verify(partService, times(1)).delete(anyLong());
     }
 
     @Test
     public void givenWrongUser_shouldRespond403() throws Exception {
-        // given
         when(partService.findById(WRONG_PART_ID)).thenReturn(WRONG_PART);
 
         // when + then
@@ -188,7 +185,7 @@ class PartControllerTest {
     public void shouldReturnChangePartFormView() throws Exception {
         // given
         Project project = Project.builder()
-                .id(1L)
+                .id(PROJECT_ID)
                 .user(MOCK_USER)
                 .build();
 
@@ -200,14 +197,26 @@ class PartControllerTest {
         // when + then
         mockMvc
                 .perform(get("/creator/parts/change?partId="
-                        + PART_ID + "&projectId=" + project.getId()))
+                        + PART_ID + "&projectId=" + PROJECT_ID))
                 .andExpect(model().attribute("project", project))
                 .andExpect(model().attribute("oldPartId", PART_ID))
                 .andExpect(model().attribute("parts", usersParts))
                 .andExpect(view().name("part/part_change"));
     }
 
-    // shouldRedirectToProjectDetails
+    @Test
+    public void shouldRedirectToProjectDetails() throws Exception {
+        PartChangeRequestDto dto = new PartChangeRequestDto();
+        dto.setProjectId(PROJECT_ID);
+        dto.setProjectId(PROJECT_ID);
+
+        mockMvc
+                .perform(post("/creator/parts/change")
+                        .param("projectId", PROJECT_ID.toString())
+                        .param("oldPartId", "1")
+                        .param("newPartId", "2"))
+                .andExpect(redirectedUrl("/creator/projects/details/" + PROJECT_ID));
+    }
 
 
 }

@@ -20,28 +20,31 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Wycena3000</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#" th:text="#{page.service-name}">Wycena3000</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/main/resources/templates/index.html"
-                       th:href="@{/}">Strona główna</a>
+                       th:href="@{/}" th:text="#{index.body.main-page}">Strona główna</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/main/resources/templates/project/projects_all.html"
-                       th:href="@{/creator/projects/all}">Projekty</a>
+                       th:href="@{/creator/projects/all}" th:text="#{index.body.projects}">Projekty</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/board/board_all.html" th:href="@{/creator/boards/all}">
+                    <a class="nav-link" href="/main/resources/templates/board/board_all.html"
+                       th:href="@{/creator/boards/all}" th:text="#{index.body.boards}">
                         Płyty
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html" th:href="@{/creator/parts/all}">
+                    <a class="nav-link" href="/main/resources/templates/partRepository/part_all.html"
+                       th:href="@{/creator/parts/all}" th:text="#{index.body.parts}">
                         Elementy
                     </a>
                 </li>
@@ -49,14 +52,14 @@
             </ul>
             <div sec:authorize="isAuthenticated()">
                 <form th:action="@{/logout}" method="post">
-                    <button class="btn btn-warning mx-3" type="submit">Wyloguj</button>
+                    <button class="btn btn-warning mx-1" type="submit" th:text="#{index.body.logout}">Wyloguj</button>
                 </form>
             </div>
             <div sec:authorize="!isAuthenticated()">
-                <a href="/main/resources/templates/board/board_add.html" th:href="@{/user/register}"
-                   class="btn btn-success mx-1">Rejestracja</a>
+                <a href="/main/resources/templates/board/board_add.html" th:href="@{#}"
+                   class="btn btn-secondary mx-1" th:text="#{index.body.register}">Rejestracja</a>
                 <a href="/main/resources/templates/project/edit_project.html" th:href="@{/user/login}"
-                   class="btn btn-success mx-1">Logowanie</a>
+                   class="btn btn-success mx-1" th:text="#{index.body.login}">Logowanie</a>
             </div>
         </div>
     </div>
@@ -67,20 +70,23 @@
 <div class="container">
 
     <form class="form-signin" method="post" th:action="@{/user/login}">
-        <h2 class="form-signin-heading">Logowanie</h2>
+        <h2 class="form-signin-heading" th:text="#{index.body.login}">Logowanie</h2>
         <p>
-            <label for="username" class="sr-only">Nazwa użytkownika</label>
-            <input type="text" id="username" name="username" class="form-control" placeholder="Nazwa użytkownika" required autofocus>
+            <label for="username" class="sr-only" th:text="#{login.username}">Nazwa użytkownika</label>
+            <input type="text" id="username" name="username" class="form-control" th:placeholder="#{login.username}"
+                   required autofocus>
         </p>
         <p>
-            <label for="password" class="sr-only">Hasło</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Hasło" required>
+            <label for="password" class="sr-only" th:text="#{login.password}">Hasło</label>
+            <input type="password" id="password" name="password" class="form-control" th:placeholder="#{login.password}" required>
         </p>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Wejdź</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{login.enter}">Wejdź</button>
     </form>
 
     <div>
-        <p>W celu zalogowania się jako testowy użytkownik, <br> proszę podać login: test, hasło: test</p>
+        <p>
+            <span th:text="#{login.info.part-1}">W celu zalogowania się jako testowy użytkownik, </span><br>
+            <span th:text="#{login.info.part-2}">proszę podać login: test, hasło: test</span></p>
     </div>
 </div>
 
