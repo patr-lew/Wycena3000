@@ -2,11 +2,9 @@
 #### simple app for creating price estimation of carpentry projects.
 
 ## General info
-There is a lot of very advanced tools for carpenters in the market. Unforntunately, most of them is so advanced that many carpenters either don't have time or the knowledge to use all of the possible features. Many of them ends up estimating project price on paper.
+There is a lot of very advanced tools for carpenters in the market. Unfortunately, most of them is so advanced that many carpenters either don't have time or the knowledge to use all of the possible features. Many of them ends up estimating project price on paper.
 
 The program aims to be an intermediate step between those advanced tools and a piece of paper. Once project's sketch is given, one can easily and fast add all required parts and boards and once this step is finished, there is always possibility to change the type of used materials. This allows to create different price tiers for a potential client.
-
-This is also a graduation project for Java developer course in Coderslab.
 
 ## Technologies
 * Backend
