@@ -29,6 +29,10 @@ The latest stable version of the app is pushed on Heroku server and is accessibl
 
 Please do give a moment for the app to start up, __Heroku builds the app every time it's being accessed__ and deconstructs it after half hour of idle.
 
+## Pre-build configuration - PostgreSQL
+Enter application.properties and fill `spring.datasource.username=` and `spring.datasource.password=` with your PostgreSQL credentials.
+In your PostgreSQL create also database named "wycena3000".
+
 ## Build
 Building requires Java Runtime Environment (at least version 11) and Maven installed. Once you downloaded the source code, go to the directory containing it (in the example it's "/home/username/Downloads/wycena3000") and use Maven to compile the code.
 ```
@@ -38,7 +42,7 @@ $ mvn package
 
 The command will create a 'target' folder containing compiled and ready-to-use application. To start it, type:
 ```
-java -cp target/wycena3000-0.0.1-SNAPSHOT.jar com.lewandowski.wycena3000.Wycena3000Application
+java -jar target/wycena3000-0.0.1-SNAPSHOT.jar com.lewandowski.wycena3000.Wycena3000Application
 ```
 
 ## How to use it
